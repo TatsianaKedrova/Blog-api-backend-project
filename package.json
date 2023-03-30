@@ -7,7 +7,7 @@
     "dev": "yarn nodemon --inspect dist/index.js",
     "build": "tsc",
     "start": "nodemon dist/index.js",
-    "test": "jest --detectOpenHandles --watch"
+    "jest": "jest --detectOpenHandles --watch --runInBand"
   },
   "keywords": [],
   "author": "",

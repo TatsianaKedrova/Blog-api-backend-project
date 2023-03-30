@@ -1,4 +1,4 @@
-import { splitToWords, sum, multiply } from "../../src/examples";
+import { splitToWords, sum, multiply } from "../src/examples";
 
 let a: number;
 let b: number;

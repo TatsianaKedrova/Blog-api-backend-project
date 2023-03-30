@@ -1,15 +1,14 @@
-import express, { Request, Response } from "express";
+import { AvailableResolutions, TCreateVideoInputModel } from "dto/data.types";
+import { app } from "./settings";
 
-const app = express();
 require("dotenv").config();
 const port = process.env.PORT || 5000;
 
-app.use(express.json());
-
-app.get("/", (req: Request, res: Response) => {
-  let helloMessage = "Great and creative Sherif!";
-  res.send(helloMessage);
-});
+// const something: TCreateVideoInputModel = {
+//   author: "Tania",
+//   title: "Pretty analytical girl",
+//   availableResolutions: [],
+// };
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
