@@ -30,7 +30,7 @@ export type TCreateVideoInputModel = {
 
 export type TUpdateVideoInputModel = TCreateVideoInputModel & {
   canBeDownloaded: boolean; //by default = false
-  minAgeRestriction: number; //max=18, min=1
+  minAgeRestriction: number | null; //max=18, min=1
   publicationDate: string;
 };
 

@@ -5,7 +5,7 @@
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
-    "baseUrl": "./src",
+    // "baseUrl": "./src",
     "noImplicitReturns": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,

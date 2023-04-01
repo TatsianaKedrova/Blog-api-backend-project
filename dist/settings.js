@@ -5,10 +5,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.app = void 0;
 const express_1 = __importDefault(require("express"));
+const video_router_1 = require("./routers/video-router");
 exports.app = (0, express_1.default)();
 exports.app.use(express_1.default.json());
-exports.app.get("/", (req, res) => {
-    let helloMessage = "Great and creative Sherif!";
-    res.send(helloMessage);
+exports.app.get("/", () => {
+    console.log("hello");
 });
+exports.app.use("/api/videos", video_router_1.videosRouter);
 //# sourceMappingURL=settings.js.map
