@@ -6,6 +6,9 @@
     "rootDir": "./src",
     "strict": true,
     // "baseUrl": "./src",
+    // "paths": {
+    //   "@/*": ["src/*"]
+    // },
     "noImplicitReturns": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
