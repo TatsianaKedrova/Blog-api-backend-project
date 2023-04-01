@@ -1,5 +1,5 @@
 export type TApiErrorResult = {
-  errorMessages: TFieldError[];
+  errorsMessages: TFieldError[];
 };
 
 export type TFieldError = {
@@ -7,7 +7,7 @@ export type TFieldError = {
   field: string;
 };
 
-export enum AvailableResolutions {
+export enum Resolutions {
   P144 = "P144",
   P240 = "P240",
   P360 = "P360",
@@ -18,10 +18,23 @@ export enum AvailableResolutions {
   P2160 = "P2160",
 }
 
-// export type TAvailableResolutions = "P144" | "P240" | "P360" | "P480" | "P720" | "P1080" | "P1440" | "P2160";
+type NonEmptyArray<T> = [T, ...T[]];
+
+export type TResolutionsArray = NonEmptyArray<Resolutions>;
 
 export type TCreateVideoInputModel = {
-  title: string;
-  author: string;
-  availableResolutions: AvailableResolutions[];
+  title: string; // required, maxLength = 40
+  author: string; //required, maxLength = 20
+  availableResolutions: TResolutionsArray;
+};
+
+export type TUpdateVideoInputModel = TCreateVideoInputModel & {
+  canBeDownloaded: boolean; //by default = false
+  minAgeRestriction: number; //max=18, min=1
+  publicationDate: string;
+};
+
+export type TVideo = TUpdateVideoInputModel & {
+  id: number;
+  createdAt: string;
 };
