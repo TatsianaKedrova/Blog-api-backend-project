@@ -6,14 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.videosRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const http_status_codes_1 = require("http-status-codes");
-const videos_db_1 = require("../temporal-database/videos-db");
 const responseErrorUtils_1 = require("../utils/responseErrorUtils");
+const videos_db_1 = require("../temporal-database/videos-db");
 exports.videosRouter = express_1.default.Router({});
 //TODO get all videos
 exports.videosRouter.get("/", (req, res) => {
-    if (videos_db_1.videos.length > 0) {
-        res.status(http_status_codes_1.StatusCodes.OK).send(videos_db_1.videos);
-    }
+    res.status(http_status_codes_1.StatusCodes.OK).send(videos_db_1.videos);
 });
 //TODO get video by Id
 exports.videosRouter.get("/:id", (req, res) => {

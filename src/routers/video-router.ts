@@ -1,16 +1,14 @@
 import express, { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { TApiErrorResult, TVideo } from "../dto/data.types";
-import { videos } from "../temporal-database/videos-db";
 import { responseErrorFunction } from "../utils/responseErrorUtils";
+import { videos } from "../temporal-database/videos-db";
 
 export const videosRouter = express.Router({});
 
 //TODO get all videos
 videosRouter.get("/", (req: Request, res: Response<TVideo[]>) => {
-  if (videos.length > 0) {
-    res.status(StatusCodes.OK).send(videos);
-  }
+  res.status(StatusCodes.OK).send(videos);
 });
 
 //TODO get video by Id
@@ -48,11 +46,8 @@ videosRouter.delete(
   }
 );
 
-
 //TODO create new video
 videosRouter.post("/", (req: Request, res: Response) => {});
 
 //TODO update video by id
 videosRouter.put("/:id", (req: Request, res: Response) => {});
-
-

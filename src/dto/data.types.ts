@@ -38,3 +38,7 @@ export type TVideo = TUpdateVideoInputModel & {
   id: number;
   createdAt: string;
 };
+
+export type TDataBase = {
+  [key: string]: TVideo[];
+};
