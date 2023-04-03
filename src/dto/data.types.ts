@@ -1,3 +1,5 @@
+import { Request } from "express";
+
 export type TApiErrorResult = {
   errorsMessages: TFieldError[];
 };
@@ -7,20 +9,11 @@ export type TFieldError = {
   field: string;
 };
 
-export enum Resolutions {
-  P144 = "P144",
-  P240 = "P240",
-  P360 = "P360",
-  P480 = "P480",
-  P720 = "P720",
-  P1080 = "P1080",
-  P1440 = "P1440",
-  P2160 = "P2160",
-}
 
+export type TResolutions = "P144" | "P240" | "P360" | "P480" | "P720" | "P1080" | "P1440" | "P2160";
 type NonEmptyArray<T> = [T, ...T[]];
 
-export type TResolutionsArray = NonEmptyArray<Resolutions>;
+export type TResolutionsArray = NonEmptyArray<TResolutions>;
 
 export type TCreateVideoInputModel = {
   title: string; // required, maxLength = 40
@@ -42,3 +35,16 @@ export type TVideo = TUpdateVideoInputModel & {
 export type TDataBase = {
   [key: string]: TVideo[];
 };
+
+export type TRequestBodyModel = Request<{}, {}, TCreateVideoInputModel>;
+
+// export enum Resolutions {
+//   P144 = "P144",
+//   P240 = "P240",
+//   P360 = "P360",
+//   P480 = "P480",
+//   P720 = "P720",
+//   P1080 = "P1080",
+//   P1440 = "P1440",
+//   P2160 = "P2160",
+// }

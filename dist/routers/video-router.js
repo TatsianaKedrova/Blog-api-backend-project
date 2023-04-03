@@ -8,6 +8,7 @@ const express_1 = __importDefault(require("express"));
 const http_status_codes_1 = require("http-status-codes");
 const responseErrorUtils_1 = require("../utils/responseErrorUtils");
 const videos_db_1 = require("../temporal-database/videos-db");
+const inputRequestValidator_1 = require("../utils/inputRequestValidator");
 exports.videosRouter = express_1.default.Router({});
 //TODO get all videos
 exports.videosRouter.get("/", (req, res) => {
@@ -37,7 +38,29 @@ exports.videosRouter.delete("/:id", (req, res) => {
     }
 });
 //TODO create new video
-exports.videosRouter.post("/", (req, res) => { });
+exports.videosRouter.post("/", (req, res) => {
+    res.set({
+        "Content-Type": "application/json",
+        Accept: "application/json",
+    });
+    const { title, author, availableResolutions } = req.body;
+    (0, inputRequestValidator_1.validateRequestBody)(title, 40, "Title", res);
+    (0, inputRequestValidator_1.validateRequestBody)(author, 20, "Author", res);
+    (0, inputRequestValidator_1.validateResolutions)(availableResolutions, res);
+    const newVideo = {
+        id: 0,
+        title: req.body.title,
+        author: req.body.author,
+        availableResolutions: req.body.availableResolutions,
+        canBeDownloaded: true,
+        minAgeRestriction: null,
+        createdAt: new Date().toISOString(),
+        publicationDate: new Date().toISOString(),
+    };
+    videos_db_1.videos.push(newVideo);
+    res.status(http_status_codes_1.StatusCodes.CREATED).send(newVideo);
+});
 //TODO update video by id
-exports.videosRouter.put("/:id", (req, res) => { });
+exports.videosRouter.put("/:id", (req, res) => {
+});
 //# sourceMappingURL=video-router.js.map
