@@ -1,7 +1,11 @@
+// import { TVideo } from "dto/data.types";
 import request from "supertest";
 import { StatusCodes } from "http-status-codes";
 import { app } from "../src/settings";
 
+describe("/videos", () => {
+//   let newVideo = TVideo;
+});
 // describe("/videos", () => {
 //   let newVideo: VideoType | null = null;
 

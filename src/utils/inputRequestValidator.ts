@@ -14,12 +14,9 @@ const resolutions: TResolutionsArray = [
 const isResolution = (x: TResolutions): x is TResolutions =>
   resolutions.includes(x);
 
-export const createVideoInputValidation = {
-  validateTitleAndAuthor(
-    requestProperty: string,
-    maxLength: number
-  ) {
-    if (!requestProperty || !requestProperty.trim()) {
+export const videoInputValidation = {
+  validateTitleAndAuthor(requestProperty: string, maxLength: number) {
+    if (!requestProperty || typeof requestProperty !== "string" || !requestProperty.trim()) {
       return false;
     } else if (requestProperty.trim().length > maxLength) {
       return false;
@@ -37,4 +34,14 @@ export const createVideoInputValidation = {
       return errorResolution;
     }
   },
+  validateMinAgeRestriction(minAgeRestriction: number) {
+    if (minAgeRestriction < 1 || minAgeRestriction > 18) {
+      return false;
+    } else return true;
+  },
+  validateCanBeDownloaded(canBeDownloaded: boolean) {
+    if (typeof canBeDownloaded !== "boolean") {
+      return false;
+    } else return true;
+  }
 };

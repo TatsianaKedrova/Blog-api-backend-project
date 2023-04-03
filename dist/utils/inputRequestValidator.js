@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createVideoInputValidation = void 0;
+exports.videoInputValidation = void 0;
 const resolutions = [
     "P144",
     "P240",
@@ -12,9 +12,9 @@ const resolutions = [
     "P2160",
 ];
 const isResolution = (x) => resolutions.includes(x);
-exports.createVideoInputValidation = {
+exports.videoInputValidation = {
     validateTitleAndAuthor(requestProperty, maxLength) {
-        if (!requestProperty || !requestProperty.trim()) {
+        if (!requestProperty || typeof requestProperty !== "string" || !requestProperty.trim()) {
             return false;
         }
         else if (requestProperty.trim().length > maxLength) {
@@ -36,5 +36,19 @@ exports.createVideoInputValidation = {
             return errorResolution;
         }
     },
+    validateMinAgeRestriction(minAgeRestriction) {
+        if (minAgeRestriction < 1 || minAgeRestriction > 18) {
+            return false;
+        }
+        else
+            return true;
+    },
+    validateCanBeDownloaded(canBeDownloaded) {
+        if (typeof canBeDownloaded !== "boolean") {
+            return false;
+        }
+        else
+            return true;
+    }
 };
 //# sourceMappingURL=inputRequestValidator.js.map
