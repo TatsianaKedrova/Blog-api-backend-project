@@ -1,15 +1,10 @@
 import express, { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import {
-  TApiErrorResult,
-  TRequestBodyModel,
-  TVideo,
-} from "../dto/data.types";
+import { TApiErrorResult, TRequestBodyModel, TVideo } from "../dto/data.types";
 import { responseErrorFunction } from "../utils/responseErrorUtils";
 import { videos } from "../temporal-database/videos-db";
 import {
-  validateRequestBody,
-  validateResolutions,
+  createVideoInputValidation,
 } from "../utils/inputRequestValidator";
 
 export const videosRouter = express.Router({});
@@ -63,26 +58,45 @@ videosRouter.post(
       Accept: "application/json",
     });
     const { title, author, availableResolutions } = req.body;
-    validateRequestBody(title, 40, "Title", res);
-    validateRequestBody(author, 20, "Author", res);
-    validateResolutions(availableResolutions, res);
+    const titleValidation = createVideoInputValidation.validateTitleAndAuthor(
+      title,
+      40
+    );
+    const authorValidation = createVideoInputValidation.validateTitleAndAuthor(
+      author,
+      20
+    );
+    const resolutionValidation =
+      createVideoInputValidation.validateResolution(availableResolutions);
+    if (!titleValidation) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(responseErrorFunction("Title is invalid", "title"));
+    } else if (!authorValidation) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(responseErrorFunction("Author is invalid", "Author"));
+    } else if (!resolutionValidation) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .json(responseErrorFunction("Resolution is invalid", "Resolution"));
+    } else {
+      const newVideo: TVideo = {
+        id: 0,
+        title: req.body.title,
+        author: req.body.author,
+        availableResolutions: req.body.availableResolutions,
+        canBeDownloaded: true,
+        minAgeRestriction: null,
+        createdAt: new Date().toISOString(),
+        publicationDate: new Date().toISOString(),
+      };
 
-    const newVideo: TVideo = {
-      id: 0,
-      title: req.body.title,
-      author: req.body.author,
-      availableResolutions: req.body.availableResolutions,
-      canBeDownloaded: true,
-      minAgeRestriction: null,
-      createdAt: new Date().toISOString(),
-      publicationDate: new Date().toISOString(),
-    };
-    videos.push(newVideo);
-    res.status(StatusCodes.CREATED).send(newVideo);
+      videos.push(newVideo);
+      res.status(StatusCodes.CREATED).send(newVideo);
+    }
   }
 );
 
 //TODO update video by id
-videosRouter.put("/:id", (req: Request, res: Response) => {
-
-});
+videosRouter.put("/:id", (req: Request, res: Response) => {});

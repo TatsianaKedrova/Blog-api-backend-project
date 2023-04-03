@@ -1,23 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateResolutions = exports.validateRequestBody = void 0;
-const http_status_codes_1 = require("http-status-codes");
-const responseErrorUtils_1 = require("./responseErrorUtils");
-const validateRequestBody = (requestProperty, maxLength, errorMessage, res) => {
-    if (!requestProperty.trim()) {
-        res
-            .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
-            .json((0, responseErrorUtils_1.responseErrorFunction)(`${errorMessage} is invalid`, `${errorMessage}`));
-        return;
-    }
-    else if (requestProperty.trim().length > maxLength) {
-        res
-            .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
-            .json((0, responseErrorUtils_1.responseErrorFunction)(`Max length of ${errorMessage} should be ${maxLength}`, `${errorMessage}`));
-        return;
-    }
-};
-exports.validateRequestBody = validateRequestBody;
+exports.createVideoInputValidation = void 0;
 const resolutions = [
     "P144",
     "P240",
@@ -29,21 +12,29 @@ const resolutions = [
     "P2160",
 ];
 const isResolution = (x) => resolutions.includes(x);
-const validateResolutions = (resolutions, res) => {
-    if (resolutions.length === 0) {
-        res
-            .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
-            .json((0, responseErrorUtils_1.responseErrorFunction)("There should be at least one resolution for created video", "Resolution"));
-        return;
-    }
-    resolutions.map((element) => {
-        const result = isResolution(element);
-        if (!result) {
-            res
-                .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
-                .json((0, responseErrorUtils_1.responseErrorFunction)(`Resolution ${element} doesn't exist`, "Resolution"));
+exports.createVideoInputValidation = {
+    validateTitleAndAuthor(requestProperty, maxLength) {
+        if (!requestProperty || !requestProperty.trim()) {
+            return false;
         }
-    });
+        else if (requestProperty.trim().length > maxLength) {
+            return false;
+        }
+        else
+            return true;
+    },
+    validateResolution(resolutions) {
+        if (resolutions.length === 0) {
+            return false;
+        }
+        else {
+            let result;
+            const errorResolution = resolutions.find((element) => {
+                result = isResolution(element);
+                return result;
+            });
+            return errorResolution;
+        }
+    },
 };
-exports.validateResolutions = validateResolutions;
 //# sourceMappingURL=inputRequestValidator.js.map

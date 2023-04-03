@@ -44,23 +44,39 @@ exports.videosRouter.post("/", (req, res) => {
         Accept: "application/json",
     });
     const { title, author, availableResolutions } = req.body;
-    (0, inputRequestValidator_1.validateRequestBody)(title, 40, "Title", res);
-    (0, inputRequestValidator_1.validateRequestBody)(author, 20, "Author", res);
-    (0, inputRequestValidator_1.validateResolutions)(availableResolutions, res);
-    const newVideo = {
-        id: 0,
-        title: req.body.title,
-        author: req.body.author,
-        availableResolutions: req.body.availableResolutions,
-        canBeDownloaded: true,
-        minAgeRestriction: null,
-        createdAt: new Date().toISOString(),
-        publicationDate: new Date().toISOString(),
-    };
-    videos_db_1.videos.push(newVideo);
-    res.status(http_status_codes_1.StatusCodes.CREATED).send(newVideo);
+    const titleValidation = inputRequestValidator_1.createVideoInputValidation.validateTitleAndAuthor(title, 40);
+    const authorValidation = inputRequestValidator_1.createVideoInputValidation.validateTitleAndAuthor(author, 20);
+    const resolutionValidation = inputRequestValidator_1.createVideoInputValidation.validateResolution(availableResolutions);
+    if (!titleValidation) {
+        res
+            .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+            .json((0, responseErrorUtils_1.responseErrorFunction)("Title is invalid", "title"));
+    }
+    else if (!authorValidation) {
+        res
+            .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+            .json((0, responseErrorUtils_1.responseErrorFunction)("Author is invalid", "Author"));
+    }
+    else if (!resolutionValidation) {
+        res
+            .status(http_status_codes_1.StatusCodes.BAD_REQUEST)
+            .json((0, responseErrorUtils_1.responseErrorFunction)("Resolution is invalid", "Resolution"));
+    }
+    else {
+        const newVideo = {
+            id: 0,
+            title: req.body.title,
+            author: req.body.author,
+            availableResolutions: req.body.availableResolutions,
+            canBeDownloaded: true,
+            minAgeRestriction: null,
+            createdAt: new Date().toISOString(),
+            publicationDate: new Date().toISOString(),
+        };
+        videos_db_1.videos.push(newVideo);
+        res.status(http_status_codes_1.StatusCodes.CREATED).send(newVideo);
+    }
 });
 //TODO update video by id
-exports.videosRouter.put("/:id", (req, res) => {
-});
+exports.videosRouter.put("/:id", (req, res) => { });
 //# sourceMappingURL=video-router.js.map
