@@ -8,8 +8,8 @@ const express_1 = __importDefault(require("express"));
 const http_status_codes_1 = require("http-status-codes");
 const responseErrorUtils_1 = require("../utils/responseErrorUtils");
 const videos_db_1 = require("../temporal-database/videos-db");
-const inputRequestValidator_1 = require("../utils/inputRequestValidator");
-const uuid_1 = require("uuid");
+const videoPostRequestValidator_1 = require("../utils/videoPostRequestValidator");
+const crypto_1 = __importDefault(require("crypto"));
 const creation_publication_dates_1 = require("../utils/creation-publication-dates");
 exports.videosRouter = express_1.default.Router({});
 //TODO get all videos
@@ -33,8 +33,9 @@ exports.videosRouter.get("/:id", (req, res) => {
 });
 //TODO create new video
 exports.videosRouter.post("/", (req, res) => {
-    let errors = (0, inputRequestValidator_1.validatePostBody)(req.body);
+    let errors = (0, videoPostRequestValidator_1.validatePostBody)(req.body);
     if (errors.length > 0) {
+        res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send((0, responseErrorUtils_1.responseErrorFunction)(errors));
     }
     else {
         const { title, author, availableResolutions } = req.body;
@@ -43,7 +44,7 @@ exports.videosRouter.post("/", (req, res) => {
             Accept: "application/json",
         });
         const newVideo = {
-            id: +(0, uuid_1.v4)(),
+            id: +crypto_1.default.randomUUID(),
             title,
             author,
             availableResolutions,
@@ -88,27 +89,6 @@ exports.videosRouter.put("/:id", (req, res) => {
         foundVideo.title = req.body.title;
     res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
 });
-// const titleValidation = videoInputValidation.validateTitleAndAuthor(
-//   title,
-//   40
-// );
-// const authorValidation = videoInputValidation.validateTitleAndAuthor(
-//   author,
-//   20
-// );
-// const resolutionValidation =
-//   videoInputValidation.validateResolution(availableResolutions);
-// if (!titleValidation) {
-//   res
-//     .status(StatusCodes.BAD_REQUEST)
-//     .json(responseErrorFunction("Title is invalid", "title"));
-// } else if (!authorValidation) {
-//   res
-//     .status(StatusCodes.BAD_REQUEST)
-//     .json(responseErrorFunction("Author is invalid", "Author"));
-// } else if (!resolutionValidation) {
-//   res
-//     .status(StatusCodes.BAD_REQUEST)
-//     .json(responseErrorFunction("Resolution is invalid", "Resolution"));
-// }
+/*fetch("http://localhost:3000/api/videos", {method: "POST", headers: {"Content-Type": "application/json",
+        "Accept": "application/json"}, body: JSON.stringify({title: "nadin"})}).then(res => res.json()).then(res => console.log(res))*/
 //# sourceMappingURL=video-router.js.map

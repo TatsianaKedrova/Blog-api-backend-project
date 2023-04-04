@@ -9,12 +9,15 @@ import {
 } from "../dto/data.types";
 import { responseErrorFunction } from "../utils/responseErrorUtils";
 import { db } from "../temporal-database/videos-db";
-import { validatePostBody } from "../utils/inputRequestValidator";
+import { validatePostBody } from "../utils/videoPostRequestValidator";
 import { RequestWithBody } from "../dto/UpdateVideoModel";
 import { URIParamsRequest } from "../dto/URIParamsRequest";
 import { RequestBodyModel } from "../dto/PostVideoModel";
-import { v4 } from "uuid";
-import { creationVideoDate, publicationVideoDate } from "../utils/creation-publication-dates";
+import crypto from "crypto";
+import {
+  creationVideoDate,
+  publicationVideoDate,
+} from "../utils/creation-publication-dates";
 
 export const videosRouter = express.Router({});
 
@@ -52,16 +55,16 @@ videosRouter.post(
   ) => {
     let errors: TFieldError[] = validatePostBody(req.body);
     if (errors.length > 0) {
+      res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
     } else {
       const { title, author, availableResolutions } = req.body;
-
       res.set({
         "Content-Type": "application/json",
         Accept: "application/json",
       });
-      
+
       const newVideo: TVideo = {
-        id: +v4(),
+        id: +crypto.randomUUID(),
         title,
         author,
         availableResolutions,
@@ -128,26 +131,5 @@ videosRouter.put(
   }
 );
 
-// const titleValidation = videoInputValidation.validateTitleAndAuthor(
-//   title,
-//   40
-// );
-// const authorValidation = videoInputValidation.validateTitleAndAuthor(
-//   author,
-//   20
-// );
-// const resolutionValidation =
-//   videoInputValidation.validateResolution(availableResolutions);
-// if (!titleValidation) {
-//   res
-//     .status(StatusCodes.BAD_REQUEST)
-//     .json(responseErrorFunction("Title is invalid", "title"));
-// } else if (!authorValidation) {
-//   res
-//     .status(StatusCodes.BAD_REQUEST)
-//     .json(responseErrorFunction("Author is invalid", "Author"));
-// } else if (!resolutionValidation) {
-//   res
-//     .status(StatusCodes.BAD_REQUEST)
-//     .json(responseErrorFunction("Resolution is invalid", "Resolution"));
-// }
+/*fetch("http://localhost:3000/api/videos", {method: "POST", headers: {"Content-Type": "application/json",
+        "Accept": "application/json"}, body: JSON.stringify({title: "nadin"})}).then(res => res.json()).then(res => console.log(res))*/
