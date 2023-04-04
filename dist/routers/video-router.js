@@ -93,7 +93,7 @@ exports.videosRouter.put("/:id", (req, res) => {
             .send((0, responseErrorUtils_1.responseErrorFunction)("Course not found for given id", "id"));
         return;
     }
-    foundVideo.title = req.body.title;
+    // foundVideo.title = req.body.title;
     res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
 });
 //# sourceMappingURL=video-router.js.map
