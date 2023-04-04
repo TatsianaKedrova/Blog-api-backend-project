@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.responseErrorFunction = void 0;
-const responseErrorFunction = (message, field) => {
+const responseErrorFunction = (errors) => {
     return {
-        errorsMessages: [{ message, field }],
+        errorsMessages: errors,
     };
 };
 exports.responseErrorFunction = responseErrorFunction;

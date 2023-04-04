@@ -1,10 +1,9 @@
-import { TApiErrorResult } from "../dto/data.types";
+import { TApiErrorResult, TFieldError } from "../dto/data.types";
 
 export const responseErrorFunction = (
-  message: string,
-  field: string
+  errors: TFieldError[]
 ): TApiErrorResult => {
   return {
-    errorsMessages: [{ message, field }],
+    errorsMessages: errors,
   };
 };

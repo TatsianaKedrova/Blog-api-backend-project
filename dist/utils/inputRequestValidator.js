@@ -1,20 +1,32 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.videoInputValidation = void 0;
-const resolutions = [
-    "P144",
-    "P240",
-    "P360",
-    "P480",
-    "P720",
-    "P1080",
-    "P1440",
-    "P2160",
-];
-const isResolution = (x) => resolutions.includes(x);
+exports.videoInputValidation = exports.validatePostBody = void 0;
+const data_types_1 = require("./../dto/data.types");
+const isResolution = (x) => data_types_1.resolutions.includes(x);
+const validatePostBody = (body) => {
+    const { title, author, availableResolutions } = body;
+    const errors = [];
+    if (!title || !title.trim()) {
+        errors.push({ message: "Title is invalid", field: "title" });
+    }
+    else if (typeof title !== "string") {
+        errors.push({ message: "Title must be of type 'string'", field: "title" });
+    }
+    else if (title.length > 40) {
+        errors.push({
+            message: "Title's maximum length must be 40",
+            field: "title",
+        });
+    }
+    console.log("errors: ", errors);
+    return errors;
+};
+exports.validatePostBody = validatePostBody;
 exports.videoInputValidation = {
     validateTitleAndAuthor(requestProperty, maxLength) {
-        if (!requestProperty || typeof requestProperty !== "string" || !requestProperty.trim()) {
+        if (!requestProperty ||
+            typeof requestProperty !== "string" ||
+            !requestProperty.trim()) {
             return false;
         }
         else if (requestProperty.trim().length > maxLength) {
@@ -49,6 +61,6 @@ exports.videoInputValidation = {
         }
         else
             return true;
-    }
+    },
 };
 //# sourceMappingURL=inputRequestValidator.js.map
