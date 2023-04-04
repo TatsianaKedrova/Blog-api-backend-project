@@ -13,7 +13,6 @@ import { validatePostBody } from "../utils/videoPostRequestValidator";
 import { RequestWithBody } from "../dto/UpdateVideoModel";
 import { URIParamsRequest } from "../dto/URIParamsRequest";
 import { RequestBodyModel } from "../dto/PostVideoModel";
-import crypto from "crypto";
 import {
   creationVideoDate,
   publicationVideoDate,
@@ -62,9 +61,9 @@ videosRouter.post(
         "Content-Type": "application/json",
         Accept: "application/json",
       });
-
+    
       const newVideo: TVideo = {
-        id: +crypto.randomUUID(),
+        id: Date.now() + (Math.random()*10000),
         title,
         author,
         availableResolutions,
@@ -131,5 +130,5 @@ videosRouter.put(
   }
 );
 
-/*fetch("http://localhost:3000/api/videos", {method: "POST", headers: {"Content-Type": "application/json",
-        "Accept": "application/json"}, body: JSON.stringify({title: "nadin"})}).then(res => res.json()).then(res => console.log(res))*/
+/*  fetch("http://localhost:3000/api/videos", {method: "POST", headers: {"Content-Type": "application/json",
+        "Accept": "application/json"}, body: JSON.stringify({title: "nadin", author: "jack london", availableResolutions: ["P144"]})}).then(res => res.json()).then(res => console.log(res))*/

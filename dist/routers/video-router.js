@@ -9,7 +9,6 @@ const http_status_codes_1 = require("http-status-codes");
 const responseErrorUtils_1 = require("../utils/responseErrorUtils");
 const videos_db_1 = require("../temporal-database/videos-db");
 const videoPostRequestValidator_1 = require("../utils/videoPostRequestValidator");
-const crypto_1 = __importDefault(require("crypto"));
 const creation_publication_dates_1 = require("../utils/creation-publication-dates");
 exports.videosRouter = express_1.default.Router({});
 //TODO get all videos
@@ -44,7 +43,7 @@ exports.videosRouter.post("/", (req, res) => {
             Accept: "application/json",
         });
         const newVideo = {
-            id: +crypto_1.default.randomUUID(),
+            id: Date.now() + (Math.random() * 10000),
             title,
             author,
             availableResolutions,
@@ -89,6 +88,6 @@ exports.videosRouter.put("/:id", (req, res) => {
         foundVideo.title = req.body.title;
     res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
 });
-/*fetch("http://localhost:3000/api/videos", {method: "POST", headers: {"Content-Type": "application/json",
-        "Accept": "application/json"}, body: JSON.stringify({title: "nadin"})}).then(res => res.json()).then(res => console.log(res))*/
+/*  fetch("http://localhost:3000/api/videos", {method: "POST", headers: {"Content-Type": "application/json",
+        "Accept": "application/json"}, body: JSON.stringify({title: "nadin", author: "jack london", availableResolutions: ["P144"]})}).then(res => res.json()).then(res => console.log(res))*/
 //# sourceMappingURL=video-router.js.map
