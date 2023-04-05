@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.videoResolutionValidator = void 0;
-const data_types_1 = require("../dto/data.types");
-const isResolution = (x) => data_types_1.resolutions.includes(x);
+const ResolutionsVideoModel_1 = require("../dto/videosDTO/ResolutionsVideoModel");
+const isResolution = (x) => ResolutionsVideoModel_1.videoResolutions.includes(x);
 const videoResolutionValidator = (availableResolutions) => {
     const errors = [];
     if (availableResolutions === undefined) {

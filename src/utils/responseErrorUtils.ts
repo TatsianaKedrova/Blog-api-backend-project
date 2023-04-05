@@ -1,8 +1,11 @@
-import { TApiErrorResult, TFieldError } from "../dto/data.types";
+import {
+  TApiErrorResultObject,
+  TFieldError,
+} from "../dto/videosDTO/ErrorVideoResponseModel";
 
 export const responseErrorFunction = (
   errors: TFieldError[]
-): TApiErrorResult => {
+): TApiErrorResultObject => {
   return {
     errorsMessages: errors,
   };

@@ -1,12 +1,8 @@
-import {
-  TFieldError,
-  TResolutionsArray,
-  resolutions,
-  TResolutions,
-} from "../dto/data.types";
+import { TFieldError } from "../dto/videosDTO/ErrorVideoResponseModel";
+import { TResolutions, TResolutionsArray, videoResolutions } from "../dto/videosDTO/ResolutionsVideoModel";
 
 const isResolution = (x: TResolutions): x is TResolutions =>
-  resolutions.includes(x);
+  videoResolutions.includes(x);
 
 export const videoResolutionValidator = (
   availableResolutions: TResolutionsArray

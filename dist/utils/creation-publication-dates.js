@@ -20,7 +20,7 @@ const dateValidator = (publicationDate) => {
     }
     else if (!exports.dateISOPattern.test(exports.creationVideoDate)) {
         errors.push({
-            message: "Publication date should match this format: '/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+([+-][0-2]\d:[0-5]\d|Z)/'",
+            message: "Publication date should match this format: '/d{4}-[01]d-[0-3]dT[0-2]d:[0-5]d:[0-5]d.d+([+-][0-2]d:[0-5]d|Z)/'",
             field: "Publication date",
         });
     }

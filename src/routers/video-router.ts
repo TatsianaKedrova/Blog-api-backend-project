@@ -1,22 +1,16 @@
 import express, { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import {
-  TApiErrorResult,
-  TCreateVideoInputModel,
-  TFieldError,
-  TUpdateVideoInputModel,
-  TVideo,
-} from "../dto/data.types";
 import { responseErrorFunction } from "../utils/responseErrorUtils";
 import { db } from "../temporal-database/videos-db";
 import { validatePostBody } from "../utils/videoPostRequestValidator";
-import { RequestWithBody } from "../dto/UpdateVideoModel";
-import { URIParamsRequest } from "../dto/URIParamsRequest";
-import { RequestBodyModel } from "../dto/PostVideoModel";
+import { RequestWithBody, TUpdateVideoInputModel } from "../dto/videosDTO/UpdateVideoModel";
+import { URIParamsRequest } from "../dto/videosDTO/URIParamsRequest";
+import { RequestBodyModel, TCreateVideoInputModel, TVideo } from "../dto/videosDTO/CreateVideoModel";
 import {
   creationVideoDate,
   publicationVideoDate,
 } from "../utils/creation-publication-dates";
+import {  TApiErrorResultObject, TFieldError } from "../dto/videosDTO/ErrorVideoResponseModel";
 
 export const videosRouter = express.Router({});
 
@@ -28,7 +22,7 @@ videosRouter.get("/", (req: Request, res: Response<TVideo[]>) => {
 //TODO get video by Id
 videosRouter.get(
   "/:id",
-  (req: Request<URIParamsRequest>, res: Response<TVideo | TApiErrorResult>) => {
+  (req: Request<URIParamsRequest>, res: Response<TVideo | TApiErrorResultObject>) => {
     const getErrors = [];
     const foundVideoById = db.videos.find(
       (element) => element.id === +req.params.id
@@ -50,7 +44,7 @@ videosRouter.post(
   "/",
   (
     req: RequestBodyModel<TCreateVideoInputModel>,
-    res: Response<TApiErrorResult | TVideo>
+    res: Response<TApiErrorResultObject | TVideo>
   ) => {
     let errors: TFieldError[] = validatePostBody(req.body);
     if (errors.length > 0) {
@@ -82,7 +76,7 @@ videosRouter.post(
 //TODO delete video by Id
 videosRouter.delete(
   "/:id",
-  (req: Request<URIParamsRequest>, res: Response<TVideo | TApiErrorResult>) => {
+  (req: Request<URIParamsRequest>, res: Response<TVideo | TApiErrorResultObject>) => {
     const foundVideoById = db.videos.findIndex(
       (element) => element.id === +req.params.id
     );
