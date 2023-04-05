@@ -61,13 +61,13 @@ videosRouter.post(
         "Content-Type": "application/json",
         Accept: "application/json",
       });
-    
+
       const newVideo: TVideo = {
-        id: Date.now() + (Math.random()*10000),
+        id: Date.now() + Math.floor(Math.random() * 10000),
         title,
         author,
         availableResolutions,
-        canBeDownloaded: true,
+        canBeDownloaded: false,
         minAgeRestriction: null,
         createdAt: creationVideoDate,
         publicationDate: publicationVideoDate,
@@ -130,5 +130,5 @@ videosRouter.put(
   }
 );
 
-/*  fetch("http://localhost:3000/api/videos", {method: "POST", headers: {"Content-Type": "application/json",
+/*fetch("https://blog-api-backend-project-git-master-tatsianakedrova.vercel.app/api/videos", {method: "POST", headers: {"Content-Type": "application/json",
         "Accept": "application/json"}, body: JSON.stringify({title: "nadin", author: "jack london", availableResolutions: ["P144"]})}).then(res => res.json()).then(res => console.log(res))*/

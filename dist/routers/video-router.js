@@ -43,11 +43,11 @@ exports.videosRouter.post("/", (req, res) => {
             Accept: "application/json",
         });
         const newVideo = {
-            id: Date.now() + (Math.random() * 10000),
+            id: Date.now() + Math.floor(Math.random() * 10000),
             title,
             author,
             availableResolutions,
-            canBeDownloaded: true,
+            canBeDownloaded: false,
             minAgeRestriction: null,
             createdAt: creation_publication_dates_1.creationVideoDate,
             publicationDate: creation_publication_dates_1.publicationVideoDate,
@@ -88,6 +88,6 @@ exports.videosRouter.put("/:id", (req, res) => {
         foundVideo.title = req.body.title;
     res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
 });
-/*  fetch("http://localhost:3000/api/videos", {method: "POST", headers: {"Content-Type": "application/json",
+/*fetch("https://blog-api-backend-project-git-master-tatsianakedrova.vercel.app/api/videos", {method: "POST", headers: {"Content-Type": "application/json",
         "Accept": "application/json"}, body: JSON.stringify({title: "nadin", author: "jack london", availableResolutions: ["P144"]})}).then(res => res.json()).then(res => console.log(res))*/
 //# sourceMappingURL=video-router.js.map
