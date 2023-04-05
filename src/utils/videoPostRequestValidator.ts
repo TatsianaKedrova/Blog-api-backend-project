@@ -1,4 +1,5 @@
-import { TCreateVideoInputModel, TFieldError } from "../dto/data.types";
+import { TCreateVideoInputModel } from "../dto/videosDTO/CreateVideoModel";
+import { TFieldError } from "../dto/videosDTO/ErrorVideoResponseModel";
 import { videoResolutionValidator } from "./videoResolutionValidator";
 import { videoTitleAuthorValidation } from "./videoTitleAuthorValidator";
 
@@ -8,8 +9,8 @@ export const validatePostBody = (
   const { title, author, availableResolutions } = body;
   const errors: TFieldError[] = [];
 
-  const titleErrors = videoTitleAuthorValidation(title, 40, "Title");
-  const authorErrors = videoTitleAuthorValidation(author, 20, "Author");
+  const titleErrors = videoTitleAuthorValidation(title, 40, "title");
+  const authorErrors = videoTitleAuthorValidation(author, 20, "author");
   const resolutionsErrors = videoResolutionValidator(availableResolutions);
 
   return [...errors, ...titleErrors, ...authorErrors, ...resolutionsErrors];
