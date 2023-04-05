@@ -1,7 +1,11 @@
-import { TVideo } from "./../src/dto/data.types";
 import request from "supertest";
 import { StatusCodes } from "http-status-codes";
 import { app } from "../src/settings";
+import { TVideo } from "../src/dto/videosDTO/CreateVideoModel";
+import {
+  creationVideoDate,
+  publicationVideoDate,
+} from "../src/utils/creation-publication-dates";
 
 describe("videos router", () => {
   beforeAll(async () => {
@@ -12,155 +16,162 @@ describe("videos router", () => {
     await request(app).get("/api/videos").expect(200, []);
   });
 
-  test("should return 400 if body was not provided and the course shouldn't be created", async () => {
+  test("should return 400 if body was not provided and a new video shouldn't be created", async () => {
     await request(app)
       .post("/api/videos")
-      .send({ title: "     " })
-      .expect(StatusCodes.BAD_REQUEST);
+      .send({})
+      .expect(StatusCodes.BAD_REQUEST, {
+        errorsMessages: [
+          {
+            message: "Please include a valid title",
+            field: "title",
+          },
+          {
+            message: "Please include a valid author",
+            field: "author",
+          },
+          {
+            message: "Please include at least 1 resolution",
+            field: "availableResolutions",
+          },
+        ],
+      });
 
     const getAllExistingCourses = await request(app)
       .get("/api/videos")
       .expect(StatusCodes.OK);
-    expect(getAllExistingCourses).not.toContainEqual({
-      id: expect.any(String),
-      title: "",
-    });
+    expect(getAllExistingCourses.body).toEqual([]);
   });
 
-  let createdCourse1: CourseViewModel | null = null;
+  test("should return 400 if title was not provided and a new video shouldn't be created", async () => {
+    await request(app)
+      .post("/api/videos")
+      .send({
+        author: "valid author",
+        availableResolutions: ["P144", "P240", "P720"],
+      })
+      .expect(StatusCodes.BAD_REQUEST, {
+        errorsMessages: [
+          {
+            message: "Please include a valid title",
+            field: "title",
+          },
+        ],
+      });
+
+    const getAllExistingCourses = await request(app)
+      .get("/api/videos")
+      .expect(StatusCodes.OK);
+    expect(getAllExistingCourses.body).toEqual([]);
+  });
+
+  test("should return 400 if title is null and a new video shouldn't be created", async () => {
+    await request(app)
+      .post("/api/videos")
+      .send({
+        title: null,
+        author: "valid author",
+        availableResolutions: ["P144", "P240", "P720"],
+      })
+      .expect(StatusCodes.BAD_REQUEST, {
+        errorsMessages: [
+          {
+            message: "Please include a valid title",
+            field: "title",
+          },
+        ],
+      });
+
+    const getAllExistingCourses = await request(app)
+      .get("/api/videos")
+      .expect(StatusCodes.OK);
+    expect(getAllExistingCourses.body).toEqual([]);
+  });
+
+  test("should return 400 if author's length is bigger than 20", async () => {
+    await request(app)
+      .post("/api/videos")
+      .send({
+        title: "Intellectual games",
+        author: "11111111111111111111111111111111111111111111111111111111",
+        availableResolutions: ["P144"],
+      })
+      .expect(StatusCodes.BAD_REQUEST, {
+        errorsMessages: [
+          {
+            message: "author's maximum length must be 20",
+            field: "author",
+          },
+        ],
+      });
+    const getAllExistingCourses = await request(app)
+      .get("/api/videos")
+      .expect(StatusCodes.OK);
+    expect(getAllExistingCourses.body).toEqual([]);
+  });
+
+  test("should return 400 if resolution is incorrect", async () => {
+    await request(app)
+      .post("/api/videos")
+      .send({
+        title: "Intellectual games",
+        author: "Newton",
+        availableResolutions: ["P148"],
+      })
+      .expect(StatusCodes.BAD_REQUEST, {
+        errorsMessages: [
+          {
+            message: `Resolution P148 is invalid`,
+            field: "availableResolutions",
+          },
+        ],
+      });
+  });
+
+  let createdVideo1: TVideo;
   test("should return status code 201 and newly created course", async () => {
     const createResponse = await request(app)
-      .post("/courses")
-      .send({ title: "Taniusha is a great girl" })
+      .post("/api/videos")
+      .send({
+        title: "Great girl",
+        author: "Cat Ricky",
+        availableResolutions: ["P144"],
+      })
       .expect(StatusCodes.CREATED)
       .expect("Content-Type", "application/json; charset=utf-8");
-    createdCourse1 = createResponse.body;
-    expect(createdCourse1).toEqual({
-      id: expect.any(String),
-      title: "Taniusha is a great girl",
+    createdVideo1 = createResponse.body;
+    expect(createdVideo1).toEqual({
+      id: expect.any(Number),
+      title: "Great girl",
+      author: "Cat Ricky",
+      availableResolutions: ["P144"],
+      canBeDownloaded: false,
+      minAgeRestriction: null,
+      createdAt: creationVideoDate,
+      publicationDate: publicationVideoDate,
     });
-
-    await request(app).get("/courses").expect(StatusCodes.OK, [createdCourse1]);
+    const getAllExistingCourses = await request(app)
+      .get("/api/videos")
+      .expect(StatusCodes.OK);
+    expect(getAllExistingCourses.body).toEqual([createdVideo1]);
   });
 
-  let createdCourse2: CourseViewModel | null = null;
-  test(`create one more course course with ${StatusCodes.CREATED}`, async () => {
-    const postResponse = await request(app)
-      .post("/courses")
-      .send({ title: "Time is everything, not just money" })
-      .expect(StatusCodes.CREATED)
-      .expect("Content-Type", "application/json; charset=utf-8");
-    createdCourse2 = postResponse.body;
-
-    expect(createdCourse2).toEqual({
-      id: expect.any(String),
-      title: "Time is everything, not just money",
-    });
-
+  test("SHOULDN'T DELETE video if ID is wrong", async () => {
     await request(app)
-      .get("/courses")
-      .expect(StatusCodes.OK, [createdCourse1, createdCourse2]);
-  });
-
-  test("should return 404 for not existing video", async () => {
-    await request(app).get("/api/videos/999").expect(StatusCodes.NOT_FOUND);
-  });
-
-  test.only("should return 200 for existing video", async () => {
-    await request(app).get("/api/videos/1").expect(StatusCodes.OK);
-  });
-
-  let createdVideo: TVideo;
-  test("should delete the particular video", async () => {
+      .delete("/api/videos/99999999")
+      .expect(StatusCodes.NOT_FOUND);
     await request(app)
-      .delete("/api/videos/" + createdVideo.id)
+      .get("/api/videos/")
+      .expect(StatusCodes.OK, [createdVideo1]);
+  });
+
+  test("DELETE video by ID", async () => {
+    await request(app)
+      .delete("/api/videos/" + createdVideo1.id)
       .expect(StatusCodes.NO_CONTENT);
     await request(app)
-      .get("/api/videos/" + createdVideo.id)
+      .get("/api/videos/" + createdVideo1.id)
       .expect(StatusCodes.NOT_FOUND);
+    await request(app).get("/api/videos/").expect(StatusCodes.OK, []);
   });
 });
-
-// describe("/videos", () => {
-//   let newVideo: VideoType | null = null;
-
-//   beforeAll(async () => {
-//     await request(app).delete("/testing/all-data").expect(204);
-//   });
-
-//   it("GET products = []", async () => {
-//     await request(app).get("/videos/").expect([]);
-//   });
-
-//   it("- POST does not create the video with incorrect data (no title, no author)", async function () {
-//     await request(app)
-//       .post("/videos/")
-//       .send({ title: "", author: "" })
-//       .expect(CodeResponsesEnum.Incorrect_values_400, {
-//         errorsMessages: [
-//           { message: "title is required", field: "title" },
-//           { message: "author is required", field: "author" },
-//         ],
-//       });
-
-//     const res = await request(app).get("/videos/");
-//     expect(res.body).toEqual([]);
-//   });
-
-//   it("- GET product by ID with incorrect id", async () => {
-//     await request(app).get("/videos/helloWorld").expect(400);
-//   });
-//   it("+ GET product by ID with correct id", async () => {
-//     await request(app)
-//       .get("/videos/" + newVideo!.id)
-//       .expect(200, newVideo);
-//   });
-
-//   it("- PUT product by ID with incorrect data", async () => {
-//     await request(app)
-//       .put("/videos/" + 1223)
-//       .send({ title: "title", author: "title" })
-//       .expect(CodeResponsesEnum.Not_found_404);
-
-//     const res = await request(app).get("/videos/");
-//     expect(res.body[0]).toEqual(newVideo);
-//   });
-
-//   it("+ PUT product by ID with correct data", async () => {
-//     await request(app)
-//       .put("/videos/" + newVideo!.id)
-//       .send({
-//         title: "hello title",
-//         author: "hello author",
-//         publicationDate: "2023-01-12T08:12:39.261Z",
-//       })
-//       .expect(CodeResponsesEnum.Not_content_204);
-
-//     const res = await request(app).get("/videos/");
-//     expect(res.body[0]).toEqual({
-//       ...newVideo,
-//       title: "hello title",
-//       author: "hello author",
-//       publicationDate: "2023-01-12T08:12:39.261Z",
-//     });
-//     newVideo = res.body[0];
-//   });
-
-//   it("- DELETE product by incorrect ID", async () => {
-//     await request(app)
-//       .delete("/videos/876328")
-//       .expect(CodeResponsesEnum.Not_found_404);
-
-//     const res = await request(app).get("/videos/");
-//     expect(res.body[0]).toEqual(newVideo);
-//   });
-//   it("+ DELETE product by correct ID, auth", async () => {
-//     await request(app)
-//       .delete("/videos/" + newVideo!.id)
-//       .set("authorization", "Basic YWRtaW46cXdlcnR5")
-//       .expect();
-
-//     const res = await request(app).get("/videos/");
-//     expect(res.body.length).toBe(0);
-//   });
-// });
