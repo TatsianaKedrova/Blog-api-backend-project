@@ -8,13 +8,13 @@ const videoResolutionValidator = (availableResolutions) => {
     if (availableResolutions === undefined) {
         errors.push({
             message: "Please include at least 1 resolution",
-            field: "available resolutions",
+            field: "availableResolutions",
         });
     }
     else if (availableResolutions.length === 0) {
         errors.push({
             message: "Please include at least 1 resolution",
-            field: "available resolutions",
+            field: "availableResolutions",
         });
     }
     else {
@@ -26,7 +26,7 @@ const videoResolutionValidator = (availableResolutions) => {
         })
             .map((wrongResolution) => errors.push({
             message: `Resolution ${wrongResolution} is invalid`,
-            field: "video resolutions",
+            field: "availableResolutions",
         }));
     }
     return errors;

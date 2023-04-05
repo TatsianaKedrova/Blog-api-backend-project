@@ -1,5 +1,9 @@
 import { TFieldError } from "../dto/videosDTO/ErrorVideoResponseModel";
-import { TResolutions, TResolutionsArray, videoResolutions } from "../dto/videosDTO/ResolutionsVideoModel";
+import {
+  TResolutions,
+  TResolutionsArray,
+  videoResolutions,
+} from "../dto/videosDTO/ResolutionsVideoModel";
 
 const isResolution = (x: TResolutions): x is TResolutions =>
   videoResolutions.includes(x);
@@ -11,12 +15,12 @@ export const videoResolutionValidator = (
   if (availableResolutions === undefined) {
     errors.push({
       message: "Please include at least 1 resolution",
-      field: "available resolutions",
+      field: "availableResolutions",
     });
   } else if (availableResolutions.length === 0) {
     errors.push({
       message: "Please include at least 1 resolution",
-      field: "available resolutions",
+      field: "availableResolutions",
     });
   } else {
     let result;
@@ -28,7 +32,7 @@ export const videoResolutionValidator = (
       .map((wrongResolution) =>
         errors.push({
           message: `Resolution ${wrongResolution} is invalid`,
-          field: "video resolutions",
+          field: "availableResolutions",
         })
       );
   }
