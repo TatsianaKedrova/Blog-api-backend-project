@@ -6,13 +6,7 @@ const videoPostRequestValidator_1 = require("./videoPostRequestValidator");
 const videoPutRequestValidator = (body) => {
     let errors = [];
     const { title, author, availableResolutions, canBeDownloaded, minAgeRestriction, publicationDate, } = body;
-    let titleAuthorResolutionsValidator = [];
-    const requiredKeys = ["title", "author"];
-    const checkIfRequiredFieldsExist = requiredKeys.filter((value) => {
-        const missingField = Object.keys(body).includes(value);
-        return missingField === false;
-    });
-    titleAuthorResolutionsValidator = (0, videoPostRequestValidator_1.validatePostBody)({
+    const titleAuthorResolutionsValidator = (0, videoPostRequestValidator_1.validatePostBody)({
         title,
         author,
         availableResolutions,
@@ -56,6 +50,11 @@ const videoPutRequestValidator = (body) => {
     return [...errors, ...titleAuthorResolutionsValidator];
 };
 exports.videoPutRequestValidator = videoPutRequestValidator;
+// const requiredKeys = ["title", "author"];
+// const checkIfRequiredFieldsExist = requiredKeys.filter((value) => {
+//   const missingField = Object.keys(body).includes(value);
+//   return missingField === false;
+// });
 // if (checkIfRequiredFieldsExist.length > 0) {
 //   for (const element of checkIfRequiredFieldsExist) {
 //     errors.push({

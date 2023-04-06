@@ -94,7 +94,7 @@ exports.videosRouter.put("/:id", (req, res) => {
         foundVideo.title = title;
         foundVideo.minAgeRestriction = minAgeRestriction;
         foundVideo.availableResolutions = availableResolutions;
-        res.status(http_status_codes_1.StatusCodes.OK).send(foundVideo);
+        res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
     }
 });
 /*fetch("https://blog-api-backend-project-git-master-tatsianakedrova.vercel.app/api/videos", {method: "POST", headers: {"Content-Type": "application/json",

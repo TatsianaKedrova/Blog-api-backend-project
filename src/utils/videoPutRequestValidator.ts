@@ -15,13 +15,7 @@ export const videoPutRequestValidator = (
     minAgeRestriction,
     publicationDate,
   } = body;
-  let titleAuthorResolutionsValidator: TFieldError[] = [];
-  const requiredKeys = ["title", "author"];
-  const checkIfRequiredFieldsExist = requiredKeys.filter((value) => {
-    const missingField = Object.keys(body).includes(value);
-    return missingField === false;
-  });
-  titleAuthorResolutionsValidator = validatePostBody({
+  const titleAuthorResolutionsValidator: TFieldError[] = validatePostBody({
     title,
     author,
     availableResolutions,
@@ -66,6 +60,11 @@ export const videoPutRequestValidator = (
   return [...errors, ...titleAuthorResolutionsValidator];
 };
 
+// const requiredKeys = ["title", "author"];
+// const checkIfRequiredFieldsExist = requiredKeys.filter((value) => {
+//   const missingField = Object.keys(body).includes(value);
+//   return missingField === false;
+// });
 // if (checkIfRequiredFieldsExist.length > 0) {
 //   for (const element of checkIfRequiredFieldsExist) {
 //     errors.push({

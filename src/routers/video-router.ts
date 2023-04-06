@@ -143,7 +143,7 @@ videosRouter.put(
       foundVideo.title = title;
       foundVideo.minAgeRestriction = minAgeRestriction;
       foundVideo.availableResolutions = availableResolutions;
-      res.status(StatusCodes.OK).send(foundVideo);
+      res.sendStatus(StatusCodes.NO_CONTENT);
     }
   }
 );
