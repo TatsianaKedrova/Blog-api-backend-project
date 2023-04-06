@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { responseErrorFunction } from "../utils/responseErrorUtils";
-import { db } from "../temporal-database/videos-db";
+import { db } from "../temporal-database/project-db";
 import { validatePostBody } from "../utils/videoPostRequestValidator";
 import {
   RequestWithURIParamsAndBody,

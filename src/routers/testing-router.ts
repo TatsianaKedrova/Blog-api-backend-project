@@ -1,6 +1,6 @@
 import express from "express";
 import { StatusCodes } from "http-status-codes";
-import { TDataBase, db } from "../temporal-database/videos-db";
+import { TDataBase, db } from "../temporal-database/project-db";
 export const testingRouter = express.Router({});
 
 //TODO REMOVE ALL COURSES
