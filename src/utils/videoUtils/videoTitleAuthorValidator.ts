@@ -1,4 +1,4 @@
-import { TFieldError } from "../dto/videosDTO/ErrorVideoResponseModel";
+import { TFieldError } from "../../dto/common/ErrorResponseModel";
 
 export const videoTitleAuthorValidation = (
   title_or_author: string,

@@ -6,11 +6,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.testingRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const http_status_codes_1 = require("http-status-codes");
-const videos_db_1 = require("../temporal-database/videos-db");
+const project_db_1 = require("../temporal-database/project-db");
 exports.testingRouter = express_1.default.Router({});
 //TODO REMOVE ALL COURSES
 exports.testingRouter.delete("/all-data", (req, res) => {
-    videos_db_1.db.videos = [];
+    Object.keys(project_db_1.db).forEach((database) => {
+        project_db_1.db[database] = [];
+    });
     res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
 });
 //# sourceMappingURL=testing-router.js.map

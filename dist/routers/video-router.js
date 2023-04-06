@@ -6,20 +6,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.videosRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const http_status_codes_1 = require("http-status-codes");
-const responseErrorUtils_1 = require("../utils/responseErrorUtils");
-const videos_db_1 = require("../temporal-database/videos-db");
-const videoPostRequestValidator_1 = require("../utils/videoPostRequestValidator");
-const creation_publication_dates_1 = require("../utils/creation-publication-dates");
-const videoPutRequestValidator_1 = require("../utils/videoPutRequestValidator");
+const responseErrorUtils_1 = require("../utils/common-utils/responseErrorUtils");
+const project_db_1 = require("../temporal-database/project-db");
+const videoPostRequestValidator_1 = require("../utils/videoUtils/videoPostRequestValidator");
+const creation_publication_dates_1 = require("../utils/common-utils/creation-publication-dates");
+const videoPutRequestValidator_1 = require("../utils/videoUtils/videoPutRequestValidator");
 exports.videosRouter = express_1.default.Router({});
 //TODO get all videos
 exports.videosRouter.get("/", (req, res) => {
-    res.status(http_status_codes_1.StatusCodes.OK).send(videos_db_1.db.videos);
+    res.status(http_status_codes_1.StatusCodes.OK).send(project_db_1.db.videos);
 });
 //TODO get video by Id
 exports.videosRouter.get("/:id", (req, res) => {
     const errors = [];
-    const foundVideoById = videos_db_1.db.videos.find((element) => element.id === +req.params.id);
+    const foundVideoById = project_db_1.db.videos.find((element) => element.id === +req.params.id);
     if (!foundVideoById) {
         errors.push({
             message: "There is no video with such Id",
@@ -54,18 +54,18 @@ exports.videosRouter.post("/", (req, res) => {
             createdAt: creation_publication_dates_1.creationVideoDate,
             publicationDate: creation_publication_dates_1.publicationVideoDate,
         };
-        videos_db_1.db.videos.push(newVideo);
+        project_db_1.db.videos.push(newVideo);
         res.status(http_status_codes_1.StatusCodes.CREATED).send(newVideo);
     }
 });
 //TODO delete video by Id
 exports.videosRouter.delete("/:id", (req, res) => {
-    const foundVideoById = videos_db_1.db.videos.findIndex((element) => element.id === +req.params.id);
+    const foundVideoById = project_db_1.db.videos.findIndex((element) => element.id === +req.params.id);
     if (foundVideoById === -1) {
         res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
     }
     else {
-        videos_db_1.db.videos.splice(foundVideoById, 1);
+        project_db_1.db.videos.splice(foundVideoById, 1);
         res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
     }
 });
@@ -77,7 +77,7 @@ exports.videosRouter.put("/:id", (req, res) => {
         res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send((0, responseErrorUtils_1.responseErrorFunction)(errors));
         return;
     }
-    const foundVideo = videos_db_1.db.videos.find((el) => el.id === +req.params.id);
+    const foundVideo = project_db_1.db.videos.find((el) => el.id === +req.params.id);
     if (!foundVideo) {
         errors.push({ message: "Not_Found video with such ID", field: "id" });
         res.status(http_status_codes_1.StatusCodes.NOT_FOUND).send((0, responseErrorUtils_1.responseErrorFunction)(errors));

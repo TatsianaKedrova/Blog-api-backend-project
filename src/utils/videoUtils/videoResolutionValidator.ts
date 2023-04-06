@@ -1,9 +1,9 @@
-import { TFieldError } from "../dto/videosDTO/ErrorVideoResponseModel";
+import { TFieldError } from "../../dto/common/ErrorResponseModel";
 import {
   TResolutions,
   TResolutionsArray,
   videoResolutions,
-} from "../dto/videosDTO/ResolutionsVideoModel";
+} from "../../dto/videosDTO/ResolutionsVideoModel";
 
 const isResolution = (x: TResolutions): x is TResolutions =>
   videoResolutions.includes(x);

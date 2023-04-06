@@ -1,6 +1,6 @@
-import { TFieldError } from "../dto/videosDTO/ErrorVideoResponseModel";
-import { TUpdateVideoInputModel } from "../dto/videosDTO/UpdateVideoModel";
-import { dateISOPattern } from "./creation-publication-dates";
+import { TFieldError } from "../../dto/common/ErrorResponseModel";
+import { TUpdateVideoInputModel } from "../../dto/videosDTO/UpdateVideoModel";
+import { dateISOPattern } from "../common-utils/creation-publication-dates";
 import { validatePostBody } from "./videoPostRequestValidator";
 
 export const videoPutRequestValidator = (
