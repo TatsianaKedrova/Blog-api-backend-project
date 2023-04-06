@@ -6,11 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.videosRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const http_status_codes_1 = require("http-status-codes");
-const responseErrorUtils_1 = require("../utils/responseErrorUtils");
+const responseErrorUtils_1 = require("../utils/common-utils/responseErrorUtils");
 const project_db_1 = require("../temporal-database/project-db");
-const videoPostRequestValidator_1 = require("../utils/videoPostRequestValidator");
-const creation_publication_dates_1 = require("../utils/creation-publication-dates");
-const videoPutRequestValidator_1 = require("../utils/videoPutRequestValidator");
+const videoPostRequestValidator_1 = require("../utils/videoUtils/videoPostRequestValidator");
+const creation_publication_dates_1 = require("../utils/common-utils/creation-publication-dates");
+const videoPutRequestValidator_1 = require("../utils/videoUtils/videoPutRequestValidator");
 exports.videosRouter = express_1.default.Router({});
 //TODO get all videos
 exports.videosRouter.get("/", (req, res) => {

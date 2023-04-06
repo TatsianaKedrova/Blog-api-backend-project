@@ -20,4 +20,5 @@ exports.blogsRouter.get("/:id", (req, res) => {
         res.status(http_status_codes_1.StatusCodes.OK).send(foundBlogById);
     }
 });
+exports.blogsRouter.post("/", (req, res) => { });
 //# sourceMappingURL=blogs-router.js.map

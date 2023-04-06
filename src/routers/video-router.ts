@@ -1,8 +1,8 @@
 import express, { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { responseErrorFunction } from "../utils/responseErrorUtils";
+import { responseErrorFunction } from "../utils/common-utils/responseErrorUtils";
 import { db } from "../temporal-database/project-db";
-import { validatePostBody } from "../utils/videoPostRequestValidator";
+import { validatePostBody } from "../utils/videoUtils/videoPostRequestValidator";
 import {
   RequestWithURIParamsAndBody,
   TUpdateVideoInputModel,
@@ -16,12 +16,12 @@ import {
 import {
   creationVideoDate,
   publicationVideoDate,
-} from "../utils/creation-publication-dates";
+} from "../utils/common-utils/creation-publication-dates";
 import {
   TApiErrorResultObject,
   TFieldError,
 } from "../dto/common/ErrorResponseModel";
-import { videoPutRequestValidator } from "../utils/videoPutRequestValidator";
+import { videoPutRequestValidator } from "../utils/videoUtils/videoPutRequestValidator";
 
 export const videosRouter = express.Router({});
 

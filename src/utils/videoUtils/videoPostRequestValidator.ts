@@ -1,5 +1,5 @@
-import { TCreateVideoInputModel } from "../dto/videosDTO/CreateVideoModel";
-import { TFieldError } from "../dto/common/ErrorResponseModel";
+import { TCreateVideoInputModel } from "../../dto/videosDTO/CreateVideoModel";
+import { TFieldError } from "../../dto/common/ErrorResponseModel";
 import { videoResolutionValidator } from "./videoResolutionValidator";
 import { videoTitleAuthorValidation } from "./videoTitleAuthorValidator";
 

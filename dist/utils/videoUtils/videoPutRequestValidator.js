@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.videoPutRequestValidator = void 0;
-const creation_publication_dates_1 = require("./creation-publication-dates");
-const videoPostRequestValidator_1 = require("./videoUtils/videoPostRequestValidator");
+const creation_publication_dates_1 = require("../common-utils/creation-publication-dates");
+const videoPostRequestValidator_1 = require("./videoPostRequestValidator");
 const videoPutRequestValidator = (body) => {
     let errors = [];
     const { title, author, availableResolutions, canBeDownloaded, minAgeRestriction, publicationDate, } = body;

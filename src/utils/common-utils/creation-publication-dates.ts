@@ -1,4 +1,4 @@
-import { TFieldError } from "../dto/common/ErrorResponseModel";
+import { TFieldError } from "../../dto/common/ErrorResponseModel";
 
 export const creationVideoDate = new Date().toISOString();
 export const publicationVideoDate = new Date(

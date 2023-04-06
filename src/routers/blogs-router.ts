@@ -18,3 +18,5 @@ blogsRouter.get("/:id", (req, res: Response<BlogViewModel>) => {
     res.status(StatusCodes.OK).send(foundBlogById);
   }
 });
+
+blogsRouter.post("/", (req, res: Response<BlogViewModel>) => {});

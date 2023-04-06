@@ -1,7 +1,7 @@
 import {
   TApiErrorResultObject,
   TFieldError,
-} from "../dto/common/ErrorResponseModel";
+} from "../../dto/common/ErrorResponseModel";
 
 export const responseErrorFunction = (
   errors: TFieldError[]
