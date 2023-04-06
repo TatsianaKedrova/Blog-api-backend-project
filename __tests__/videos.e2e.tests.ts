@@ -5,7 +5,7 @@ import { TVideo } from "../src/dto/videosDTO/CreateVideoModel";
 import {
   creationVideoDate,
   publicationVideoDate,
-} from "../src/utils/creation-publication-dates";
+} from "../src/utils/common-utils/creation-publication-dates";
 
 describe("videos router", () => {
   beforeAll(async () => {
