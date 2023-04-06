@@ -3,14 +3,25 @@ import { StatusCodes } from "http-status-codes";
 import { responseErrorFunction } from "../utils/responseErrorUtils";
 import { db } from "../temporal-database/videos-db";
 import { validatePostBody } from "../utils/videoPostRequestValidator";
-import { RequestWithBody, TUpdateVideoInputModel } from "../dto/videosDTO/UpdateVideoModel";
+import {
+  RequestWithURIParamsAndBody,
+  TUpdateVideoInputModel,
+} from "../dto/videosDTO/UpdateVideoModel";
 import { URIParamsRequest } from "../dto/videosDTO/URIParamsRequest";
-import { RequestBodyModel, TCreateVideoInputModel, TVideo } from "../dto/videosDTO/CreateVideoModel";
+import {
+  RequestBodyModel,
+  TCreateVideoInputModel,
+  TVideo,
+} from "../dto/videosDTO/CreateVideoModel";
 import {
   creationVideoDate,
   publicationVideoDate,
 } from "../utils/creation-publication-dates";
-import {  TApiErrorResultObject, TFieldError } from "../dto/videosDTO/ErrorVideoResponseModel";
+import {
+  TApiErrorResultObject,
+  TFieldError,
+} from "../dto/videosDTO/ErrorVideoResponseModel";
+import { videoPutRequestValidator } from "../utils/videoPutRequestValidator";
 
 export const videosRouter = express.Router({});
 
@@ -22,17 +33,20 @@ videosRouter.get("/", (req: Request, res: Response<TVideo[]>) => {
 //TODO get video by Id
 videosRouter.get(
   "/:id",
-  (req: Request<URIParamsRequest>, res: Response<TVideo | TApiErrorResultObject>) => {
-    const getErrors = [];
+  (
+    req: Request<URIParamsRequest>,
+    res: Response<TVideo | TApiErrorResultObject>
+  ) => {
+    const errors = [];
     const foundVideoById = db.videos.find(
       (element) => element.id === +req.params.id
     );
     if (!foundVideoById) {
-      getErrors.push({
+      errors.push({
         message: "There is no video with such Id",
         field: "Invalid Id",
       });
-      res.status(StatusCodes.NOT_FOUND).send(responseErrorFunction(getErrors));
+      res.status(StatusCodes.NOT_FOUND).send(responseErrorFunction(errors));
     } else {
       res.status(StatusCodes.OK).send(foundVideoById);
     }
@@ -49,6 +63,7 @@ videosRouter.post(
     let errors: TFieldError[] = validatePostBody(req.body);
     if (errors.length > 0) {
       res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
+      return;
     } else {
       const { title, author, availableResolutions } = req.body;
       res.set({
@@ -76,7 +91,10 @@ videosRouter.post(
 //TODO delete video by Id
 videosRouter.delete(
   "/:id",
-  (req: Request<URIParamsRequest>, res: Response<TVideo | TApiErrorResultObject>) => {
+  (
+    req: Request<URIParamsRequest>,
+    res: Response<TVideo | TApiErrorResultObject>
+  ) => {
     const foundVideoById = db.videos.findIndex(
       (element) => element.id === +req.params.id
     );
@@ -93,10 +111,10 @@ videosRouter.delete(
 videosRouter.put(
   "/:id",
   (
-    req: RequestWithBody<URIParamsRequest, TUpdateVideoInputModel>,
+    req: RequestWithURIParamsAndBody<URIParamsRequest, TUpdateVideoInputModel>,
     res: Response
   ) => {
-    const putErrors: TFieldError[] = [];
+    const errors: TFieldError[] = videoPutRequestValidator(req.body);
     const {
       title,
       author,
@@ -105,22 +123,28 @@ videosRouter.put(
       minAgeRestriction,
       publicationDate,
     } = req.body;
-    // if (!req.body.title.trim()) {
-    //   res
-    //     .status(StatusCodes.BAD_REQUEST)
-    //     .json(responseErrorFunction("Title is invalid!", "Title"));
-    //   return;
-    // }
-
-    const foundVideo = db.videos.find((el) => el.id === req.params.id);
-    // if (!foundVideo) {
-    //   res
-    //     .status(StatusCodes.NOT_FOUND)
-    //     .send(responseErrorFunction("Course not found for given id", "id"));
-    //   return;
-    // }
-    if (foundVideo && foundVideo.title) foundVideo.title = req.body.title;
-    res.sendStatus(StatusCodes.NO_CONTENT);
+    if (errors.length > 0) {
+      res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
+      return;
+    }
+    const foundVideo = db.videos.find((el) => el.id === +req.params.id);
+    if (!foundVideo) {
+      errors.push({ message: "Not_Found video with such ID", field: "id" });
+      res.status(StatusCodes.NOT_FOUND).send(responseErrorFunction(errors));
+      return;
+    } else {
+      res.set({
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      });
+      foundVideo.publicationDate = publicationDate;
+      foundVideo.canBeDownloaded = canBeDownloaded;
+      foundVideo.author = author;
+      foundVideo.title = title;
+      foundVideo.minAgeRestriction = minAgeRestriction;
+      foundVideo.availableResolutions = availableResolutions;
+      res.status(StatusCodes.OK).send(foundVideo);
+    }
   }
 );
 

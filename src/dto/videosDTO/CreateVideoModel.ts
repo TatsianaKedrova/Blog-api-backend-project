@@ -4,9 +4,11 @@ import { TUpdateVideoInputModel } from "./UpdateVideoModel";
 
 export type RequestBodyModel<B> = Request<{}, {}, B>;
 
-export type TCreateVideoInputModel = {
+export type RequiredVideoBodyProperties = {
   title: string; // required, maxLength = 40
   author: string; //required, maxLength = 20
+};
+export type TCreateVideoInputModel = Required<RequiredVideoBodyProperties> & {
   availableResolutions: TResolutionsArray;
 };
 
