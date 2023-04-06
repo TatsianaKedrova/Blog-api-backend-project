@@ -20,7 +20,7 @@ import {
 import {
   TApiErrorResultObject,
   TFieldError,
-} from "../dto/videosDTO/ErrorVideoResponseModel";
+} from "../dto/common/ErrorResponseModel";
 import { videoPutRequestValidator } from "../utils/videoPutRequestValidator";
 
 export const videosRouter = express.Router({});

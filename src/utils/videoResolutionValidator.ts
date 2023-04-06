@@ -1,4 +1,4 @@
-import { TFieldError } from "../dto/videosDTO/ErrorVideoResponseModel";
+import { TFieldError } from "../dto/common/ErrorResponseModel";
 import {
   TResolutions,
   TResolutionsArray,
