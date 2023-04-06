@@ -1,10 +1,12 @@
 import express from "express";
 import { StatusCodes } from "http-status-codes";
-import { db } from "../temporal-database/videos-db";
+import { TDataBase, db } from "../temporal-database/videos-db";
 export const testingRouter = express.Router({});
 
 //TODO REMOVE ALL COURSES
 testingRouter.delete("/all-data", (req, res) => {
-    db.videos = [];
-    res.sendStatus(StatusCodes.NO_CONTENT);
+  Object.keys(db).forEach((database) => {
+    db[database as keyof TDataBase] = [];
   });
+  res.sendStatus(StatusCodes.NO_CONTENT);
+});

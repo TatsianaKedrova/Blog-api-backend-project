@@ -10,7 +10,9 @@ const videos_db_1 = require("../temporal-database/videos-db");
 exports.testingRouter = express_1.default.Router({});
 //TODO REMOVE ALL COURSES
 exports.testingRouter.delete("/all-data", (req, res) => {
-    videos_db_1.db.videos = [];
+    Object.keys(videos_db_1.db).forEach((database) => {
+        videos_db_1.db[database] = [];
+    });
     res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
 });
 //# sourceMappingURL=testing-router.js.map
