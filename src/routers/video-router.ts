@@ -3,13 +3,9 @@ import { StatusCodes } from "http-status-codes";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorUtils";
 import { db } from "../temporal-database/project-db";
 import { validatePostBody } from "../utils/videoUtils/videoPostRequestValidator";
+import { TUpdateVideoInputModel } from "../dto/videosDTO/UpdateVideoModel";
+import { URIParamsRequestForVideo } from "../dto/videosDTO/URIParamsRequestForVideo";
 import {
-  RequestWithURIParamsAndBody,
-  TUpdateVideoInputModel,
-} from "../dto/videosDTO/UpdateVideoModel";
-import { URIParamsRequest } from "../dto/videosDTO/URIParamsRequest";
-import {
-  RequestBodyModel,
   TCreateVideoInputModel,
   TVideo,
 } from "../dto/videosDTO/CreateVideoModel";
@@ -22,6 +18,10 @@ import {
   TFieldError,
 } from "../dto/common/ErrorResponseModel";
 import { videoPutRequestValidator } from "../utils/videoUtils/videoPutRequestValidator";
+import {
+  RequestBodyModel,
+  RequestWithURIParamsAndBody,
+} from "../dto/common/RequestModels";
 
 export const videosRouter = express.Router({});
 
@@ -34,7 +34,7 @@ videosRouter.get("/", (req: Request, res: Response<TVideo[]>) => {
 videosRouter.get(
   "/:id",
   (
-    req: Request<URIParamsRequest>,
+    req: Request<URIParamsRequestForVideo>,
     res: Response<TVideo | TApiErrorResultObject>
   ) => {
     const errors = [];
@@ -92,7 +92,7 @@ videosRouter.post(
 videosRouter.delete(
   "/:id",
   (
-    req: Request<URIParamsRequest>,
+    req: Request<URIParamsRequestForVideo>,
     res: Response<TVideo | TApiErrorResultObject>
   ) => {
     const foundVideoById = db.videos.findIndex(
@@ -111,7 +111,10 @@ videosRouter.delete(
 videosRouter.put(
   "/:id",
   (
-    req: RequestWithURIParamsAndBody<URIParamsRequest, TUpdateVideoInputModel>,
+    req: RequestWithURIParamsAndBody<
+      URIParamsRequestForVideo,
+      TUpdateVideoInputModel
+    >,
     res: Response
   ) => {
     const errors: TFieldError[] = videoPutRequestValidator(req.body);
@@ -147,6 +150,3 @@ videosRouter.put(
     }
   }
 );
-
-/*fetch("https://blog-api-backend-project-git-master-tatsianakedrova.vercel.app/api/videos", {method: "POST", headers: {"Content-Type": "application/json",
-        "Accept": "application/json"}, body: JSON.stringify({title: "nadin", author: "jack london", availableResolutions: ["P144"]})}).then(res => res.json()).then(res => console.log(res))*/

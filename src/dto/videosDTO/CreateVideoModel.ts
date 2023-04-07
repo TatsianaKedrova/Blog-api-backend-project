@@ -1,8 +1,5 @@
-import { Request } from "express";
 import { TResolutionsArray } from "./ResolutionsVideoModel";
 import { TUpdateVideoInputModel } from "./UpdateVideoModel";
-
-export type RequestBodyModel<B> = Request<{}, {}, B>;
 
 export type RequiredVideoBodyProperties = {
   title: string; // required, maxLength = 40

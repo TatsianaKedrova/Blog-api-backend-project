@@ -1,7 +1,4 @@
-import { Request } from "express";
 import { TCreateVideoInputModel } from "./CreateVideoModel";
-
-export type RequestWithURIParamsAndBody<I, T> = Request<I, {}, T>;
 
 export type TUpdatePartialFields = {
   canBeDownloaded: boolean; //by default = false

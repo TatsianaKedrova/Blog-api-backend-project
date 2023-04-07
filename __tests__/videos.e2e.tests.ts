@@ -2,7 +2,10 @@ import request from "supertest";
 import { StatusCodes } from "http-status-codes";
 import { app } from "../src/settings";
 import { TVideo } from "../src/dto/videosDTO/CreateVideoModel";
-import { creationVideoDate, publicationVideoDate } from "../src/utils/common-utils/creation-publication-dates";
+import {
+  creationVideoDate,
+  publicationVideoDate,
+} from "../src/utils/common-utils/creation-publication-dates";
 
 describe("videos router", () => {
   beforeAll(async () => {
