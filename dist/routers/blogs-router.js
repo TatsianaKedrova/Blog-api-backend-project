@@ -39,13 +39,13 @@ exports.blogsRouter.post("/", (req, res) => {
 });
 //TODO: UPDATE BLOG BY ID
 exports.blogsRouter.put("/:id", (req, res) => {
-    //validatiom
+    //validation
     res.sendStatus(http_status_codes_1.StatusCodes.BAD_REQUEST);
     //401 unauthorized
     res.sendStatus(http_status_codes_1.StatusCodes.UNAUTHORIZED);
     //NOT_FOUND
-    const newBlog = blogs_repository_1.blogsRepository.updateBlogById(req.params.id);
-    if (!newBlog) {
+    const updatedBlog = blogs_repository_1.blogsRepository.updateBlogById(req.params.id);
+    if (!updatedBlog) {
         res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
     }
     res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
@@ -55,8 +55,8 @@ exports.blogsRouter.delete("/:id", (req, res) => {
     //401 unauthorized
     res.sendStatus(http_status_codes_1.StatusCodes.UNAUTHORIZED);
     //NOT_FOUND
-    const newBlog = blogs_repository_1.blogsRepository.deleteBlogById(req.params.id);
-    if (!newBlog) {
+    const foundBlog = blogs_repository_1.blogsRepository.deleteBlogById(req.params.id);
+    if (!foundBlog) {
         res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
     }
     res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);

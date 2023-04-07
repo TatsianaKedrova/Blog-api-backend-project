@@ -60,15 +60,15 @@ blogsRouter.put(
     req: RequestWithURIParamsAndBody<URIParamsRequest, BlogInputModel>,
     res: Response<TApiErrorResultObject>
   ) => {
-    //validatiom
+    //validation
     res.sendStatus(StatusCodes.BAD_REQUEST);
 
     //401 unauthorized
     res.sendStatus(StatusCodes.UNAUTHORIZED);
 
     //NOT_FOUND
-    const newBlog = blogsRepository.updateBlogById(req.params.id);
-    if (!newBlog) {
+    const updatedBlog = blogsRepository.updateBlogById(req.params.id);
+    if (!updatedBlog) {
       res.sendStatus(StatusCodes.NOT_FOUND);
     }
 
@@ -82,8 +82,8 @@ blogsRouter.delete("/:id", (req: RequestWithURIParam<URIParamsRequest>, res: Res
   res.sendStatus(StatusCodes.UNAUTHORIZED);
 
   //NOT_FOUND
-  const newBlog = blogsRepository.deleteBlogById(req.params.id);
-  if (!newBlog) {
+  const foundBlog = blogsRepository.deleteBlogById(req.params.id);
+  if (!foundBlog) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   }
   res.sendStatus(StatusCodes.NO_CONTENT);

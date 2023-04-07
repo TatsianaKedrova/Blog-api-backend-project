@@ -31,5 +31,28 @@ exports.postsRepository = {
             return newPost;
         }
     },
+    updatePostById(id, body) {
+        const { blogId, content, shortDescription, title } = body;
+        const foundPostById = project_db_1.db.posts.find((post) => post.id === id);
+        if (!foundPostById) {
+            return false;
+        }
+        else {
+            foundPostById.blogId = blogId;
+            foundPostById.content = content;
+            foundPostById.shortDescription = shortDescription;
+            foundPostById.title = title;
+            return true;
+        }
+    },
+    deletePostById(id) {
+        for (let i = 0; i < project_db_1.db.posts.length; i++) {
+            if (project_db_1.db.posts[i].id === id) {
+                project_db_1.db.posts.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
+    },
 };
 //# sourceMappingURL=posts-repository.js.map
