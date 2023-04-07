@@ -23,6 +23,15 @@ exports.db = {
             websiteUrl: "dear-baby.com",
         },
     ],
-    posts: [],
+    posts: [
+        {
+            id: "string",
+            title: "Late night",
+            shortDescription: "I am sitting and learning great node js",
+            content: "Content - this is content! Love you so much",
+            blogId: "123",
+            blogName: "Tania",
+        },
+    ],
 };
 //# sourceMappingURL=project-db.js.map

@@ -97,6 +97,4 @@ exports.videosRouter.put("/:id", (req, res) => {
         res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
     }
 });
-/*fetch("https://blog-api-backend-project-git-master-tatsianakedrova.vercel.app/api/videos", {method: "POST", headers: {"Content-Type": "application/json",
-        "Accept": "application/json"}, body: JSON.stringify({title: "nadin", author: "jack london", availableResolutions: ["P144"]})}).then(res => res.json()).then(res => console.log(res))*/
 //# sourceMappingURL=video-router.js.map
