@@ -1,4 +1,4 @@
-export type URIParamsRequest = {
+export type URIParamsRequestForVideo = {
   /**
    * URI param id
    */
