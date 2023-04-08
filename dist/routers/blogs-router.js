@@ -10,6 +10,14 @@ const project_db_1 = require("../temporal-database/project-db");
 const blogs_repository_1 = require("../repositories/blogs-repository");
 const responseErrorUtils_1 = require("../utils/common-utils/responseErrorUtils");
 exports.blogsRouter = express_1.default.Router({});
+exports.blogsRouter.use((req, res, next) => {
+    if (req.method !== "GET") {
+        next();
+    }
+    else {
+        return;
+    }
+});
 //TODO: GET LIST OF BLOGS
 exports.blogsRouter.get("/", (req, res) => {
     res.status(http_status_codes_1.StatusCodes.OK).send(project_db_1.db.blogs);
@@ -53,7 +61,7 @@ exports.blogsRouter.put("/:id", (req, res) => {
 //TODO: DELETE BLOG BY ID
 exports.blogsRouter.delete("/:id", (req, res) => {
     //401 unauthorized
-    res.sendStatus(http_status_codes_1.StatusCodes.UNAUTHORIZED);
+    // res.sendStatus(StatusCodes.UNAUTHORIZED);
     //NOT_FOUND
     const foundBlog = blogs_repository_1.blogsRepository.deleteBlogById(req.params.id);
     if (!foundBlog) {

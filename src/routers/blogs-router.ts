@@ -14,7 +14,17 @@ import {
   RequestWithURIParamsAndBody,
 } from "../dto/common/RequestModels";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorUtils";
+import { basicAuthMiddleware } from "../middleware/basicAuth";
 export const blogsRouter = express.Router({});
+
+blogsRouter.use((req, res, next) => {
+  if (req.method !== "GET") {
+    next();
+  } else {
+    return;
+  }
+});
+
 //TODO: GET LIST OF BLOGS
 blogsRouter.get("/", (req, res: Response<BlogViewModel[]>) => {
   res.status(StatusCodes.OK).send(db.blogs);
@@ -23,7 +33,10 @@ blogsRouter.get("/", (req, res: Response<BlogViewModel[]>) => {
 //TODO: GET BLOG BY ID
 blogsRouter.get(
   "/:id",
-  (req: RequestWithURIParam<URIParamsRequest>, res: Response<BlogViewModel>) => {
+  (
+    req: RequestWithURIParam<URIParamsRequest>,
+    res: Response<BlogViewModel>
+  ) => {
     const foundBlog = blogsRepository.findBlogById(req.params.id);
     if (!foundBlog) {
       res.sendStatus(StatusCodes.NOT_FOUND);
@@ -77,14 +90,17 @@ blogsRouter.put(
 );
 
 //TODO: DELETE BLOG BY ID
-blogsRouter.delete("/:id", (req: RequestWithURIParam<URIParamsRequest>, res: Response) => {
-  //401 unauthorized
-  res.sendStatus(StatusCodes.UNAUTHORIZED);
+blogsRouter.delete(
+  "/:id",
+  (req: RequestWithURIParam<URIParamsRequest>, res: Response) => {
+    //401 unauthorized
+    // res.sendStatus(StatusCodes.UNAUTHORIZED);
 
-  //NOT_FOUND
-  const foundBlog = blogsRepository.deleteBlogById(req.params.id);
-  if (!foundBlog) {
-    res.sendStatus(StatusCodes.NOT_FOUND);
+    //NOT_FOUND
+    const foundBlog = blogsRepository.deleteBlogById(req.params.id);
+    if (!foundBlog) {
+      res.sendStatus(StatusCodes.NOT_FOUND);
+    }
+    res.sendStatus(StatusCodes.NO_CONTENT);
   }
-  res.sendStatus(StatusCodes.NO_CONTENT);
-});
+);
