@@ -20,9 +20,10 @@ export let basicAuthMiddleware = (
     let credentials = Buffer.from(authValue.split(" ")[1], "base64")
       .toString()
       .split(":");
+    let authType = authValue.split(" ")[0].toLowerCase();
     let username = credentials[0];
     let password = credentials[1];
-    if (!(username === "admin" && password === "qwerty")) {
+    if (!(authType === "basic" && username === "admin" && password === "qwerty")) {
       res.set({
         "WWW-Authenticate": "Basic",
       });
