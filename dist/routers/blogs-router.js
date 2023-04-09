@@ -48,7 +48,7 @@ exports.blogsRouter.put("/:id", (req, res) => {
         res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send((0, responseErrorUtils_1.responseErrorFunction)(errors));
     }
     //NOT_FOUND
-    const updatedBlog = blogs_repository_1.blogsRepository.updateBlogById(req.params.id);
+    const updatedBlog = blogs_repository_1.blogsRepository.updateBlogById(req.params.id, req.body);
     if (!updatedBlog) {
         res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
     }

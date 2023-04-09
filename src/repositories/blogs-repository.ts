@@ -24,11 +24,17 @@ export const blogsRepository = {
     db.blogs.push(newBlog);
     return newBlog;
   },
-  updateBlogById(id: string) {
+  updateBlogById(id: string, body: BlogInputModel): boolean {
+    const { description, name, websiteUrl } = body;
     const foundBlog = db.blogs.find((blog) => blog.id === id);
-    if (foundBlog) {
+    if (!foundBlog) {
+      return false;
+    } else {
+      foundBlog.name = name;
+      foundBlog.description = description;
+      foundBlog.websiteUrl = websiteUrl;
+      return true;
     }
-    return foundBlog;
   },
   deleteBlogById(id: string): boolean {
     for (let i = 0; i < db.blogs.length; i++) {

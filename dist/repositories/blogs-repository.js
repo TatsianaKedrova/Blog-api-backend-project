@@ -23,11 +23,18 @@ exports.blogsRepository = {
         project_db_1.db.blogs.push(newBlog);
         return newBlog;
     },
-    updateBlogById(id) {
+    updateBlogById(id, body) {
+        const { description, name, websiteUrl } = body;
         const foundBlog = project_db_1.db.blogs.find((blog) => blog.id === id);
-        if (foundBlog) {
+        if (!foundBlog) {
+            return false;
         }
-        return foundBlog;
+        else {
+            foundBlog.name = name;
+            foundBlog.description = description;
+            foundBlog.websiteUrl = websiteUrl;
+            return true;
+        }
     },
     deleteBlogById(id) {
         for (let i = 0; i < project_db_1.db.blogs.length; i++) {

@@ -75,7 +75,7 @@ blogsRouter.put(
       res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
     }
     //NOT_FOUND
-    const updatedBlog = blogsRepository.updateBlogById(req.params.id);
+    const updatedBlog = blogsRepository.updateBlogById(req.params.id, req.body);
     if (!updatedBlog) {
       res.sendStatus(StatusCodes.NOT_FOUND);
     }
@@ -88,7 +88,6 @@ blogsRouter.put(
 blogsRouter.delete(
   "/:id",
   (req: RequestWithURIParam<URIParamsRequest>, res: Response) => {
-
     //NOT_FOUND
     const foundBlog = blogsRepository.deleteBlogById(req.params.id);
     if (!foundBlog) {
