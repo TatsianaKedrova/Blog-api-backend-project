@@ -88,8 +88,6 @@ blogsRouter.put(
 blogsRouter.delete(
   "/:id",
   (req: RequestWithURIParam<URIParamsRequest>, res: Response) => {
-    //401 unauthorized
-    // res.sendStatus(StatusCodes.UNAUTHORIZED);
 
     //NOT_FOUND
     const foundBlog = blogsRepository.deleteBlogById(req.params.id);

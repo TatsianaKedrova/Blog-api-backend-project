@@ -56,8 +56,6 @@ exports.blogsRouter.put("/:id", (req, res) => {
 });
 //TODO: DELETE BLOG BY ID
 exports.blogsRouter.delete("/:id", (req, res) => {
-    //401 unauthorized
-    // res.sendStatus(StatusCodes.UNAUTHORIZED);
     //NOT_FOUND
     const foundBlog = blogs_repository_1.blogsRepository.deleteBlogById(req.params.id);
     if (!foundBlog) {

@@ -9,10 +9,10 @@ let basicAuthMiddleware = (req, res, next) => {
     }
     authValue = req.get("Authorization");
     if (!authValue) {
-        res
-            .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
-            .set("WWW-Authenticate", "Basic")
-            .send();
+        res.set({
+            "WWW-Authenticate": "Basic",
+        });
+        return res.sendStatus(http_status_codes_1.StatusCodes.UNAUTHORIZED);
     }
     else {
         let credentials = Buffer.from(authValue.split(" ")[1], "base64")
@@ -21,10 +21,10 @@ let basicAuthMiddleware = (req, res, next) => {
         let username = credentials[0];
         let password = credentials[1];
         if (!(username === "admin" && password === "qwerty")) {
-            res
-                .status(http_status_codes_1.StatusCodes.UNAUTHORIZED)
-                .set("WWW-Authenticate", "Basic")
-                .send();
+            res.set({
+                "WWW-Authenticate": "Basic",
+            });
+            return res.sendStatus(http_status_codes_1.StatusCodes.UNAUTHORIZED);
         }
         next();
     }
