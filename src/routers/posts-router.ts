@@ -42,10 +42,10 @@ postsRouter.post(
     res: Response<PostViewModel | TApiErrorResultObject>
   ) => {
     const errors: TFieldError[] = [];
-    const newPost = postsRepository.createNewPost(req.body);
     if (errors.length > 0) {
       res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
     } else {
+      const newPost = postsRepository.createNewPost(req.body);
       res.status(StatusCodes.CREATED).send(newPost);
     }
   }
@@ -63,9 +63,6 @@ postsRouter.put(
     //validation
     res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
 
-    //401 unauthorized
-    res.sendStatus(StatusCodes.UNAUTHORIZED);
-
     const isUpdated = postsRepository.updatePostById(req.params.id, req.body);
     if (!isUpdated) {
       res.sendStatus(StatusCodes.NOT_FOUND);
@@ -80,9 +77,6 @@ postsRouter.delete(
   "/:id",
   (req: RequestWithURIParam<URIParamsRequest>, res: Response) => {
     const isDeleted = postsRepository.deletePostById(req.params.id);
-
-    //401 unauthorized
-    res.sendStatus(StatusCodes.UNAUTHORIZED);
 
     if (!isDeleted) {
       res.sendStatus(StatusCodes.NOT_FOUND);

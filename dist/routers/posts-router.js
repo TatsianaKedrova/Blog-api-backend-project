@@ -29,11 +29,11 @@ exports.postsRouter.get("/:id", (req, res) => {
 //TODO: CREATE A NEW POST
 exports.postsRouter.post("/", (req, res) => {
     const errors = [];
-    const newPost = posts_repository_1.postsRepository.createNewPost(req.body);
     if (errors.length > 0) {
         res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send((0, responseErrorUtils_1.responseErrorFunction)(errors));
     }
     else {
+        const newPost = posts_repository_1.postsRepository.createNewPost(req.body);
         res.status(http_status_codes_1.StatusCodes.CREATED).send(newPost);
     }
 });
@@ -42,8 +42,6 @@ exports.postsRouter.put("/:id", (req, res) => {
     const errors = [];
     //validation
     res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send((0, responseErrorUtils_1.responseErrorFunction)(errors));
-    //401 unauthorized
-    res.sendStatus(http_status_codes_1.StatusCodes.UNAUTHORIZED);
     const isUpdated = posts_repository_1.postsRepository.updatePostById(req.params.id, req.body);
     if (!isUpdated) {
         res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
@@ -55,8 +53,6 @@ exports.postsRouter.put("/:id", (req, res) => {
 //TODO: DELETE POST BY ID
 exports.postsRouter.delete("/:id", (req, res) => {
     const isDeleted = posts_repository_1.postsRepository.deletePostById(req.params.id);
-    //401 unauthorized
-    res.sendStatus(http_status_codes_1.StatusCodes.UNAUTHORIZED);
     if (!isDeleted) {
         res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
     }
