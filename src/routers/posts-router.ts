@@ -81,7 +81,7 @@ postsRouter.delete(
     if (!isDeleted) {
       res.sendStatus(StatusCodes.NOT_FOUND);
     } else {
-      res.status(StatusCodes.NO_CONTENT);
+      res.sendStatus(StatusCodes.NO_CONTENT);
     }
   }
 );

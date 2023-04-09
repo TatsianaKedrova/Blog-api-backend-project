@@ -60,7 +60,7 @@ exports.postsRouter.delete("/:id", (req, res) => {
         res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
     }
     else {
-        res.status(http_status_codes_1.StatusCodes.NO_CONTENT);
+        res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
     }
 });
 //# sourceMappingURL=posts-router.js.map
