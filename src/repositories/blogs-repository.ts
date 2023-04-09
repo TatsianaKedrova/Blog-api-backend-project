@@ -26,13 +26,17 @@ export const blogsRepository = {
   },
   updateBlogById(id: string) {
     const foundBlog = db.blogs.find((blog) => blog.id === id);
-    if(foundBlog) {
-        
+    if (foundBlog) {
     }
     return foundBlog;
   },
-  deleteBlogById(id: string): BlogViewModel | undefined {
-    const foundBlog = db.blogs.find((blog) => blog.id === id);
-    return foundBlog;
+  deleteBlogById(id: string): boolean {
+    for (let i = 0; i < db.blogs.length; i++) {
+      if (db.blogs[i].id === id) {
+        db.blogs.splice(i, 1);
+        return true;
+      }
+    }
+    return false;
   },
 };

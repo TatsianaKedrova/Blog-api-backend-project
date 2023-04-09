@@ -14,7 +14,10 @@ import {
   RequestWithURIParamsAndBody,
 } from "../dto/common/RequestModels";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
+import { basicAuthMiddleware } from "../middleware/basicAuth";
 export const postsRouter = express.Router({});
+
+postsRouter.use(basicAuthMiddleware);
 
 //TODO: GET LIST OF POSTS
 postsRouter.get("/", (req, res: Response<PostViewModel[]>) => {
