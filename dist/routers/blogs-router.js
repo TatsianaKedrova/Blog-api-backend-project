@@ -9,7 +9,9 @@ const express_1 = __importDefault(require("express"));
 const project_db_1 = require("../temporal-database/project-db");
 const blogs_repository_1 = require("../repositories/blogs-repository");
 const responseErrorUtils_1 = require("../utils/common-utils/responseErrorUtils");
+const basicAuth_1 = require("../middleware/basicAuth");
 exports.blogsRouter = express_1.default.Router({});
+exports.blogsRouter.use(basicAuth_1.basicAuthMiddleware);
 //TODO: GET LIST OF BLOGS
 exports.blogsRouter.get("/", (req, res) => {
     res.status(http_status_codes_1.StatusCodes.OK).send(project_db_1.db.blogs);
@@ -31,18 +33,20 @@ exports.blogsRouter.post("/", (req, res) => {
     if (errors.length > 0) {
         res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send((0, responseErrorUtils_1.responseErrorFunction)(errors));
     }
-    //401 unauthorized
-    res.sendStatus(http_status_codes_1.StatusCodes.UNAUTHORIZED);
-    //OK
+    res.set({
+        "Content-Type": "application/json",
+        Accept: "application/json",
+    });
     const newBlog = blogs_repository_1.blogsRepository.createNewBlog(req.body);
     res.status(http_status_codes_1.StatusCodes.CREATED).send(newBlog);
 });
 //TODO: UPDATE BLOG BY ID
 exports.blogsRouter.put("/:id", (req, res) => {
+    const errors = [];
     //validation
-    res.sendStatus(http_status_codes_1.StatusCodes.BAD_REQUEST);
-    //401 unauthorized
-    res.sendStatus(http_status_codes_1.StatusCodes.UNAUTHORIZED);
+    if (errors.length > 0) {
+        res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send((0, responseErrorUtils_1.responseErrorFunction)(errors));
+    }
     //NOT_FOUND
     const updatedBlog = blogs_repository_1.blogsRepository.updateBlogById(req.params.id);
     if (!updatedBlog) {
@@ -53,7 +57,7 @@ exports.blogsRouter.put("/:id", (req, res) => {
 //TODO: DELETE BLOG BY ID
 exports.blogsRouter.delete("/:id", (req, res) => {
     //401 unauthorized
-    res.sendStatus(http_status_codes_1.StatusCodes.UNAUTHORIZED);
+    // res.sendStatus(StatusCodes.UNAUTHORIZED);
     //NOT_FOUND
     const foundBlog = blogs_repository_1.blogsRepository.deleteBlogById(req.params.id);
     if (!foundBlog) {
@@ -61,4 +65,10 @@ exports.blogsRouter.delete("/:id", (req, res) => {
     }
     res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
 });
+// fetch("http://localhost:3000/api/blogs/123", {method: "DELETE"}).then(res => res.json()).then(res => console.log(res))
+// fetch("http://localhost:3000/api/blogs/456", {method: "DELETE", headers: {"authorization": "Basic YWRtaW46cXdlcnR5"}}).then(res => res.json()).then(res => console.log(res))
+/*fetch("http://localhost:3000/api/blogs", {method: "POST", headers: {"Content-Type": "application/json",
+      "Accept": "application/json"}, body: JSON.stringify({ name: "Tania",
+    description: "She is such a pretty girl",
+    websiteUrl: "www.google.com"})}).then(res => res.json()).then(res => console.log(res))*/
 //# sourceMappingURL=blogs-router.js.map

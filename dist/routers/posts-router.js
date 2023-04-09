@@ -9,7 +9,9 @@ const http_status_codes_1 = require("http-status-codes");
 const project_db_1 = require("../temporal-database/project-db");
 const posts_repository_1 = require("../repositories/posts-repository");
 const responseErrorUtils_1 = require("../utils/common-utils/responseErrorUtils");
+const basicAuth_1 = require("../middleware/basicAuth");
 exports.postsRouter = express_1.default.Router({});
+exports.postsRouter.use(basicAuth_1.basicAuthMiddleware);
 //TODO: GET LIST OF POSTS
 exports.postsRouter.get("/", (req, res) => {
     res.status(http_status_codes_1.StatusCodes.OK).send(project_db_1.db.posts);

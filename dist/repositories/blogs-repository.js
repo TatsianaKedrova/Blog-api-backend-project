@@ -30,8 +30,13 @@ exports.blogsRepository = {
         return foundBlog;
     },
     deleteBlogById(id) {
-        const foundBlog = project_db_1.db.blogs.find((blog) => blog.id === id);
-        return foundBlog;
+        for (let i = 0; i < project_db_1.db.blogs.length; i++) {
+            if (project_db_1.db.blogs[i].id === id) {
+                project_db_1.db.blogs.splice(i, 1);
+                return true;
+            }
+        }
+        return false;
     },
 };
 //# sourceMappingURL=blogs-repository.js.map

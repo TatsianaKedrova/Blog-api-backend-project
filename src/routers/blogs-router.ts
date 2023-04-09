@@ -14,7 +14,11 @@ import {
   RequestWithURIParamsAndBody,
 } from "../dto/common/RequestModels";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorUtils";
+import { basicAuthMiddleware } from "../middleware/basicAuth";
 export const blogsRouter = express.Router({});
+
+blogsRouter.use(basicAuthMiddleware);
+
 //TODO: GET LIST OF BLOGS
 blogsRouter.get("/", (req, res: Response<BlogViewModel[]>) => {
   res.status(StatusCodes.OK).send(db.blogs);
@@ -23,7 +27,10 @@ blogsRouter.get("/", (req, res: Response<BlogViewModel[]>) => {
 //TODO: GET BLOG BY ID
 blogsRouter.get(
   "/:id",
-  (req: RequestWithURIParam<URIParamsRequest>, res: Response<BlogViewModel>) => {
+  (
+    req: RequestWithURIParam<URIParamsRequest>,
+    res: Response<BlogViewModel>
+  ) => {
     const foundBlog = blogsRepository.findBlogById(req.params.id);
     if (!foundBlog) {
       res.sendStatus(StatusCodes.NOT_FOUND);
@@ -45,9 +52,10 @@ blogsRouter.post(
     if (errors.length > 0) {
       res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
     }
-    //401 unauthorized
-    res.sendStatus(StatusCodes.UNAUTHORIZED);
-    //OK
+    res.set({
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    });
     const newBlog = blogsRepository.createNewBlog(req.body);
     res.status(StatusCodes.CREATED).send(newBlog);
   }
@@ -60,12 +68,12 @@ blogsRouter.put(
     req: RequestWithURIParamsAndBody<URIParamsRequest, BlogInputModel>,
     res: Response<TApiErrorResultObject>
   ) => {
+    const errors: TFieldError[] = [];
+
     //validation
-    res.sendStatus(StatusCodes.BAD_REQUEST);
-
-    //401 unauthorized
-    res.sendStatus(StatusCodes.UNAUTHORIZED);
-
+    if (errors.length > 0) {
+      res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
+    }
     //NOT_FOUND
     const updatedBlog = blogsRepository.updateBlogById(req.params.id);
     if (!updatedBlog) {
@@ -77,14 +85,25 @@ blogsRouter.put(
 );
 
 //TODO: DELETE BLOG BY ID
-blogsRouter.delete("/:id", (req: RequestWithURIParam<URIParamsRequest>, res: Response) => {
-  //401 unauthorized
-  res.sendStatus(StatusCodes.UNAUTHORIZED);
+blogsRouter.delete(
+  "/:id",
+  (req: RequestWithURIParam<URIParamsRequest>, res: Response) => {
+    //401 unauthorized
+    // res.sendStatus(StatusCodes.UNAUTHORIZED);
 
-  //NOT_FOUND
-  const foundBlog = blogsRepository.deleteBlogById(req.params.id);
-  if (!foundBlog) {
-    res.sendStatus(StatusCodes.NOT_FOUND);
+    //NOT_FOUND
+    const foundBlog = blogsRepository.deleteBlogById(req.params.id);
+    if (!foundBlog) {
+      res.sendStatus(StatusCodes.NOT_FOUND);
+    }
+    res.sendStatus(StatusCodes.NO_CONTENT);
   }
-  res.sendStatus(StatusCodes.NO_CONTENT);
-});
+);
+// fetch("http://localhost:3000/api/blogs/123", {method: "DELETE"}).then(res => res.json()).then(res => console.log(res))
+
+// fetch("http://localhost:3000/api/blogs/456", {method: "DELETE", headers: {"authorization": "Basic YWRtaW46cXdlcnR5"}}).then(res => res.json()).then(res => console.log(res))
+
+/*fetch("http://localhost:3000/api/blogs", {method: "POST", headers: {"Content-Type": "application/json",
+      "Accept": "application/json"}, body: JSON.stringify({ name: "Tania",
+    description: "She is such a pretty girl", 
+    websiteUrl: "www.google.com"})}).then(res => res.json()).then(res => console.log(res))*/
