@@ -40,14 +40,17 @@ exports.postsRouter.post("/", (req, res) => {
 //TODO: UPDATE POST BY ID
 exports.postsRouter.put("/:id", (req, res) => {
     const errors = [];
-    //validation
-    res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send((0, responseErrorUtils_1.responseErrorFunction)(errors));
-    const isUpdated = posts_repository_1.postsRepository.updatePostById(req.params.id, req.body);
-    if (!isUpdated) {
-        res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
+    if (errors.length > 0) {
+        res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send((0, responseErrorUtils_1.responseErrorFunction)(errors));
     }
     else {
-        res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
+        const isUpdated = posts_repository_1.postsRepository.updatePostById(req.params.id, req.body);
+        if (!isUpdated) {
+            res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
+        }
+        else {
+            res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
+        }
     }
 });
 //TODO: DELETE POST BY ID

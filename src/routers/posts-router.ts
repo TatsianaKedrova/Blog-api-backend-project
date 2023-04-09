@@ -59,15 +59,15 @@ postsRouter.put(
     res: Response<TApiErrorResultObject>
   ) => {
     const errors: TFieldError[] = [];
-
-    //validation
-    res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
-
-    const isUpdated = postsRepository.updatePostById(req.params.id, req.body);
-    if (!isUpdated) {
-      res.sendStatus(StatusCodes.NOT_FOUND);
+    if (errors.length > 0) {
+      res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
     } else {
-      res.sendStatus(StatusCodes.NO_CONTENT);
+      const isUpdated = postsRepository.updatePostById(req.params.id, req.body);
+      if (!isUpdated) {
+        res.sendStatus(StatusCodes.NOT_FOUND);
+      } else {
+        res.sendStatus(StatusCodes.NO_CONTENT);
+      }
     }
   }
 );
