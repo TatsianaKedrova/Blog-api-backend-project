@@ -16,6 +16,12 @@ import {
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { basicAuthMiddleware } from "../middleware/basicAuth";
 export const postsRouter = express.Router({});
+import { body } from "express-validator";
+import {
+  isValidBlogId,
+  postsStringsValidator,
+} from "../utils/postsValidator/postsValidator";
+import { responseErrorTransformerFunction } from "../utils/common-utils/responseErrorTransformerUtil";
 
 postsRouter.use(basicAuthMiddleware);
 
@@ -37,14 +43,22 @@ postsRouter.get("/:id", (req, res: Response<PostViewModel>) => {
 //TODO: CREATE A NEW POST
 postsRouter.post(
   "/",
+  postsStringsValidator("title", 30),
+  postsStringsValidator("shortDescription", 100),
+  postsStringsValidator("content", 1000),
+  body("blogId").custom(isValidBlogId),
   (
     req: RequestBodyModel<PostInputModel>,
     res: Response<PostViewModel | TApiErrorResultObject>
   ) => {
-    const errors: TFieldError[] = [];
+    const errors = responseErrorTransformerFunction(req);
     if (errors.length > 0) {
       res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
     } else {
+      res.set({
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      });
       const newPost = postsRepository.createNewPost(req.body);
       res.status(StatusCodes.CREATED).send(newPost);
     }
