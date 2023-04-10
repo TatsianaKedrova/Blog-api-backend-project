@@ -8,12 +8,11 @@ const express_1 = __importDefault(require("express"));
 const http_status_codes_1 = require("http-status-codes");
 const project_db_1 = require("../temporal-database/project-db");
 const posts_repository_1 = require("../repositories/posts-repository");
-const responseErrorUtils_1 = require("../utils/common-utils/responseErrorUtils");
-const basicAuth_1 = require("../middleware/basicAuth");
+const basicAuth_1 = require("../middlewares/basicAuth");
 exports.postsRouter = express_1.default.Router({});
 const postsValidator_1 = require("../utils/postsValidator/postsValidator");
-const responseErrorTransformerUtil_1 = require("../utils/common-utils/responseErrorTransformerUtil");
 const express_validator_1 = require("express-validator");
+const input_validation_middleware_1 = require("../middlewares/input-validation-middleware");
 exports.postsRouter.use(basicAuth_1.basicAuthMiddleware);
 //TODO: GET LIST OF POSTS
 exports.postsRouter.get("/", (req, res) => {
@@ -30,34 +29,22 @@ exports.postsRouter.get("/:id", (req, res) => {
     }
 });
 //TODO: CREATE A NEW POST
-exports.postsRouter.post("/", (0, postsValidator_1.stringsInputValidator)("title", 30), (0, postsValidator_1.stringsInputValidator)("shortDescription", 100), (0, postsValidator_1.stringsInputValidator)("content", 1000), (0, express_validator_1.body)("blogId").custom(postsValidator_1.isValidBlogId), (req, res) => {
-    const errors = (0, responseErrorTransformerUtil_1.responseErrorTransformerFunction)(req);
-    if (errors.length > 0) {
-        res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send((0, responseErrorUtils_1.responseErrorFunction)(errors));
-    }
-    else {
-        res.set({
-            "Content-Type": "application/json",
-            Accept: "application/json",
-        });
-        const newPost = posts_repository_1.postsRepository.createNewPost(req.body);
-        res.status(http_status_codes_1.StatusCodes.CREATED).send(newPost);
-    }
+exports.postsRouter.post("/", (0, postsValidator_1.stringsInputValidator)("title", 30), (0, postsValidator_1.stringsInputValidator)("shortDescription", 100), (0, postsValidator_1.stringsInputValidator)("content", 1000), (0, express_validator_1.body)("blogId").custom(postsValidator_1.isValidBlogId), input_validation_middleware_1.inputValidationMiddleware, (req, res) => {
+    res.set({
+        "Content-Type": "application/json",
+        Accept: "application/json",
+    });
+    const newPost = posts_repository_1.postsRepository.createNewPost(req.body);
+    res.status(http_status_codes_1.StatusCodes.CREATED).send(newPost);
 });
 //TODO: UPDATE POST BY ID
-exports.postsRouter.put("/:id", (0, postsValidator_1.stringsInputValidator)("title", 30), (0, postsValidator_1.stringsInputValidator)("shortDescription", 100), (0, postsValidator_1.stringsInputValidator)("content", 1000), (0, express_validator_1.body)("blogId").custom(postsValidator_1.isValidBlogId), (req, res) => {
-    const errors = (0, responseErrorTransformerUtil_1.responseErrorTransformerFunction)(req);
-    if (errors.length > 0) {
-        res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send((0, responseErrorUtils_1.responseErrorFunction)(errors));
+exports.postsRouter.put("/:id", (0, postsValidator_1.stringsInputValidator)("title", 30), (0, postsValidator_1.stringsInputValidator)("shortDescription", 100), (0, postsValidator_1.stringsInputValidator)("content", 1000), (0, express_validator_1.body)("blogId").custom(postsValidator_1.isValidBlogId), input_validation_middleware_1.inputValidationMiddleware, (req, res) => {
+    const isUpdated = posts_repository_1.postsRepository.updatePostById(req.params.id, req.body);
+    if (!isUpdated) {
+        res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
     }
     else {
-        const isUpdated = posts_repository_1.postsRepository.updatePostById(req.params.id, req.body);
-        if (!isUpdated) {
-            res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
-        }
-        else {
-            res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
-        }
+        res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
     }
 });
 //TODO: DELETE POST BY ID

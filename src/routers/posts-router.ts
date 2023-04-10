@@ -3,21 +3,21 @@ import { PostInputModel, PostViewModel } from "../dto/postsDTO/PostViewModel";
 import { StatusCodes } from "http-status-codes";
 import { db } from "../temporal-database/project-db";
 import { postsRepository } from "../repositories/posts-repository";
-import { responseErrorFunction } from "../utils/common-utils/responseErrorUtils";
-import {
-  TApiErrorResultObject, TFieldError,
-} from "../dto/common/ErrorResponseModel";
+import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import {
   RequestBodyModel,
   RequestWithURIParam,
   RequestWithURIParamsAndBody,
 } from "../dto/common/RequestModels";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
-import { basicAuthMiddleware } from "../middleware/basicAuth";
+import { basicAuthMiddleware } from "../middlewares/basicAuth";
 export const postsRouter = express.Router({});
-import { isValidBlogId, stringsInputValidator } from "../utils/postsValidator/postsValidator";
-import { responseErrorTransformerFunction } from "../utils/common-utils/responseErrorTransformerUtil";
+import {
+  isValidBlogId,
+  stringsInputValidator,
+} from "../utils/postsValidator/postsValidator";
 import { body } from "express-validator";
+import { inputValidationMiddleware } from "../middlewares/input-validation-middleware";
 
 postsRouter.use(basicAuthMiddleware);
 
@@ -43,21 +43,17 @@ postsRouter.post(
   stringsInputValidator("shortDescription", 100),
   stringsInputValidator("content", 1000),
   body("blogId").custom(isValidBlogId),
+  inputValidationMiddleware,
   (
     req: RequestBodyModel<PostInputModel>,
     res: Response<PostViewModel | TApiErrorResultObject>
   ) => {
-    const errors: TFieldError[] = responseErrorTransformerFunction(req);
-    if (errors.length > 0) {
-      res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
-    } else {
-      res.set({
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      });
-      const newPost = postsRepository.createNewPost(req.body);
-      res.status(StatusCodes.CREATED).send(newPost);
-    }
+    res.set({
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    });
+    const newPost = postsRepository.createNewPost(req.body);
+    res.status(StatusCodes.CREATED).send(newPost);
   }
 );
 
@@ -68,20 +64,16 @@ postsRouter.put(
   stringsInputValidator("shortDescription", 100),
   stringsInputValidator("content", 1000),
   body("blogId").custom(isValidBlogId),
+  inputValidationMiddleware,
   (
     req: RequestWithURIParamsAndBody<URIParamsRequest, PostInputModel>,
     res: Response<TApiErrorResultObject>
   ) => {
-    const errors = responseErrorTransformerFunction(req);
-    if (errors.length > 0) {
-      res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
+    const isUpdated = postsRepository.updatePostById(req.params.id, req.body);
+    if (!isUpdated) {
+      res.sendStatus(StatusCodes.NOT_FOUND);
     } else {
-      const isUpdated = postsRepository.updatePostById(req.params.id, req.body);
-      if (!isUpdated) {
-        res.sendStatus(StatusCodes.NOT_FOUND);
-      } else {
-        res.sendStatus(StatusCodes.NO_CONTENT);
-      }
+      res.sendStatus(StatusCodes.NO_CONTENT);
     }
   }
 );

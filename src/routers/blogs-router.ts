@@ -5,7 +5,6 @@ import { BlogInputModel, BlogViewModel } from "../dto/blogsDTO/BlogViewModel";
 import { blogsRepository } from "../repositories/blogs-repository";
 import {
   TApiErrorResultObject,
-  TFieldError,
 } from "../dto/common/ErrorResponseModel";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import {
@@ -13,13 +12,10 @@ import {
   RequestWithURIParam,
   RequestWithURIParamsAndBody,
 } from "../dto/common/RequestModels";
-import { responseErrorFunction } from "../utils/common-utils/responseErrorUtils";
-import { basicAuthMiddleware } from "../middleware/basicAuth";
+import { basicAuthMiddleware } from "../middlewares/basicAuth";
 import { stringsInputValidator } from "../utils/postsValidator/postsValidator";
-import {
-  blogsURLValidator,
-} from "../utils/blogsValidator/blogsValidator";
-import { responseErrorTransformerFunction } from "../utils/common-utils/responseErrorTransformerUtil";
+import { blogsURLValidator } from "../utils/blogsValidator/blogsValidator";
+import { inputValidationMiddleware } from "../middlewares/input-validation-middleware";
 export const blogsRouter = express.Router({});
 
 blogsRouter.use(basicAuthMiddleware);
@@ -51,14 +47,11 @@ blogsRouter.post(
   stringsInputValidator("name", 15),
   stringsInputValidator("description", 500),
   blogsURLValidator(),
+  inputValidationMiddleware,
   (
     req: RequestBodyModel<BlogInputModel>,
     res: Response<BlogViewModel | TApiErrorResultObject>
   ) => {
-    const errors: TFieldError[] = responseErrorTransformerFunction(req);
-    if (errors.length > 0) {
-      res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
-    } else {
       res.set({
         "Content-Type": "application/json",
         Accept: "application/json",
@@ -66,7 +59,6 @@ blogsRouter.post(
       const newBlog = blogsRepository.createNewBlog(req.body);
       res.status(StatusCodes.CREATED).send(newBlog);
     }
-  }
 );
 
 //TODO: UPDATE BLOG BY ID
@@ -75,14 +67,11 @@ blogsRouter.put(
   stringsInputValidator("name", 15),
   stringsInputValidator("description", 500),
   blogsURLValidator(),
+  inputValidationMiddleware,
   (
     req: RequestWithURIParamsAndBody<URIParamsRequest, BlogInputModel>,
     res: Response<TApiErrorResultObject>
   ) => {
-    const errors: TFieldError[] = responseErrorTransformerFunction(req);
-    if (errors.length > 0) {
-      res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
-    }
     const updatedBlog = blogsRepository.updateBlogById(req.params.id, req.body);
     if (!updatedBlog) {
       res.sendStatus(StatusCodes.NOT_FOUND);

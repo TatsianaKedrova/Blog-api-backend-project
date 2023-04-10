@@ -24,4 +24,16 @@ const stringsInputValidator = (field, maxLength) => {
         .withMessage(`${field}'s max length is ${maxLength}`);
 };
 exports.stringsInputValidator = stringsInputValidator;
+//?This function doesn't show errors - need to check it again later
+// export const postsValidator = (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   stringsInputValidator("title", 30);
+//   stringsInputValidator("shortDescription", 100);
+//   stringsInputValidator("content", 1000);
+//   body("blogId").custom(isValidBlogId);
+//   next();
+// };
 //# sourceMappingURL=postsValidator.js.map

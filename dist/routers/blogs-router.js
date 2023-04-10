@@ -8,11 +8,10 @@ const http_status_codes_1 = require("http-status-codes");
 const express_1 = __importDefault(require("express"));
 const project_db_1 = require("../temporal-database/project-db");
 const blogs_repository_1 = require("../repositories/blogs-repository");
-const responseErrorUtils_1 = require("../utils/common-utils/responseErrorUtils");
-const basicAuth_1 = require("../middleware/basicAuth");
+const basicAuth_1 = require("../middlewares/basicAuth");
 const postsValidator_1 = require("../utils/postsValidator/postsValidator");
 const blogsValidator_1 = require("../utils/blogsValidator/blogsValidator");
-const responseErrorTransformerUtil_1 = require("../utils/common-utils/responseErrorTransformerUtil");
+const input_validation_middleware_1 = require("../middlewares/input-validation-middleware");
 exports.blogsRouter = express_1.default.Router({});
 exports.blogsRouter.use(basicAuth_1.basicAuthMiddleware);
 //TODO: GET LIST OF BLOGS
@@ -30,26 +29,16 @@ exports.blogsRouter.get("/:id", (req, res) => {
     }
 });
 //TODO: CREATE A NEW BLOG
-exports.blogsRouter.post("/", (0, postsValidator_1.stringsInputValidator)("name", 15), (0, postsValidator_1.stringsInputValidator)("description", 500), (0, blogsValidator_1.blogsURLValidator)(), (req, res) => {
-    const errors = (0, responseErrorTransformerUtil_1.responseErrorTransformerFunction)(req);
-    if (errors.length > 0) {
-        res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send((0, responseErrorUtils_1.responseErrorFunction)(errors));
-    }
-    else {
-        res.set({
-            "Content-Type": "application/json",
-            Accept: "application/json",
-        });
-        const newBlog = blogs_repository_1.blogsRepository.createNewBlog(req.body);
-        res.status(http_status_codes_1.StatusCodes.CREATED).send(newBlog);
-    }
+exports.blogsRouter.post("/", (0, postsValidator_1.stringsInputValidator)("name", 15), (0, postsValidator_1.stringsInputValidator)("description", 500), (0, blogsValidator_1.blogsURLValidator)(), input_validation_middleware_1.inputValidationMiddleware, (req, res) => {
+    res.set({
+        "Content-Type": "application/json",
+        Accept: "application/json",
+    });
+    const newBlog = blogs_repository_1.blogsRepository.createNewBlog(req.body);
+    res.status(http_status_codes_1.StatusCodes.CREATED).send(newBlog);
 });
 //TODO: UPDATE BLOG BY ID
-exports.blogsRouter.put("/:id", (0, postsValidator_1.stringsInputValidator)("name", 15), (0, postsValidator_1.stringsInputValidator)("description", 500), (0, blogsValidator_1.blogsURLValidator)(), (req, res) => {
-    const errors = (0, responseErrorTransformerUtil_1.responseErrorTransformerFunction)(req);
-    if (errors.length > 0) {
-        res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send((0, responseErrorUtils_1.responseErrorFunction)(errors));
-    }
+exports.blogsRouter.put("/:id", (0, postsValidator_1.stringsInputValidator)("name", 15), (0, postsValidator_1.stringsInputValidator)("description", 500), (0, blogsValidator_1.blogsURLValidator)(), input_validation_middleware_1.inputValidationMiddleware, (req, res) => {
     const updatedBlog = blogs_repository_1.blogsRepository.updateBlogById(req.params.id, req.body);
     if (!updatedBlog) {
         res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);

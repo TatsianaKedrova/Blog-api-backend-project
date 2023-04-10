@@ -1,5 +1,6 @@
 import { CustomValidator, body } from "express-validator";
 import { db } from "../../temporal-database/project-db";
+import { NextFunction, Request, Response } from "express";
 
 export const isValidBlogId: CustomValidator = (blogId: string) => {
   const blogNameValue = db.blogs.find((blog) => blog.id === blogId);
@@ -21,3 +22,17 @@ export const stringsInputValidator = (field: string, maxLength: number) => {
     .isLength({ max: maxLength })
     .withMessage(`${field}'s max length is ${maxLength}`);
 };
+
+
+//?This function doesn't show errors - need to check it again later
+// export const postsValidator = (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   stringsInputValidator("title", 30);
+//   stringsInputValidator("shortDescription", 100);
+//   stringsInputValidator("content", 1000);
+//   body("blogId").custom(isValidBlogId);
+//   next();
+// };
