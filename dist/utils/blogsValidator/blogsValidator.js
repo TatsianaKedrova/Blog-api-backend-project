@@ -1,3 +1,17 @@
 "use strict";
-const { check, validationResult } = require('express-validator');
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.blogsURLValidator = void 0;
+const postsValidator_1 = require("./../postsValidator/postsValidator");
+const blogsURLValidator = () => {
+    return (0, postsValidator_1.stringsInputValidator)("websiteUrl", 100).custom((url) => {
+        const urlRegex = new RegExp("^https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$");
+        const testUrl = urlRegex.test(url);
+        if (testUrl) {
+            return true;
+        }
+        else
+            throw new Error("Url is incorrect");
+    });
+};
+exports.blogsURLValidator = blogsURLValidator;
 //# sourceMappingURL=blogsValidator.js.map

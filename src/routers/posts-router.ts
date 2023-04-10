@@ -5,8 +5,7 @@ import { db } from "../temporal-database/project-db";
 import { postsRepository } from "../repositories/posts-repository";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorUtils";
 import {
-  TApiErrorResultObject,
-  TFieldError,
+  TApiErrorResultObject, TFieldError,
 } from "../dto/common/ErrorResponseModel";
 import {
   RequestBodyModel,
@@ -16,12 +15,9 @@ import {
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { basicAuthMiddleware } from "../middleware/basicAuth";
 export const postsRouter = express.Router({});
-import { body } from "express-validator";
-import {
-  isValidBlogId,
-  postsStringsValidator,
-} from "../utils/postsValidator/postsValidator";
+import { isValidBlogId, stringsInputValidator } from "../utils/postsValidator/postsValidator";
 import { responseErrorTransformerFunction } from "../utils/common-utils/responseErrorTransformerUtil";
+import { body } from "express-validator";
 
 postsRouter.use(basicAuthMiddleware);
 
@@ -43,15 +39,15 @@ postsRouter.get("/:id", (req, res: Response<PostViewModel>) => {
 //TODO: CREATE A NEW POST
 postsRouter.post(
   "/",
-  postsStringsValidator("title", 30),
-  postsStringsValidator("shortDescription", 100),
-  postsStringsValidator("content", 1000),
+  stringsInputValidator("title", 30),
+  stringsInputValidator("shortDescription", 100),
+  stringsInputValidator("content", 1000),
   body("blogId").custom(isValidBlogId),
   (
     req: RequestBodyModel<PostInputModel>,
     res: Response<PostViewModel | TApiErrorResultObject>
   ) => {
-    const errors = responseErrorTransformerFunction(req);
+    const errors: TFieldError[] = responseErrorTransformerFunction(req);
     if (errors.length > 0) {
       res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
     } else {
@@ -68,11 +64,15 @@ postsRouter.post(
 //TODO: UPDATE POST BY ID
 postsRouter.put(
   "/:id",
+  stringsInputValidator("title", 30),
+  stringsInputValidator("shortDescription", 100),
+  stringsInputValidator("content", 1000),
+  body("blogId").custom(isValidBlogId),
   (
     req: RequestWithURIParamsAndBody<URIParamsRequest, PostInputModel>,
     res: Response<TApiErrorResultObject>
   ) => {
-    const errors: TFieldError[] = [];
+    const errors = responseErrorTransformerFunction(req);
     if (errors.length > 0) {
       res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
     } else {

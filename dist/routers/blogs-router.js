@@ -10,6 +10,9 @@ const project_db_1 = require("../temporal-database/project-db");
 const blogs_repository_1 = require("../repositories/blogs-repository");
 const responseErrorUtils_1 = require("../utils/common-utils/responseErrorUtils");
 const basicAuth_1 = require("../middleware/basicAuth");
+const postsValidator_1 = require("../utils/postsValidator/postsValidator");
+const blogsValidator_1 = require("../utils/blogsValidator/blogsValidator");
+const responseErrorTransformerUtil_1 = require("../utils/common-utils/responseErrorTransformerUtil");
 exports.blogsRouter = express_1.default.Router({});
 exports.blogsRouter.use(basicAuth_1.basicAuthMiddleware);
 //TODO: GET LIST OF BLOGS
@@ -27,27 +30,26 @@ exports.blogsRouter.get("/:id", (req, res) => {
     }
 });
 //TODO: CREATE A NEW BLOG
-exports.blogsRouter.post("/", (req, res) => {
-    const errors = [];
-    //validation
+exports.blogsRouter.post("/", (0, postsValidator_1.stringsInputValidator)("name", 15), (0, postsValidator_1.stringsInputValidator)("description", 500), (0, blogsValidator_1.blogsURLValidator)(), (req, res) => {
+    const errors = (0, responseErrorTransformerUtil_1.responseErrorTransformerFunction)(req);
     if (errors.length > 0) {
         res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send((0, responseErrorUtils_1.responseErrorFunction)(errors));
     }
-    res.set({
-        "Content-Type": "application/json",
-        Accept: "application/json",
-    });
-    const newBlog = blogs_repository_1.blogsRepository.createNewBlog(req.body);
-    res.status(http_status_codes_1.StatusCodes.CREATED).send(newBlog);
+    else {
+        res.set({
+            "Content-Type": "application/json",
+            Accept: "application/json",
+        });
+        const newBlog = blogs_repository_1.blogsRepository.createNewBlog(req.body);
+        res.status(http_status_codes_1.StatusCodes.CREATED).send(newBlog);
+    }
 });
 //TODO: UPDATE BLOG BY ID
-exports.blogsRouter.put("/:id", (req, res) => {
-    const errors = [];
-    //validation
+exports.blogsRouter.put("/:id", (0, postsValidator_1.stringsInputValidator)("name", 15), (0, postsValidator_1.stringsInputValidator)("description", 500), (0, blogsValidator_1.blogsURLValidator)(), (req, res) => {
+    const errors = (0, responseErrorTransformerUtil_1.responseErrorTransformerFunction)(req);
     if (errors.length > 0) {
         res.status(http_status_codes_1.StatusCodes.BAD_REQUEST).send((0, responseErrorUtils_1.responseErrorFunction)(errors));
     }
-    //NOT_FOUND
     const updatedBlog = blogs_repository_1.blogsRepository.updateBlogById(req.params.id, req.body);
     if (!updatedBlog) {
         res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
@@ -56,17 +58,10 @@ exports.blogsRouter.put("/:id", (req, res) => {
 });
 //TODO: DELETE BLOG BY ID
 exports.blogsRouter.delete("/:id", (req, res) => {
-    //NOT_FOUND
     const foundBlog = blogs_repository_1.blogsRepository.deleteBlogById(req.params.id);
     if (!foundBlog) {
         res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
     }
     res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
 });
-// fetch("http://localhost:3000/api/blogs/123", {method: "DELETE"}).then(res => res.json()).then(res => console.log(res))
-// fetch("http://localhost:3000/api/blogs/456", {method: "DELETE", headers: {"authorization": "Basic YWRtaW46cXdlcnR5"}}).then(res => res.json()).then(res => console.log(res))
-/*fetch("http://localhost:3000/api/blogs", {method: "POST", headers: {"Content-Type": "application/json",
-      "Accept": "application/json"}, body: JSON.stringify({ name: "Tania",
-    description: "She is such a pretty girl",
-    websiteUrl: "www.google.com"})}).then(res => res.json()).then(res => console.log(res))*/
 //# sourceMappingURL=blogs-router.js.map

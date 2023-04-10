@@ -1,7 +1,4 @@
-import {
-  CustomValidator,
-  check,
-} from "express-validator";
+import { CustomValidator, body } from "express-validator";
 import { db } from "../../temporal-database/project-db";
 
 export const isValidBlogId: CustomValidator = (blogId: string) => {
@@ -12,8 +9,8 @@ export const isValidBlogId: CustomValidator = (blogId: string) => {
   return true;
 };
 
-export const postsStringsValidator = (field: string, maxLength: number) => {
-  return check(field)
+export const stringsInputValidator = (field: string, maxLength: number) => {
+  return body(field)
     .exists()
     .withMessage(`${field} field is required`)
     .isString()
@@ -22,5 +19,5 @@ export const postsStringsValidator = (field: string, maxLength: number) => {
     .notEmpty()
     .withMessage(`${field} must be included in request body`)
     .isLength({ max: maxLength })
-    .withMessage(`${field}'s max length is 30`);
+    .withMessage(`${field}'s max length is ${maxLength}`);
 };

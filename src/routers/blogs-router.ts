@@ -15,6 +15,11 @@ import {
 } from "../dto/common/RequestModels";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorUtils";
 import { basicAuthMiddleware } from "../middleware/basicAuth";
+import { stringsInputValidator } from "../utils/postsValidator/postsValidator";
+import {
+  blogsURLValidator,
+} from "../utils/blogsValidator/blogsValidator";
+import { responseErrorTransformerFunction } from "../utils/common-utils/responseErrorTransformerUtil";
 export const blogsRouter = express.Router({});
 
 blogsRouter.use(basicAuthMiddleware);
@@ -43,38 +48,41 @@ blogsRouter.get(
 //TODO: CREATE A NEW BLOG
 blogsRouter.post(
   "/",
+  stringsInputValidator("name", 15),
+  stringsInputValidator("description", 500),
+  blogsURLValidator(),
   (
     req: RequestBodyModel<BlogInputModel>,
     res: Response<BlogViewModel | TApiErrorResultObject>
   ) => {
-    const errors: TFieldError[] = [];
-    //validation
+    const errors: TFieldError[] = responseErrorTransformerFunction(req);
     if (errors.length > 0) {
       res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
+    } else {
+      res.set({
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      });
+      const newBlog = blogsRepository.createNewBlog(req.body);
+      res.status(StatusCodes.CREATED).send(newBlog);
     }
-    res.set({
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    });
-    const newBlog = blogsRepository.createNewBlog(req.body);
-    res.status(StatusCodes.CREATED).send(newBlog);
   }
 );
 
 //TODO: UPDATE BLOG BY ID
 blogsRouter.put(
   "/:id",
+  stringsInputValidator("name", 15),
+  stringsInputValidator("description", 500),
+  blogsURLValidator(),
   (
     req: RequestWithURIParamsAndBody<URIParamsRequest, BlogInputModel>,
     res: Response<TApiErrorResultObject>
   ) => {
-    const errors: TFieldError[] = [];
-
-    //validation
+    const errors: TFieldError[] = responseErrorTransformerFunction(req);
     if (errors.length > 0) {
       res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
     }
-    //NOT_FOUND
     const updatedBlog = blogsRepository.updateBlogById(req.params.id, req.body);
     if (!updatedBlog) {
       res.sendStatus(StatusCodes.NOT_FOUND);
@@ -88,7 +96,6 @@ blogsRouter.put(
 blogsRouter.delete(
   "/:id",
   (req: RequestWithURIParam<URIParamsRequest>, res: Response) => {
-    //NOT_FOUND
     const foundBlog = blogsRepository.deleteBlogById(req.params.id);
     if (!foundBlog) {
       res.sendStatus(StatusCodes.NOT_FOUND);
@@ -96,11 +103,3 @@ blogsRouter.delete(
     res.sendStatus(StatusCodes.NO_CONTENT);
   }
 );
-// fetch("http://localhost:3000/api/blogs/123", {method: "DELETE"}).then(res => res.json()).then(res => console.log(res))
-
-// fetch("http://localhost:3000/api/blogs/456", {method: "DELETE", headers: {"authorization": "Basic YWRtaW46cXdlcnR5"}}).then(res => res.json()).then(res => console.log(res))
-
-/*fetch("http://localhost:3000/api/blogs", {method: "POST", headers: {"Content-Type": "application/json",
-      "Accept": "application/json"}, body: JSON.stringify({ name: "Tania",
-    description: "She is such a pretty girl", 
-    websiteUrl: "www.google.com"})}).then(res => res.json()).then(res => console.log(res))*/
