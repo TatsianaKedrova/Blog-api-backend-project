@@ -1,89 +1,102 @@
 import request from "supertest";
 import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
+import { PostViewModel } from "../src/dto/postsDTO/PostViewModel";
 import { BlogViewModel } from "../src/dto/blogsDTO/BlogViewModel";
 
 const correctAuthToken = "YWRtaW46cXdlcnR5";
 const incorrectAuthToken = "YWRtaW46c864XdlcnR5=5";
 
-describe("API for blogs", () => {
+const blogData: BlogViewModel = {
+  id: "12345",
+  name: "Blog1",
+  description: "Blog1 ",
+  websiteUrl: "https://ghYYYhkhkhkdld79.yuuecvmjxm",
+};
+
+describe("API for posts", () => {
   beforeAll(async () => {
     await request(app).delete("/api/testing/all-data");
   });
-  test("GET list of blogs with status 200", async () => {
-    await request(app).get("/api/blogs").expect(StatusCodes.OK, []);
+  test("GET list of posts with status 200", async () => {
+    await request(app).get("/api/posts").expect(StatusCodes.OK, []);
   });
 
-  test("SHOULD NOT create a new blog with incorrect input data and return status 400", async () => {
+  test("SHOULD NOT create a new post with incorrect input data and return status 400", async () => {
     await request(app)
-      .post("/api/blogs")
+      .post("/api/posts")
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({})
       .expect(StatusCodes.BAD_REQUEST, {
         errorsMessages: [
           {
-            message: "name field is required",
-            field: "name",
+            message: "title field is required",
+            field: "title",
           },
           {
-            message: "description field is required",
-            field: "description",
+            message: "shortDescription field is required",
+            field: "shortDescription",
           },
           {
-            message: "websiteUrl field is required",
-            field: "websiteUrl",
+            message: "content field is required",
+            field: "content",
+          },
+          {
+            message: "blogId with this value doesn't exist",
+            field: "blogId",
           },
         ],
       });
 
     const getAllExistingCourses = await request(app)
-      .get("/api/blogs")
+      .get("/api/posts")
       .expect(StatusCodes.OK);
     expect(getAllExistingCourses.body).toEqual([]);
   });
 
-  test("SHOULD NOT create a new blog with incorrect AUTH TYPE and return status 401", async () => {
+  test("SHOULD NOT create a new post with incorrect AUTH TYPE and return status 401", async () => {
     await request(app)
-      .post("/api/blogs")
+      .post("/api/posts")
       .set("Authorization", `Bearer ${correctAuthToken}`)
       .send({})
       .expect(StatusCodes.UNAUTHORIZED, {});
 
     const getAllExistingCourses = await request(app)
-      .get("/api/blogs")
+      .get("/api/posts")
       .expect(StatusCodes.OK);
     expect(getAllExistingCourses.body).toEqual([]);
   });
 
-  test("SHOULD NOT create a new blog with incorrect Auth token and return status 401", async () => {
+  test("SHOULD NOT create a new post with incorrect Auth token and return status 401", async () => {
     await request(app)
-      .post("/api/blogs")
+      .post("/api/posts")
       .set("Authorization", `Basic ${incorrectAuthToken}`)
       .send({})
       .expect(StatusCodes.UNAUTHORIZED, {});
 
     const getAllExistingCourses = await request(app)
-      .get("/api/blogs")
+      .get("/api/posts")
       .expect(StatusCodes.OK);
     expect(getAllExistingCourses.body).toEqual([]);
   });
 
-  let createdBlog1: BlogViewModel;
-  let createdBlog2: BlogViewModel;
-  test("Create a new blog with correct input data and return status 201", async () => {
+  let createdPost1: PostViewModel;
+  let createdPost2: PostViewModel;
+  test.only("Create a new post with correct input data and return status 201", async () => {
+    let data = {
+      title: "Tatiana",
+      shortDescription: "Who run the world",
+      content: "ggggggggggggggggggggggggggggggg",
+      blogId: blogData.id,
+    };
     const postResponse = await request(app)
-      .post("/api/blogs")
+      .post("/api/posts")
       .set("Authorization", `Basic ${correctAuthToken}`)
-      .send({
-        name: "fff",
-        description: "koala is about blog 1. That's it",
-        websiteUrl:
-          "https://MbkyQDhuICIaHnYLc7ws51KEn5wrp7cYHuVZEHlP9ADc3.uZDiBjA8F",
-      })
+      .send(data)
       .expect(StatusCodes.CREATED);
-    createdBlog1 = postResponse.body;
-    console.log(createdBlog1);
-    expect(postResponse.body.name).toEqual("fff");
+    createdPost1 = postResponse.body;
+    console.log(createdPost1);
+    expect(postResponse.body.content).toEqual("ggggggggggggggggggggggggggggggg");
 
     const getAllExistingCourses = await request(app)
       .get("/api/blogs")
@@ -119,7 +132,7 @@ describe("API for blogs", () => {
   });
 
   test("Create a new blog with incorrect input website and description and return status 400", async () => {
-    await request(app)
+    const postResponse = await request(app)
       .post("/api/blogs")
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({
@@ -153,7 +166,7 @@ describe("API for blogs", () => {
 
   test("GET blog ID with 200 status", async () => {
     await request(app)
-      .get(`/api/blogs/${createdBlog1.id}`)
+      .get(`/api/blogs/${createdPost1.id}`)
       .expect(StatusCodes.OK);
   });
 
@@ -167,8 +180,8 @@ describe("API for blogs", () => {
         websiteUrl: "https://HnYLc7ws51KEn5wrp7cYHuVZEHlP9ADc3.uZDiBjA8F",
       })
       .expect(StatusCodes.CREATED);
-    createdBlog2 = postResponse.body;
-    console.log(createdBlog2);
+    createdPost2 = postResponse.body;
+    console.log(createdPost2);
     expect(postResponse.body.description).toEqual("Cats can cure - CCC");
 
     const getAllExistingCourses = await request(app)
@@ -180,7 +193,7 @@ describe("API for blogs", () => {
 
   test("Should return Unauthorized status 401 cos' auth token is incorrect", async () => {
     await request(app)
-      .delete(`/api/blogs/${createdBlog2.id}`)
+      .delete(`/api/blogs/${createdPost2.id}`)
       .set("Authorization", `Basic ${incorrectAuthToken}`)
       .expect(StatusCodes.UNAUTHORIZED);
     const getResponse = (await request(app).get("/api/blogs")).body;
@@ -200,7 +213,7 @@ describe("API for blogs", () => {
 
   test("Should delete blog by ID with correct ID", async () => {
     await request(app)
-      .delete(`/api/blogs/${createdBlog2.id}`)
+      .delete(`/api/blogs/${createdPost2.id}`)
       .set("Authorization", `Basic ${correctAuthToken}`)
       .expect(StatusCodes.NO_CONTENT);
     const getResponse = (await request(app).get("/api/blogs")).body;
@@ -210,7 +223,7 @@ describe("API for blogs", () => {
 
   test("Should update name and description with status 204", async () => {
     const postResponse = await request(app)
-      .put(`/api/blogs/${createdBlog1.id}`)
+      .put(`/api/blogs/${createdPost1.id}`)
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({
         name: "Tania",
@@ -232,7 +245,7 @@ describe("API for blogs", () => {
 
   test("Shouldn't update blog with incorrect Auth Type -  status 401", async () => {
     const postResponse = await request(app)
-      .put(`/api/blogs/${createdBlog1.id}`)
+      .put(`/api/blogs/${createdPost1.id}`)
       .set("Authorization", `Bearer ${correctAuthToken}`)
       .send({
         name: "Stasty",
@@ -254,7 +267,7 @@ describe("API for blogs", () => {
 
   test("Shouldn't update blog with incorrect Auth Value -  status 401", async () => {
     const postResponse = await request(app)
-      .put(`/api/blogs/${createdBlog1.id}`)
+      .put(`/api/blogs/${createdPost1.id}`)
       .set("Authorization", `Basic ${incorrectAuthToken}`)
       .send({
         name: "Stasty",
@@ -276,7 +289,7 @@ describe("API for blogs", () => {
 
   test("Shouldn't update blog with missing value `description` and `websiteUrl` -  status 400", async () => {
     await request(app)
-      .put(`/api/blogs/${createdBlog1.id}`)
+      .put(`/api/blogs/${createdPost1.id}`)
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({
         name: "Stasty",
@@ -306,7 +319,7 @@ describe("API for blogs", () => {
 
   test("Shouldn't update blog with incorrect input values -  status 400", async () => {
     await request(app)
-      .put(`/api/blogs/${createdBlog1.id}`)
+      .put(`/api/blogs/${createdPost1.id}`)
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({
         name: 0,
