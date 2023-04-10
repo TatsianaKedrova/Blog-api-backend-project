@@ -10,6 +10,7 @@ export let basicAuthMiddleware = (
   if (req.method === "GET") {
     return next();
   }
+  // const basicAuthValue = "Basic YWRtaW46cXdlcnR5";
   authValue = req.get("Authorization");
   if (!authValue) {
     res.set({
