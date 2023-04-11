@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.blogsURLValidator = void 0;
+exports.blogsValidator = exports.blogsURLValidator = void 0;
 const postsValidator_1 = require("./../postsValidator/postsValidator");
 const blogsURLValidator = () => {
     return (0, postsValidator_1.stringsInputValidator)("websiteUrl", 100).custom((url) => {
@@ -14,4 +14,9 @@ const blogsURLValidator = () => {
     });
 };
 exports.blogsURLValidator = blogsURLValidator;
+exports.blogsValidator = [
+    (0, postsValidator_1.stringsInputValidator)("name", 15),
+    (0, postsValidator_1.stringsInputValidator)("description", 500),
+    (0, exports.blogsURLValidator)(),
+];
 //# sourceMappingURL=blogsValidator.js.map

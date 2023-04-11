@@ -14,9 +14,9 @@ exports.postsRepository = {
     },
     createNewPost(body) {
         const { title, shortDescription, content, blogId } = body;
-        const blogNameValue = project_db_1.db.blogs.find((blog) => blog.id === blogId);
-        if (!blogNameValue) {
-            return blogNameValue;
+        const blog = project_db_1.db.blogs.find((blog) => blog.id === blogId);
+        if (!blog) {
+            return blog;
         }
         else {
             const newPost = {
@@ -25,7 +25,7 @@ exports.postsRepository = {
                 shortDescription,
                 content,
                 blogId,
-                blogName: blogNameValue.name,
+                blogName: blog.name,
             };
             project_db_1.db.posts.push(newPost);
             return newPost;
@@ -34,6 +34,7 @@ exports.postsRepository = {
     updatePostById(id, body) {
         const { blogId, content, shortDescription, title } = body;
         const foundPostById = project_db_1.db.posts.find((post) => post.id === id);
+        const blog = project_db_1.db.blogs.find((blog) => blog.id === blogId);
         if (!foundPostById) {
             return false;
         }
@@ -42,6 +43,7 @@ exports.postsRepository = {
             foundPostById.content = content;
             foundPostById.shortDescription = shortDescription;
             foundPostById.title = title;
+            foundPostById.blogName = blog.name;
             return true;
         }
     },

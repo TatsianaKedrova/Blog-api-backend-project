@@ -83,7 +83,7 @@ describe("API for posts", () => {
   let createdPost1: PostViewModel;
   let createdPost2: PostViewModel;
   test.only("Create a new post with correct input data and return status 201", async () => {
-    let data = {
+    let inputData = {
       title: "Tatiana",
       shortDescription: "Who run the world",
       content: "ggggggggggggggggggggggggggggggg",
@@ -92,7 +92,7 @@ describe("API for posts", () => {
     const postResponse = await request(app)
       .post("/api/posts")
       .set("Authorization", `Basic ${correctAuthToken}`)
-      .send(data)
+      .send(inputData)
       .expect(StatusCodes.CREATED);
     createdPost1 = postResponse.body;
     console.log(createdPost1);

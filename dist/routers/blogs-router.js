@@ -9,11 +9,9 @@ const express_1 = __importDefault(require("express"));
 const project_db_1 = require("../temporal-database/project-db");
 const blogs_repository_1 = require("../repositories/blogs-repository");
 const basicAuth_1 = require("../middlewares/basicAuth");
-const postsValidator_1 = require("../utils/postsValidator/postsValidator");
 const blogsValidator_1 = require("../utils/blogsValidator/blogsValidator");
-const input_validation_middleware_1 = require("../middlewares/input-validation-middleware");
+const responseErrorValidationMiddleware_1 = require("../middlewares/responseErrorValidationMiddleware");
 exports.blogsRouter = express_1.default.Router({});
-exports.blogsRouter.use(basicAuth_1.basicAuthMiddleware);
 //TODO: GET LIST OF BLOGS
 exports.blogsRouter.get("/", (req, res) => {
     res.status(http_status_codes_1.StatusCodes.OK).send(project_db_1.db.blogs);
@@ -29,16 +27,12 @@ exports.blogsRouter.get("/:id", (req, res) => {
     }
 });
 //TODO: CREATE A NEW BLOG
-exports.blogsRouter.post("/", (0, postsValidator_1.stringsInputValidator)("name", 15), (0, postsValidator_1.stringsInputValidator)("description", 500), (0, blogsValidator_1.blogsURLValidator)(), input_validation_middleware_1.inputValidationMiddleware, (req, res) => {
-    res.set({
-        "Content-Type": "application/json",
-        Accept: "application/json",
-    });
+exports.blogsRouter.post("/", basicAuth_1.basicAuthMiddleware, blogsValidator_1.blogsValidator, responseErrorValidationMiddleware_1.responseErrorValidationMiddleware, (req, res) => {
     const newBlog = blogs_repository_1.blogsRepository.createNewBlog(req.body);
     res.status(http_status_codes_1.StatusCodes.CREATED).send(newBlog);
 });
 //TODO: UPDATE BLOG BY ID
-exports.blogsRouter.put("/:id", (0, postsValidator_1.stringsInputValidator)("name", 15), (0, postsValidator_1.stringsInputValidator)("description", 500), (0, blogsValidator_1.blogsURLValidator)(), input_validation_middleware_1.inputValidationMiddleware, (req, res) => {
+exports.blogsRouter.put("/:id", basicAuth_1.basicAuthMiddleware, blogsValidator_1.blogsValidator, responseErrorValidationMiddleware_1.responseErrorValidationMiddleware, (req, res) => {
     const updatedBlog = blogs_repository_1.blogsRepository.updateBlogById(req.params.id, req.body);
     if (!updatedBlog) {
         res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
@@ -46,7 +40,7 @@ exports.blogsRouter.put("/:id", (0, postsValidator_1.stringsInputValidator)("nam
     res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
 });
 //TODO: DELETE BLOG BY ID
-exports.blogsRouter.delete("/:id", (req, res) => {
+exports.blogsRouter.delete("/:id", basicAuth_1.basicAuthMiddleware, (req, res) => {
     const foundBlog = blogs_repository_1.blogsRepository.deleteBlogById(req.params.id);
     if (!foundBlog) {
         res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);

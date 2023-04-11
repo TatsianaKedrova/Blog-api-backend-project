@@ -11,3 +11,9 @@ export const blogsURLValidator = () => {
     } else throw new Error("Url is incorrect");
   });
 };
+
+export const blogsValidator = [
+  stringsInputValidator("name", 15),
+  stringsInputValidator("description", 500),
+  blogsURLValidator(),
+];

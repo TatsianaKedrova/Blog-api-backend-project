@@ -3,9 +3,7 @@ import express, { Response } from "express";
 import { db } from "../temporal-database/project-db";
 import { BlogInputModel, BlogViewModel } from "../dto/blogsDTO/BlogViewModel";
 import { blogsRepository } from "../repositories/blogs-repository";
-import {
-  TApiErrorResultObject,
-} from "../dto/common/ErrorResponseModel";
+import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import {
   RequestBodyModel,
@@ -13,12 +11,9 @@ import {
   RequestWithURIParamsAndBody,
 } from "../dto/common/RequestModels";
 import { basicAuthMiddleware } from "../middlewares/basicAuth";
-import { stringsInputValidator } from "../utils/postsValidator/postsValidator";
-import { blogsURLValidator } from "../utils/blogsValidator/blogsValidator";
-import { inputValidationMiddleware } from "../middlewares/input-validation-middleware";
+import { blogsValidator } from "../utils/blogsValidator/blogsValidator";
+import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 export const blogsRouter = express.Router({});
-
-blogsRouter.use(basicAuthMiddleware);
 
 //TODO: GET LIST OF BLOGS
 blogsRouter.get("/", (req, res: Response<BlogViewModel[]>) => {
@@ -44,30 +39,24 @@ blogsRouter.get(
 //TODO: CREATE A NEW BLOG
 blogsRouter.post(
   "/",
-  stringsInputValidator("name", 15),
-  stringsInputValidator("description", 500),
-  blogsURLValidator(),
-  inputValidationMiddleware,
+  basicAuthMiddleware,
+  blogsValidator,
+  responseErrorValidationMiddleware,
   (
     req: RequestBodyModel<BlogInputModel>,
     res: Response<BlogViewModel | TApiErrorResultObject>
   ) => {
-      res.set({
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      });
-      const newBlog = blogsRepository.createNewBlog(req.body);
-      res.status(StatusCodes.CREATED).send(newBlog);
-    }
+    const newBlog = blogsRepository.createNewBlog(req.body);
+    res.status(StatusCodes.CREATED).send(newBlog);
+  }
 );
 
 //TODO: UPDATE BLOG BY ID
 blogsRouter.put(
   "/:id",
-  stringsInputValidator("name", 15),
-  stringsInputValidator("description", 500),
-  blogsURLValidator(),
-  inputValidationMiddleware,
+  basicAuthMiddleware,
+  blogsValidator,
+  responseErrorValidationMiddleware,
   (
     req: RequestWithURIParamsAndBody<URIParamsRequest, BlogInputModel>,
     res: Response<TApiErrorResultObject>
@@ -84,6 +73,7 @@ blogsRouter.put(
 //TODO: DELETE BLOG BY ID
 blogsRouter.delete(
   "/:id",
+  basicAuthMiddleware,
   (req: RequestWithURIParam<URIParamsRequest>, res: Response) => {
     const foundBlog = blogsRepository.deleteBlogById(req.params.id);
     if (!foundBlog) {

@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stringsInputValidator = exports.isValidBlogId = void 0;
+exports.postsValidator = exports.stringsInputValidator = exports.isValidBlogId = void 0;
 const express_validator_1 = require("express-validator");
 const project_db_1 = require("../../temporal-database/project-db");
 const isValidBlogId = (blogId) => {
-    const blogNameValue = project_db_1.db.blogs.find((blog) => blog.id === blogId);
-    if (!blogNameValue) {
-        return Promise.reject("blogId with this value doesn't exist");
+    const blog = project_db_1.db.blogs.find((blog) => blog.id === blogId);
+    if (!blog) {
+        throw new Error("Blog with such ID doesn't exist");
     }
     return true;
 };
@@ -24,16 +24,10 @@ const stringsInputValidator = (field, maxLength) => {
         .withMessage(`${field}'s max length is ${maxLength}`);
 };
 exports.stringsInputValidator = stringsInputValidator;
-//?This function doesn't show errors - need to check it again later
-// export const postsValidator = (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   stringsInputValidator("title", 30);
-//   stringsInputValidator("shortDescription", 100);
-//   stringsInputValidator("content", 1000);
-//   body("blogId").custom(isValidBlogId);
-//   next();
-// };
+exports.postsValidator = [
+    (0, exports.stringsInputValidator)("title", 30),
+    (0, exports.stringsInputValidator)("shortDescription", 100),
+    (0, exports.stringsInputValidator)("content", 1000),
+    (0, express_validator_1.body)("blogId").custom(exports.isValidBlogId),
+];
 //# sourceMappingURL=postsValidator.js.map

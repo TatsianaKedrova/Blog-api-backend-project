@@ -12,14 +12,8 @@ import {
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { basicAuthMiddleware } from "../middlewares/basicAuth";
 export const postsRouter = express.Router({});
-import {
-  isValidBlogId,
-  stringsInputValidator,
-} from "../utils/postsValidator/postsValidator";
-import { body } from "express-validator";
-import { inputValidationMiddleware } from "../middlewares/input-validation-middleware";
-
-postsRouter.use(basicAuthMiddleware);
+import { postsValidator } from "../utils/postsValidator/postsValidator";
+import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 
 //TODO: GET LIST OF POSTS
 postsRouter.get("/", (req, res: Response<PostViewModel[]>) => {
@@ -39,19 +33,13 @@ postsRouter.get("/:id", (req, res: Response<PostViewModel>) => {
 //TODO: CREATE A NEW POST
 postsRouter.post(
   "/",
-  stringsInputValidator("title", 30),
-  stringsInputValidator("shortDescription", 100),
-  stringsInputValidator("content", 1000),
-  body("blogId").custom(isValidBlogId),
-  inputValidationMiddleware,
+  basicAuthMiddleware,
+  postsValidator,
+  responseErrorValidationMiddleware,
   (
     req: RequestBodyModel<PostInputModel>,
     res: Response<PostViewModel | TApiErrorResultObject>
   ) => {
-    res.set({
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    });
     const newPost = postsRepository.createNewPost(req.body);
     res.status(StatusCodes.CREATED).send(newPost);
   }
@@ -60,11 +48,9 @@ postsRouter.post(
 //TODO: UPDATE POST BY ID
 postsRouter.put(
   "/:id",
-  stringsInputValidator("title", 30),
-  stringsInputValidator("shortDescription", 100),
-  stringsInputValidator("content", 1000),
-  body("blogId").custom(isValidBlogId),
-  inputValidationMiddleware,
+  basicAuthMiddleware,
+  postsValidator,
+  responseErrorValidationMiddleware,
   (
     req: RequestWithURIParamsAndBody<URIParamsRequest, PostInputModel>,
     res: Response<TApiErrorResultObject>
@@ -81,6 +67,7 @@ postsRouter.put(
 //TODO: DELETE POST BY ID
 postsRouter.delete(
   "/:id",
+  basicAuthMiddleware,
   (req: RequestWithURIParam<URIParamsRequest>, res: Response) => {
     const isDeleted = postsRepository.deletePostById(req.params.id);
 

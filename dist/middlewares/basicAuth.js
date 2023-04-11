@@ -4,15 +4,12 @@ exports.basicAuthMiddleware = void 0;
 const http_status_codes_1 = require("http-status-codes");
 let authValue;
 let basicAuthMiddleware = (req, res, next) => {
-    if (req.method === "GET") {
-        return next();
-    }
     authValue = req.get("Authorization");
     if (!authValue) {
         res.set({
             "WWW-Authenticate": "Basic",
         });
-        return res.sendStatus(http_status_codes_1.StatusCodes.UNAUTHORIZED);
+        res.sendStatus(http_status_codes_1.StatusCodes.UNAUTHORIZED);
     }
     else {
         let credentials = Buffer.from(authValue.split(" ")[1], "base64")
@@ -25,9 +22,11 @@ let basicAuthMiddleware = (req, res, next) => {
             res.set({
                 "WWW-Authenticate": "Basic",
             });
-            return res.sendStatus(http_status_codes_1.StatusCodes.UNAUTHORIZED);
+            res.sendStatus(http_status_codes_1.StatusCodes.UNAUTHORIZED);
         }
-        next();
+        else {
+            next();
+        }
     }
 };
 exports.basicAuthMiddleware = basicAuthMiddleware;

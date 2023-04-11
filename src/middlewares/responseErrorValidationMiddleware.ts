@@ -4,7 +4,7 @@ import { responseErrorTransformerFunction } from "../utils/common-utils/response
 import { responseErrorFunction } from "../utils/common-utils/responseErrorUtils";
 import { StatusCodes } from "http-status-codes";
 
-export const inputValidationMiddleware = (
+export const responseErrorValidationMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction

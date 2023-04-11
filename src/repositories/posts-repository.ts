@@ -14,9 +14,9 @@ export const postsRepository = {
   },
   createNewPost(body: PostInputModel): PostViewModel | undefined {
     const { title, shortDescription, content, blogId } = body;
-    const blogNameValue = db.blogs.find((blog) => blog.id === blogId);
-    if (!blogNameValue) {
-      return blogNameValue;
+    const blog = db.blogs.find((blog) => blog.id === blogId);
+    if (!blog) {
+      return blog;
     } else {
       const newPost: PostViewModel = {
         id: randomUUID(),
@@ -24,7 +24,7 @@ export const postsRepository = {
         shortDescription,
         content,
         blogId,
-        blogName: blogNameValue.name,
+        blogName: blog.name,
       };
       db.posts.push(newPost);
       return newPost;
@@ -33,6 +33,7 @@ export const postsRepository = {
   updatePostById(id: string, body: PostInputModel): boolean {
     const { blogId, content, shortDescription, title } = body;
     const foundPostById = db.posts.find((post) => post.id === id);
+    const blog = db.blogs.find((blog) => blog.id === blogId);
     if (!foundPostById) {
       return false;
     } else {
@@ -40,6 +41,7 @@ export const postsRepository = {
       foundPostById.content = content;
       foundPostById.shortDescription = shortDescription;
       foundPostById.title = title;
+      foundPostById.blogName = blog!.name;
       return true;
     }
   },
