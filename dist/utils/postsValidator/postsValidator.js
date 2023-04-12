@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postsValidator = exports.stringsInputValidator = exports.isValidBlogId = void 0;
+exports.postsValidator = exports.stringsInputValidator = exports.stringInputValidatorCommon = exports.isValidBlogId = void 0;
 const express_validator_1 = require("express-validator");
 const project_db_1 = require("../../temporal-database/project-db");
 const isValidBlogId = (blogId) => {
@@ -11,7 +11,7 @@ const isValidBlogId = (blogId) => {
     return true;
 };
 exports.isValidBlogId = isValidBlogId;
-const stringsInputValidator = (field, maxLength) => {
+const stringInputValidatorCommon = (field) => {
     return (0, express_validator_1.body)(field)
         .exists()
         .withMessage(`${field} field is required`)
@@ -19,7 +19,11 @@ const stringsInputValidator = (field, maxLength) => {
         .trim()
         .withMessage(`${field} should be of type String`)
         .notEmpty()
-        .withMessage(`${field} must be included in request body`)
+        .withMessage(`${field} must be included in request body`);
+};
+exports.stringInputValidatorCommon = stringInputValidatorCommon;
+const stringsInputValidator = (field, maxLength) => {
+    return (0, exports.stringInputValidatorCommon)(field)
         .isLength({ max: maxLength })
         .withMessage(`${field}'s max length is ${maxLength}`);
 };
@@ -28,6 +32,6 @@ exports.postsValidator = [
     (0, exports.stringsInputValidator)("title", 30),
     (0, exports.stringsInputValidator)("shortDescription", 100),
     (0, exports.stringsInputValidator)("content", 1000),
-    (0, express_validator_1.body)("blogId").custom(exports.isValidBlogId),
+    (0, exports.stringInputValidatorCommon)("blogId").custom(exports.isValidBlogId),
 ];
 //# sourceMappingURL=postsValidator.js.map

@@ -2,22 +2,30 @@ import request from "supertest";
 import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
 import { PostViewModel } from "../src/dto/postsDTO/PostViewModel";
-import { BlogViewModel } from "../src/dto/blogsDTO/BlogViewModel";
+import { db } from "../src/temporal-database/project-db";
 
 const correctAuthToken = "YWRtaW46cXdlcnR5";
 const incorrectAuthToken = "YWRtaW46c864XdlcnR5=5";
 
-const blogData: BlogViewModel = {
-  id: "12345",
-  name: "Blog1",
-  description: "Blog1 ",
-  websiteUrl: "https://ghYYYhkhkhkdld79.yuuecvmjxm",
-};
-
 describe("API for posts", () => {
   beforeAll(async () => {
     await request(app).delete("/api/testing/all-data");
+    db.blogs.push(
+      {
+        id: "12345",
+        name: "Blog1",
+        description: "Blog1 description",
+        websiteUrl: "https://ghYYYhkhkhkdld79.yuuecvmjxm",
+      },
+      {
+        id: "6789",
+        name: "Blog2",
+        description: "Blog2 description",
+        websiteUrl: "https://valerykharlamov.loveyouforever",
+      }
+    );
   });
+
   test("GET list of posts with status 200", async () => {
     await request(app).get("/api/posts").expect(StatusCodes.OK, []);
   });
@@ -42,7 +50,7 @@ describe("API for posts", () => {
             field: "content",
           },
           {
-            message: "blogId with this value doesn't exist",
+            message: "blogId field is required",
             field: "blogId",
           },
         ],
@@ -82,12 +90,12 @@ describe("API for posts", () => {
 
   let createdPost1: PostViewModel;
   let createdPost2: PostViewModel;
-  test.only("Create a new post with correct input data and return status 201", async () => {
+  test("CREATE a new post with CORRECT input data and return status 201", async () => {
     let inputData = {
       title: "Tatiana",
       shortDescription: "Who run the world",
       content: "ggggggggggggggggggggggggggggggg",
-      blogId: blogData.id,
+      blogId: db.blogs[0].id,
     };
     const postResponse = await request(app)
       .post("/api/posts")
@@ -95,97 +103,84 @@ describe("API for posts", () => {
       .send(inputData)
       .expect(StatusCodes.CREATED);
     createdPost1 = postResponse.body;
-    console.log(createdPost1);
-    expect(postResponse.body.content).toEqual("ggggggggggggggggggggggggggggggg");
-
+    expect(postResponse.body.content).toEqual(
+      "ggggggggggggggggggggggggggggggg"
+    );
     const getAllExistingCourses = await request(app)
-      .get("/api/blogs")
+      .get("/api/posts")
       .expect(StatusCodes.OK);
 
     expect(getAllExistingCourses.body.length).toEqual(1);
   });
-  test("Create a new blog with incorrect input name and return status 400", async () => {
+
+  test("Should not Create a new post with incorrect input values and return status 400", async () => {
     const postResponse = await request(app)
-      .post("/api/blogs")
+      .post("/api/posts")
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({
-        name: "",
-        description: "koala is about blog 1. That's it",
-        websiteUrl:
-          "https://MbkyQDhuICIaHnYLc7ws51KEn5wrp7cYHuVZEHlP9ADc3.uZDiBjA8F",
+        title: null,
+        shortDescription: 0,
+        content: true,
+        blogId: 765,
       })
       .expect(StatusCodes.BAD_REQUEST, {
         errorsMessages: [
           {
-            message: "name must be included in request body",
-            field: "name",
+            message: "title should be of type String",
+            field: "title",
+          },
+          {
+            message: "shortDescription should be of type String",
+            field: "shortDescription",
+          },
+          {
+            message: "content should be of type String",
+            field: "content",
+          },
+          {
+            message: "blogId should be of type String",
+            field: "blogId",
           },
         ],
       });
     expect(postResponse.body.name).toBeUndefined();
 
     const getAllExistingCourses = await request(app)
-      .get("/api/blogs")
+      .get("/api/posts")
       .expect(StatusCodes.OK);
 
-    expect(getAllExistingCourses.body.length).toEqual(1);
+    expect(getAllExistingCourses.body[1]).toEqual(undefined);
   });
 
-  test("Create a new blog with incorrect input website and description and return status 400", async () => {
-    const postResponse = await request(app)
-      .post("/api/blogs")
-      .set("Authorization", `Basic ${correctAuthToken}`)
-      .send({
-        name: "Nadine",
-        description: null,
-        websiteUrl:
-          "http://MbkyQDhuICIaHnYLc7ws51KEn5wrp7cYHuVZEHlP9ADc3.uZDiBjA8F",
-      })
-      .expect(StatusCodes.BAD_REQUEST, {
-        errorsMessages: [
-          {
-            message: "description should be of type String",
-            field: "description",
-          },
-          {
-            message: "Url is incorrect",
-            field: "websiteUrl",
-          },
-        ],
-      });
-    const getAllExistingCourses = await request(app)
-      .get("/api/blogs")
-      .expect(StatusCodes.OK);
-
-    expect(getAllExistingCourses.body.length).toEqual(1);
+  test("GET post ID with 404 status", async () => {
+    await request(app).get("/api/posts/125").expect(StatusCodes.NOT_FOUND);
   });
 
-  test("GET blog ID with 404 status", async () => {
-    await request(app).get("/api/blogs/125").expect(StatusCodes.NOT_FOUND);
-  });
-
-  test("GET blog ID with 200 status", async () => {
+  test("GET post ID with 200 status", async () => {
     await request(app)
-      .get(`/api/blogs/${createdPost1.id}`)
+      .get(`/api/posts/${createdPost1.id}`)
       .expect(StatusCodes.OK);
   });
 
-  test("Create second new blog with correct input data and return status 201", async () => {
+  test("CREATE a second new POST with CORRECT input data and return status 201", async () => {
     const postResponse = await request(app)
-      .post("/api/blogs")
+      .post("/api/posts")
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({
-        name: "Nadine",
-        description: "Cats can cure - CCC",
-        websiteUrl: "https://HnYLc7ws51KEn5wrp7cYHuVZEHlP9ADc3.uZDiBjA8F",
+        title: "Valery",
+        shortDescription: "Valery is the Hockey World Champion",
+        content:
+          "I love Valery so much - he is the symbol of bravery and power and talent and hard work and Passion",
+        blogId: db.blogs[1].id,
       })
       .expect(StatusCodes.CREATED);
     createdPost2 = postResponse.body;
-    console.log(createdPost2);
-    expect(postResponse.body.description).toEqual("Cats can cure - CCC");
+    expect(postResponse.body.shortDescription).toEqual(
+      "Valery is the Hockey World Champion"
+    );
 
     const getAllExistingCourses = await request(app)
-      .get("/api/blogs")
+      .get("/api/posts")
       .expect(StatusCodes.OK);
 
     expect(getAllExistingCourses.body.length).toEqual(2);
@@ -193,163 +188,167 @@ describe("API for posts", () => {
 
   test("Should return Unauthorized status 401 cos' auth token is incorrect", async () => {
     await request(app)
-      .delete(`/api/blogs/${createdPost2.id}`)
+      .delete(`/api/posts/${createdPost2.id}`)
       .set("Authorization", `Basic ${incorrectAuthToken}`)
       .expect(StatusCodes.UNAUTHORIZED);
-    const getResponse = (await request(app).get("/api/blogs")).body;
+    const getResponse = (await request(app).get("/api/posts")).body;
     expect(getResponse.length).toEqual(2);
-    expect(getResponse[1].name).toEqual("Nadine");
+    expect(getResponse[1].title).toEqual("Valery");
   });
 
   test("Should return NOT_FOUND status 404 with incorrect ID", async () => {
     await request(app)
-      .delete("/api/blogs/123")
+      .delete("/api/posts/123")
       .set("Authorization", `Basic ${correctAuthToken}`)
       .expect(StatusCodes.NOT_FOUND);
-    const getResponse = (await request(app).get("/api/blogs")).body;
+    const getResponse = (await request(app).get("/api/posts")).body;
     expect(getResponse.length).toEqual(2);
-    expect(getResponse[1].name).toEqual("Nadine");
+    expect(getResponse[1].title).toEqual("Valery");
   });
 
-  test("Should delete blog by ID with correct ID", async () => {
+  test("Should delete post by ID with correct ID", async () => {
     await request(app)
-      .delete(`/api/blogs/${createdPost2.id}`)
+      .delete(`/api/posts/${createdPost2.id}`)
       .set("Authorization", `Basic ${correctAuthToken}`)
       .expect(StatusCodes.NO_CONTENT);
-    const getResponse = (await request(app).get("/api/blogs")).body;
-    expect(getResponse[0].name).toEqual("fff");
-    expect(getResponse.length).toBe(1);
+    const getResponse = (await request(app).get("/api/posts")).body;
+    expect(getResponse.length).toEqual(1);
+    expect(getResponse[0].title).toEqual("Tatiana");
   });
 
-  test("Should update name and description with status 204", async () => {
+  test("Should update post with all input body fields and return status 204", async () => {
     const postResponse = await request(app)
-      .put(`/api/blogs/${createdPost1.id}`)
+      .put(`/api/posts/${createdPost1.id}`)
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({
-        name: "Tania",
-        description: "Dog don't drive - DDD",
-        websiteUrl: "https://HnYLc7ws51KEn5wrp7cYHuVZEHlP9ADc3.uZDiBjA8F",
+        title: "new jumanji",
+        shortDescription: "experimenting with life",
+        content: "that is a great story",
+        blogId: db.blogs[0].id,
       })
       .expect(StatusCodes.NO_CONTENT);
     expect(postResponse.body).toEqual({});
 
     const getAllExistingCourses = await request(app)
-      .get("/api/blogs")
+      .get("/api/posts")
       .expect(StatusCodes.OK);
 
-    expect(getAllExistingCourses.body[0].name).toEqual("Tania");
-    expect(getAllExistingCourses.body[0].description).toEqual(
-      "Dog don't drive - DDD"
+    expect(getAllExistingCourses.body[0].title).toEqual("new jumanji");
+    expect(getAllExistingCourses.body[0].shortDescription).toEqual(
+      "experimenting with life"
     );
   });
 
   test("Shouldn't update blog with incorrect Auth Type -  status 401", async () => {
     const postResponse = await request(app)
-      .put(`/api/blogs/${createdPost1.id}`)
+      .put(`/api/posts/${createdPost1.id}`)
       .set("Authorization", `Bearer ${correctAuthToken}`)
       .send({
-        name: "Stasty",
-        description: "Stasty sits straight - SSS",
-        websiteUrl: "https://HnYLc7ws51KEn5wrp7cYHuVZEHlP9ADc3.uZDiBjA8F",
+        title: "old jumanji movie",
+        shortDescription: "experimenting with MY life",
+        content: "that is a great story to be discussed",
+        blogId: db.blogs[0].id,
       })
       .expect(StatusCodes.UNAUTHORIZED);
     expect(postResponse.body).toEqual({});
 
     const getAllExistingCourses = await request(app)
-      .get("/api/blogs")
+      .get("/api/posts")
       .expect(StatusCodes.OK);
 
-    expect(getAllExistingCourses.body[0].name).toEqual("Tania");
-    expect(getAllExistingCourses.body[0].description).toEqual(
-      "Dog don't drive - DDD"
+    expect(getAllExistingCourses.body[0].title).toEqual("new jumanji");
+    expect(getAllExistingCourses.body[0].shortDescription).toEqual(
+      "experimenting with life"
     );
   });
 
   test("Shouldn't update blog with incorrect Auth Value -  status 401", async () => {
     const postResponse = await request(app)
-      .put(`/api/blogs/${createdPost1.id}`)
+      .put(`/api/posts/${createdPost1.id}`)
       .set("Authorization", `Basic ${incorrectAuthToken}`)
       .send({
-        name: "Stasty",
-        description: "Stasty sits straight - SSS",
-        websiteUrl: "https://HnYLc7ws51KEn5wrp7cYHuVZEHlP9ADc3.uZDiBjA8F",
+        title: "old wine is better",
+        shortDescription: "experimenting with MY life",
+        content: "that is a great story to be discussed",
+        blogId: db.blogs[0].id,
       })
       .expect(StatusCodes.UNAUTHORIZED);
     expect(postResponse.body).toEqual({});
 
     const getAllExistingCourses = await request(app)
-      .get("/api/blogs")
+      .get("/api/posts")
       .expect(StatusCodes.OK);
 
-    expect(getAllExistingCourses.body[0].name).toEqual("Tania");
-    expect(getAllExistingCourses.body[0].description).toEqual(
-      "Dog don't drive - DDD"
+    expect(getAllExistingCourses.body[0].title).toEqual("new jumanji");
+    expect(getAllExistingCourses.body[0].shortDescription).toEqual(
+      "experimenting with life"
     );
   });
 
-  test("Shouldn't update blog with missing value `description` and `websiteUrl` -  status 400", async () => {
+  test("Shouldn't update blog with missing input values -  status 400", async () => {
     await request(app)
-      .put(`/api/blogs/${createdPost1.id}`)
+      .put(`/api/posts/${createdPost1.id}`)
       .set("Authorization", `Basic ${correctAuthToken}`)
-      .send({
-        name: "Stasty",
-      })
+      .send({})
       .expect(StatusCodes.BAD_REQUEST, {
         errorsMessages: [
           {
-            message: "description field is required",
-            field: "description",
+            message: "title field is required",
+            field: "title",
           },
           {
-            message: "websiteUrl field is required",
-            field: "websiteUrl",
+            message: "shortDescription field is required",
+            field: "shortDescription",
+          },
+          {
+            message: "content field is required",
+            field: "content",
+          },
+          {
+            message: "blogId field is required",
+            field: "blogId",
           },
         ],
       });
 
     const getAllExistingCourses = await request(app)
-      .get("/api/blogs")
+      .get("/api/posts")
       .expect(StatusCodes.OK);
 
-    expect(getAllExistingCourses.body[0].name).toEqual("Tania");
-    expect(getAllExistingCourses.body[0].description).toEqual(
-      "Dog don't drive - DDD"
+    expect(getAllExistingCourses.body[0].title).toEqual("new jumanji");
+    expect(getAllExistingCourses.body[0].shortDescription).toEqual(
+      "experimenting with life"
     );
   });
 
-  test("Shouldn't update blog with incorrect input values -  status 400", async () => {
+  test("Shouldn't UPDATE post with missing content and shortDescription -  status 400", async () => {
     await request(app)
-      .put(`/api/blogs/${createdPost1.id}`)
+      .put(`/api/posts/${createdPost1.id}`)
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({
-        name: 0,
-        description: "",
-        websiteUrl: "http://HnYLc7ws51KEn5wrp7cYHuVZEHlP9ADc3.uZDiBjA8F",
+        title: "old wine is better",
+        blogId: db.blogs[0].id,
       })
       .expect(StatusCodes.BAD_REQUEST, {
         errorsMessages: [
           {
-            message: "name should be of type String",
-            field: "name",
+            message: "shortDescription field is required",
+            field: "shortDescription",
           },
           {
-            message: "description must be included in request body",
-            field: "description",
-          },
-          {
-            message: "Url is incorrect",
-            field: "websiteUrl",
+            message: "content field is required",
+            field: "content",
           },
         ],
       });
 
     const getAllExistingCourses = await request(app)
-      .get("/api/blogs")
+      .get("/api/posts")
       .expect(StatusCodes.OK);
 
-    expect(getAllExistingCourses.body[0].name).toEqual("Tania");
-    expect(getAllExistingCourses.body[0].description).toEqual(
-      "Dog don't drive - DDD"
+    expect(getAllExistingCourses.body[0].title).toEqual("new jumanji");
+    expect(getAllExistingCourses.body[0].shortDescription).toEqual(
+      "experimenting with life"
     );
   });
 });
