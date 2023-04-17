@@ -4,47 +4,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogsRouter = void 0;
-const http_status_codes_1 = require("http-status-codes");
 const express_1 = __importDefault(require("express"));
-const project_db_1 = require("../temporal-database/project-db");
-const blogs_repository_1 = require("../repositories/blogs-repository");
 const basicAuth_1 = require("../middlewares/basicAuth");
 const blogsValidator_1 = require("../utils/blogsValidator/blogsValidator");
 const responseErrorValidationMiddleware_1 = require("../middlewares/responseErrorValidationMiddleware");
+const blogsController_1 = require("../controllers/blogsController");
 exports.blogsRouter = express_1.default.Router({});
 //TODO: GET LIST OF BLOGS
-exports.blogsRouter.get("/", (req, res) => {
-    res.status(http_status_codes_1.StatusCodes.OK).send(project_db_1.db.blogs);
-});
+exports.blogsRouter.get("/", blogsController_1.getBlogs);
 //TODO: GET BLOG BY ID
-exports.blogsRouter.get("/:id", (req, res) => {
-    const foundBlog = blogs_repository_1.blogsRepository.findBlogById(req.params.id);
-    if (!foundBlog) {
-        res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
-    }
-    else {
-        res.status(http_status_codes_1.StatusCodes.OK).send(foundBlog);
-    }
-});
+exports.blogsRouter.get("/:id", blogsController_1.getBlogsById);
 //TODO: CREATE A NEW BLOG
-exports.blogsRouter.post("/", basicAuth_1.basicAuthMiddleware, blogsValidator_1.blogsValidator, responseErrorValidationMiddleware_1.responseErrorValidationMiddleware, (req, res) => {
-    const newBlog = blogs_repository_1.blogsRepository.createNewBlog(req.body);
-    res.status(http_status_codes_1.StatusCodes.CREATED).send(newBlog);
-});
+exports.blogsRouter.post("/", basicAuth_1.basicAuthMiddleware, blogsValidator_1.blogsValidator, responseErrorValidationMiddleware_1.responseErrorValidationMiddleware, blogsController_1.createNewBlog);
 //TODO: UPDATE BLOG BY ID
-exports.blogsRouter.put("/:id", basicAuth_1.basicAuthMiddleware, blogsValidator_1.blogsValidator, responseErrorValidationMiddleware_1.responseErrorValidationMiddleware, (req, res) => {
-    const updatedBlog = blogs_repository_1.blogsRepository.updateBlogById(req.params.id, req.body);
-    if (!updatedBlog) {
-        res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
-    }
-    res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
-});
+exports.blogsRouter.put("/:id", basicAuth_1.basicAuthMiddleware, blogsValidator_1.blogsValidator, responseErrorValidationMiddleware_1.responseErrorValidationMiddleware, blogsController_1.updateBlogById);
 //TODO: DELETE BLOG BY ID
-exports.blogsRouter.delete("/:id", basicAuth_1.basicAuthMiddleware, (req, res) => {
-    const foundBlog = blogs_repository_1.blogsRepository.deleteBlogById(req.params.id);
-    if (!foundBlog) {
-        res.sendStatus(http_status_codes_1.StatusCodes.NOT_FOUND);
-    }
-    res.sendStatus(http_status_codes_1.StatusCodes.NO_CONTENT);
-});
+exports.blogsRouter.delete("/:id", basicAuth_1.basicAuthMiddleware, blogsController_1.deleteBlogById);
 //# sourceMappingURL=blogs-router.js.map

@@ -5,14 +5,14 @@ import { randomUUID } from "crypto";
 export const blogsList = db.blogs;
 
 export const blogsRepository = {
-  getListOfBlogs() {
+  async getListOfBlogs(): Promise<BlogViewModel[]> {
     return blogsList;
   },
-  findBlogById(id: string): BlogViewModel | undefined {
+  async findBlogById(id: string): Promise<BlogViewModel | undefined> {
     const foundBlogById = db.blogs.find((element) => element.id === id);
     return foundBlogById;
   },
-  createNewBlog(body: BlogInputModel) {
+  async createNewBlog(body: BlogInputModel): Promise<BlogViewModel> {
     const { name, description, websiteUrl } = body;
 
     const newBlog: BlogViewModel = {
@@ -24,7 +24,7 @@ export const blogsRepository = {
     db.blogs.push(newBlog);
     return newBlog;
   },
-  updateBlogById(id: string, body: BlogInputModel): boolean {
+  async updateBlogById(id: string, body: BlogInputModel): Promise<boolean> {
     const { description, name, websiteUrl } = body;
     const foundBlog = db.blogs.find((blog) => blog.id === id);
     if (!foundBlog) {
@@ -36,7 +36,7 @@ export const blogsRepository = {
       return true;
     }
   },
-  deleteBlogById(id: string): boolean {
+  async deleteBlogById(id: string): Promise<boolean> {
     for (let i = 0; i < db.blogs.length; i++) {
       if (db.blogs[i].id === id) {
         db.blogs.splice(i, 1);

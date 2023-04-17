@@ -5,14 +5,16 @@ import { db } from "../temporal-database/project-db";
 export const postsList = db.posts;
 
 export const postsRepository = {
-  getListOfPosts() {
+  async getListOfPosts(): Promise<PostViewModel[]> {
     return postsList;
   },
-  findPostById(id: string): PostViewModel | undefined {
+  async findPostById(id: string): Promise<PostViewModel | undefined> {
     const foundPostById = db.posts.find((element) => element.id === id);
     return foundPostById;
   },
-  createNewPost(body: PostInputModel): PostViewModel | undefined {
+  async createNewPost(
+    body: PostInputModel
+  ): Promise<PostViewModel | undefined> {
     const { title, shortDescription, content, blogId } = body;
     const blog = db.blogs.find((blog) => blog.id === blogId);
     if (!blog) {
@@ -30,7 +32,7 @@ export const postsRepository = {
       return newPost;
     }
   },
-  updatePostById(id: string, body: PostInputModel): boolean {
+  async updatePostById(id: string, body: PostInputModel): Promise<boolean> {
     const { blogId, content, shortDescription, title } = body;
     const foundPostById = db.posts.find((post) => post.id === id);
     const blog = db.blogs.find((blog) => blog.id === blogId);
@@ -45,7 +47,7 @@ export const postsRepository = {
       return true;
     }
   },
-  deletePostById(id: string): boolean {
+  async deletePostById(id: string): Promise<boolean> {
     for (let i = 0; i < db.posts.length; i++) {
       if (db.posts[i].id === id) {
         db.posts.splice(i, 1);

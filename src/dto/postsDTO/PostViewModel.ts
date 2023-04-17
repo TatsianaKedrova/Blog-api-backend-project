@@ -5,7 +5,9 @@ export type PostViewModel = Required<{
   content: string;
   blogId: string;
   blogName: string;
-}>;
+}> /*& {
+  createdAt: string;
+}*/;
 
 export type PostInputModel = Required<{
   title: string; //required, maxLength = 30
