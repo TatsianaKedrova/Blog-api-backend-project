@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { PostInputModel, PostViewModel } from "../dto/postsDTO/PostViewModel";
 import { db } from "../temporal-database/project-db";
-import { postsRepository } from "../repositories/posts-repository";
+import { postsRepository } from "../repositories/posts-in-memory-repository";
 import {
   RequestBodyModel,
   RequestWithURIParam,

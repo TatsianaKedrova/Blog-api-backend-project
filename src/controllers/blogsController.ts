@@ -1,14 +1,13 @@
 import { Request, Response } from "express";
 import { BlogInputModel, BlogViewModel } from "../dto/blogsDTO/BlogViewModel";
 import { StatusCodes } from "http-status-codes";
-import { db } from "../temporal-database/project-db";
 import {
   RequestBodyModel,
   RequestWithURIParam,
   RequestWithURIParamsAndBody,
 } from "../dto/common/RequestModels";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
-import { blogsRepository } from "../repositories/blogs-repository";
+import { blogsRepository } from "../repositories/blogs-in-memory-repository";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 
 // @desc Get all blogs
