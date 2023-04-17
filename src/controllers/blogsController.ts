@@ -14,18 +14,22 @@ import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 // @desc Get all blogs
 // @route GET /api/blogs
 // @access Public
-export const getBlogs = (req: Request, res: Response<BlogViewModel[]>) => {
-  res.status(StatusCodes.OK).send(db.blogs);
+export const getBlogs = async (
+  req: Request,
+  res: Response<BlogViewModel[]>
+) => {
+  const blogs = await blogsRepository.getListOfBlogs();
+  res.status(StatusCodes.OK).send(blogs);
 };
 
 // @desc Get blog by ID
 // @route GET /api/blogs/:id
 // @access Public
-export const getBlogsById = (
+export const getBlogsById = async (
   req: RequestWithURIParam<URIParamsRequest>,
   res: Response<BlogViewModel>
 ) => {
-  const foundBlog = blogsRepository.findBlogById(req.params.id);
+  const foundBlog = await blogsRepository.findBlogById(req.params.id);
   if (!foundBlog) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   } else {
@@ -36,22 +40,25 @@ export const getBlogsById = (
 // @desc Create new blog
 // @route POST /api/blogs
 // @access Private
-export const createNewBlog = (
+export const createNewBlog = async (
   req: RequestBodyModel<BlogInputModel>,
   res: Response<BlogViewModel | TApiErrorResultObject>
 ) => {
-  const newBlog = blogsRepository.createNewBlog(req.body);
+  const newBlog = await blogsRepository.createNewBlog(req.body);
   res.status(StatusCodes.CREATED).send(newBlog);
 };
 
 // @desc Update blog by ID
 // @route PUT /api/blogs/:id
 // @access Private
-export const updateBlogById = (
+export const updateBlogById = async (
   req: RequestWithURIParamsAndBody<URIParamsRequest, BlogInputModel>,
   res: Response<TApiErrorResultObject>
 ) => {
-  const updatedBlog = blogsRepository.updateBlogById(req.params.id, req.body);
+  const updatedBlog = await blogsRepository.updateBlogById(
+    req.params.id,
+    req.body
+  );
   if (!updatedBlog) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   }
@@ -62,11 +69,11 @@ export const updateBlogById = (
 // @desc Delete blog by ID
 // @route DELETE /api/blogs/:id
 // @access Private
-export const deleteBlogById = (
+export const deleteBlogById = async (
   req: RequestWithURIParam<URIParamsRequest>,
   res: Response
 ) => {
-  const foundBlog = blogsRepository.deleteBlogById(req.params.id);
+  const foundBlog = await blogsRepository.deleteBlogById(req.params.id);
   if (!foundBlog) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   }

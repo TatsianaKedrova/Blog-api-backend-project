@@ -14,18 +14,22 @@ import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 // @desc Get all posts
 // @route GET /api/posts
 // @access Public
-export const getPosts = (req: Request, res: Response<PostViewModel[]>) => {
-  res.status(StatusCodes.OK).send(db.posts);
+export const getPosts = async (
+  req: Request,
+  res: Response<PostViewModel[]>
+) => {
+  const posts = await postsRepository.getListOfPosts();
+  res.status(StatusCodes.OK).send(posts);
 };
 
 // @desc Get post by ID
 // @route GET /api/posts/:id
 // @access Public
-export const getPostsById = (
+export const getPostsById = async (
   req: RequestWithURIParam<URIParamsRequest>,
   res: Response<PostViewModel>
 ) => {
-  const foundPost = postsRepository.findPostById(req.params.id);
+  const foundPost = await postsRepository.findPostById(req.params.id);
   if (!foundPost) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   } else {
@@ -36,22 +40,25 @@ export const getPostsById = (
 // @desc Create new post
 // @route POST /api/posts
 // @access Private
-export const createNewPost = (
+export const createNewPost = async (
   req: RequestBodyModel<PostInputModel>,
   res: Response<PostViewModel | TApiErrorResultObject>
 ) => {
-  const newPost = postsRepository.createNewPost(req.body);
+  const newPost = await postsRepository.createNewPost(req.body);
   res.status(StatusCodes.CREATED).send(newPost);
 };
 
 // @desc Update a post
 // @route PUT /api/posts/:id
 // @access Private
-export const updatePostById = (
+export const updatePostById = async (
   req: RequestWithURIParamsAndBody<URIParamsRequest, PostInputModel>,
   res: Response<TApiErrorResultObject>
 ) => {
-  const isUpdated = postsRepository.updatePostById(req.params.id, req.body);
+  const isUpdated = await postsRepository.updatePostById(
+    req.params.id,
+    req.body
+  );
   if (!isUpdated) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   } else {
@@ -62,11 +69,11 @@ export const updatePostById = (
 // @desc Delete post by ID
 // @route DELETE /api/posts/:id
 // @access Private
-export const deletePostById = (
+export const deletePostById = async (
   req: RequestWithURIParam<URIParamsRequest>,
   res: Response
 ) => {
-  const isDeleted = postsRepository.deletePostById(req.params.id);
+  const isDeleted = await postsRepository.deletePostById(req.params.id);
 
   if (!isDeleted) {
     res.sendStatus(StatusCodes.NOT_FOUND);
