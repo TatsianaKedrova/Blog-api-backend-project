@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.blogsRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const basicAuth_1 = require("../middlewares/basicAuth");
-const blogsValidator_1 = require("../utils/blogsValidator/blogsValidator");
+const blogsValidator_1 = require("../utils/blogs-utils/blogs-validator/blogsValidator");
 const responseErrorValidationMiddleware_1 = require("../middlewares/responseErrorValidationMiddleware");
 const blogsController_1 = require("../controllers/blogsController");
 exports.blogsRouter = express_1.default.Router({});

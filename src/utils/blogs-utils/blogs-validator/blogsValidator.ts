@@ -1,4 +1,4 @@
-import { stringsInputValidator } from "./../postsValidator/postsValidator";
+import { stringsInputValidator } from "../../posts-validator/postsValidator";
 
 export const blogsURLValidator = () => {
   return stringsInputValidator("websiteUrl", 100).custom((url) => {

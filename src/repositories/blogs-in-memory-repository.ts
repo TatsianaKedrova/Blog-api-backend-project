@@ -1,4 +1,4 @@
-import { BlogInputModel, BlogViewModel } from "../dto/blogsDTO/BlogViewModel";
+import { BlogInputModel, BlogViewModel } from "../dto/blogsDTO/BlogModel";
 import { db } from "../temporal-database/project-db";
 import { randomUUID } from "crypto";
 

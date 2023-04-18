@@ -1,7 +1,7 @@
 import express from "express";
 
 import { basicAuthMiddleware } from "../middlewares/basicAuth";
-import { blogsValidator } from "../utils/blogsValidator/blogsValidator";
+import { blogsValidator } from "../utils/blogs-utils/blogs-validator/blogsValidator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import {
   createNewBlog,
