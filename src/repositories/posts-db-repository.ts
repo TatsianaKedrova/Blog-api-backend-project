@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { PostInputModel, PostViewModel } from "../dto/postsDTO/PostViewModel";
+import { PostInputModel, PostViewModel } from "../dto/postsDTO/PostModel";
 import { db } from "../temporal-database/project-db";
 
 export const postsList = db.posts;

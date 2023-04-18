@@ -1,7 +1,7 @@
 import express from "express";
 import { basicAuthMiddleware } from "../middlewares/basicAuth";
 export const postsRouter = express.Router({});
-import { postsValidator } from "../utils/postsValidator/postsValidator";
+import { postsValidator } from "../utils/posts-validator/postsValidator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import {
   createNewPost,

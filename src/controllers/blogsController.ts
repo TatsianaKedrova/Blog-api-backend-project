@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { BlogInputModel, BlogViewModel } from "../dto/blogsDTO/BlogViewModel";
+import { BlogInputModel, BlogViewModel } from "../dto/blogsDTO/BlogModel";
 import { StatusCodes } from "http-status-codes";
 import {
   RequestBodyModel,
@@ -7,8 +7,8 @@ import {
   RequestWithURIParamsAndBody,
 } from "../dto/common/RequestModels";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
-import { blogsRepository } from "../repositories/blogs-in-memory-repository";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
+import { blogsRepository } from "../repositories/blogs-db-repository";
 
 // @desc Get all blogs
 // @route GET /api/blogs
@@ -17,7 +17,7 @@ export const getBlogs = async (
   req: Request,
   res: Response<BlogViewModel[]>
 ) => {
-  const blogs = await blogsRepository.getListOfBlogs();
+  const blogs: BlogViewModel[] = await blogsRepository.getListOfBlogs();
   res.status(StatusCodes.OK).send(blogs);
 };
 
@@ -60,9 +60,9 @@ export const updateBlogById = async (
   );
   if (!updatedBlog) {
     res.sendStatus(StatusCodes.NOT_FOUND);
+  } else {
+    res.sendStatus(StatusCodes.NO_CONTENT);
   }
-
-  res.sendStatus(StatusCodes.NO_CONTENT);
 };
 
 // @desc Delete blog by ID
@@ -75,6 +75,5 @@ export const deleteBlogById = async (
   const foundBlog = await blogsRepository.deleteBlogById(req.params.id);
   if (!foundBlog) {
     res.sendStatus(StatusCodes.NOT_FOUND);
-  }
-  res.sendStatus(StatusCodes.NO_CONTENT);
+  } else res.sendStatus(StatusCodes.NO_CONTENT);
 };

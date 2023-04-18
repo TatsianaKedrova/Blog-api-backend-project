@@ -7,7 +7,7 @@ exports.postsRouter = void 0;
 const express_1 = __importDefault(require("express"));
 const basicAuth_1 = require("../middlewares/basicAuth");
 exports.postsRouter = express_1.default.Router({});
-const postsValidator_1 = require("../utils/postsValidator/postsValidator");
+const postsValidator_1 = require("../utils/posts-validator/postsValidator");
 const responseErrorValidationMiddleware_1 = require("../middlewares/responseErrorValidationMiddleware");
 const postsController_1 = require("../controllers/postsController");
 //TODO: GET LIST OF POSTS

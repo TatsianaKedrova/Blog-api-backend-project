@@ -1,5 +1,5 @@
-import { BlogViewModel } from "../dto/blogsDTO/BlogViewModel";
-import { PostViewModel } from "../dto/postsDTO/PostViewModel";
+import { BlogViewModel } from "../dto/blogsDTO/BlogModel";
+import { PostViewModel } from "../dto/postsDTO/PostModel";
 import { TVideo } from "../dto/videosDTO/CreateVideoModel";
 
 export type TDataBase = {
