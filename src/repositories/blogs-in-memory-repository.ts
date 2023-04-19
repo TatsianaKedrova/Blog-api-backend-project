@@ -1,3 +1,4 @@
+import { creationDate } from "./../utils/common-utils/creation-publication-dates";
 import { BlogInputModel, BlogViewModel } from "../dto/blogsDTO/BlogModel";
 import { db } from "../temporal-database/project-db";
 import { randomUUID } from "crypto";
@@ -20,6 +21,8 @@ export const blogsRepository = {
       name,
       description,
       websiteUrl,
+      createdAt: creationDate,
+      isMembership: false,
     };
     db.blogs.push(newBlog);
     return newBlog;

@@ -1,5 +1,5 @@
 import { Db, MongoClient } from "mongodb";
-import { PostViewModel } from "./dto/postsDTO/PostModel";
+import { PostDBType } from "./dto/postsDTO/PostModel";
 import dotenv from "dotenv";
 import { BlogDBType } from "./dto/blogsDTO/BlogModel";
 dotenv.config();
@@ -10,7 +10,7 @@ const dbName = "blogs-posts";
 const mongoDB: Db = client.db(dbName);
 
 export const blogsCollection = mongoDB.collection<BlogDBType>("blogs");
-export const postsCollection = mongoDB.collection<PostViewModel[]>("posts");
+export const postsCollection = mongoDB.collection<PostDBType>("posts");
 
 export const runDB = async () => {
   try {

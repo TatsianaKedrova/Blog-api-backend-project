@@ -10,7 +10,7 @@ import {
   getBlogsById,
   updateBlogById,
 } from "../controllers/blogsController";
-import { validateObjectIdParams } from "../utils/common-utils/validateObjectIdParams";
+import { validateObjectIdParams } from "../middlewares/validateObjectIdParams";
 export const blogsRouter = express.Router({});
 
 //TODO: GET LIST OF BLOGS

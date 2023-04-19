@@ -1,12 +1,32 @@
 import { CustomValidator, body } from "express-validator";
-import { db } from "../../temporal-database/project-db";
+import { db } from "../../../temporal-database/project-db";
+import { blogsCollection } from "../../../db";
+import { ObjectId } from "mongodb";
 
-export const isValidBlogId: CustomValidator = (blogId: string) => {
+/** This blogId validator is for hardcoded db */
+export const isValidBlogIdHardcodedDB: CustomValidator = (blogId: string) => {
   const blog = db.blogs.find((blog) => blog.id === blogId);
   if (!blog) {
     throw new Error("Blog with such ID doesn't exist");
   }
   return true;
+};
+
+/** This blogId validator is for MONGO DB*/
+export const isValidBlogId: CustomValidator = async (
+  blogId: string
+) => {
+  try {
+    const blog = await blogsCollection.findOne({ _id: new ObjectId(blogId) });
+    if (!blog) {
+      throw new Error("Blog with such ID doesn't exist");
+    }
+    return true;
+  } catch (error) {
+    throw new Error(
+      "This blogId is invalid and doesn't fit the ObjectId 24 hex characters structure"
+    );
+  }
 };
 
 export const stringInputValidatorCommon = (field: string) => {

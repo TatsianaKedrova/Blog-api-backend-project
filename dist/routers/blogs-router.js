@@ -9,7 +9,7 @@ const basicAuth_1 = require("../middlewares/basicAuth");
 const blogsValidator_1 = require("../utils/blogs-utils/blogs-validator/blogsValidator");
 const responseErrorValidationMiddleware_1 = require("../middlewares/responseErrorValidationMiddleware");
 const blogsController_1 = require("../controllers/blogsController");
-const validateObjectIdParams_1 = require("../utils/common-utils/validateObjectIdParams");
+const validateObjectIdParams_1 = require("../middlewares/validateObjectIdParams");
 exports.blogsRouter = express_1.default.Router({});
 //TODO: GET LIST OF BLOGS
 exports.blogsRouter.get("/", blogsController_1.getBlogs);
