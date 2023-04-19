@@ -51,7 +51,7 @@ exports.videosRouter.post("/", (req, res) => {
             availableResolutions,
             canBeDownloaded: false,
             minAgeRestriction: null,
-            createdAt: creation_publication_dates_1.creationVideoDate,
+            createdAt: creation_publication_dates_1.creationDate,
             publicationDate: creation_publication_dates_1.publicationVideoDate,
         };
         project_db_1.db.videos.push(newVideo);

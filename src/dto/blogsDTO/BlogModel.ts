@@ -5,6 +5,8 @@ export interface BlogDBType {
   name: string;
   description: string;
   websiteUrl: string;
+  createdAt: string;
+  isMembership: boolean; //MUST be false. True if user has not expired membership subscription to blog
 }
 
 export type BlogViewModel = {
@@ -12,10 +14,10 @@ export type BlogViewModel = {
   name: string;
   description: string;
   websiteUrl: string;
-} /*& {
   createdAt: string;
-  isMembership: boolean; //MUST be false
-}*/;
+  isMembership: boolean; //MUST be false. True if user has not expired membership subscription to blog
+};
+
 export type BlogInputModel = {
   name: string; //required, maxLength = 15
   description: string; //required, maxLength = 500
