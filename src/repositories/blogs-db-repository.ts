@@ -1,29 +1,34 @@
+import { blogsCollection } from "../db";
 import {
   BlogDBType,
   BlogInputModel,
   BlogViewModel,
 } from "../dto/blogsDTO/BlogModel";
-import { db } from "../temporal-database/project-db";
 import { transformBlogsResponse } from "../utils/blogs-utils/transformBlogsResponse";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
-import { blogsCollection } from "../db";
 import { ObjectId } from "mongodb";
 
-export const blogsList = db.blogs;
 export const blogsRepository = {
   async getListOfBlogs(): Promise<BlogViewModel[]> {
+    //   const filter: any = {};
+    //   if(title) {
+    //     filter.title = {$regex: title}
+    //   }
+    //   return  return (await blogsCollection.find<BlogDBType>(filter).toArray()).map((doc) =>
+    //   transformBlogsResponse(doc)
+    // );
     return (await blogsCollection.find<BlogDBType>({}).toArray()).map((doc) =>
       transformBlogsResponse(doc)
     );
   },
   async findBlogById(id: string): Promise<BlogViewModel | null> {
-      const foundBlog = await blogsCollection.findOne<BlogDBType>({
-        _id: new ObjectId(id),
-      });
-      if (foundBlog) {
-        return transformBlogsResponse(foundBlog);
-      }
-      return foundBlog;
+    const foundBlog = await blogsCollection.findOne<BlogDBType>({
+      _id: new ObjectId(id),
+    });
+    if (foundBlog) {
+      return transformBlogsResponse(foundBlog);
+    }
+    return foundBlog;
   },
   async createNewBlog(body: BlogInputModel): Promise<BlogViewModel> {
     const { name, description, websiteUrl } = body;
