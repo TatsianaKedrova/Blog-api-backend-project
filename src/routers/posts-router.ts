@@ -1,7 +1,7 @@
 import express from "express";
 import { basicAuthMiddleware } from "../middlewares/basicAuth";
 export const postsRouter = express.Router({});
-import { postsValidator } from "../utils/posts-validator/postsValidator";
+import { postsValidator } from "../utils/posts-utils/posts-validator/postsValidator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import {
   createNewPost,
@@ -10,12 +10,13 @@ import {
   getPostsById,
   updatePostById,
 } from "../controllers/postsController";
+import { validateObjectIdParams } from "../middlewares/validateObjectIdParams";
 
 //TODO: GET LIST OF POSTS
 postsRouter.get("/", getPosts);
 
 //TODO: GET POST BY ID
-postsRouter.get("/:id", getPostsById);
+postsRouter.get("/:id", validateObjectIdParams, getPostsById);
 
 //TODO: CREATE A NEW POST
 postsRouter.post(
@@ -30,10 +31,16 @@ postsRouter.post(
 postsRouter.put(
   "/:id",
   basicAuthMiddleware,
+  validateObjectIdParams,
   postsValidator,
   responseErrorValidationMiddleware,
   updatePostById
 );
 
 //TODO: DELETE POST BY ID
-postsRouter.delete("/:id", basicAuthMiddleware, deletePostById);
+postsRouter.delete(
+  "/:id",
+  basicAuthMiddleware,
+  validateObjectIdParams,
+  deletePostById
+);

@@ -1,7 +1,8 @@
-import { runDB } from "./repositories/db";
+import { runDB } from "./db";
 import { app } from "./settings";
+import dotenv from "dotenv";
 
-require("dotenv").config();
+dotenv.config();
 const port = process.env.PORT || 5000;
 
 const startApp = async () => {

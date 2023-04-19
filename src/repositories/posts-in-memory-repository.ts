@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import { PostInputModel, PostViewModel } from "../dto/postsDTO/PostModel";
 import { db } from "../temporal-database/project-db";
+import { creationDate } from "../utils/common-utils/creation-publication-dates";
 
 export const postsList = db.posts;
 
@@ -17,20 +18,17 @@ export const postsRepository = {
   ): Promise<PostViewModel | undefined> {
     const { title, shortDescription, content, blogId } = body;
     const blog = db.blogs.find((blog) => blog.id === blogId);
-    if (!blog) {
-      return blog;
-    } else {
-      const newPost: PostViewModel = {
-        id: randomUUID(),
-        title,
-        shortDescription,
-        content,
-        blogId,
-        blogName: blog.name,
-      };
-      db.posts.push(newPost);
-      return newPost;
-    }
+    const newPost: PostViewModel = {
+      id: randomUUID(),
+      title,
+      shortDescription,
+      content,
+      blogId,
+      blogName: blog!.name,
+      createdAt: creationDate,
+    };
+    db.posts.push(newPost);
+    return newPost;
   },
   async updatePostById(id: string, body: PostInputModel): Promise<boolean> {
     const { blogId, content, shortDescription, title } = body;

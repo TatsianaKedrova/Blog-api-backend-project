@@ -1,16 +1,16 @@
 import { Db, MongoClient } from "mongodb";
-import { BlogDBType } from "../dto/blogsDTO/BlogModel";
-import { PostViewModel } from "../dto/postsDTO/PostModel";
-require("dotenv").config();
+import { PostDBType } from "./dto/postsDTO/PostModel";
+import dotenv from "dotenv";
+import { BlogDBType } from "./dto/blogsDTO/BlogModel";
+dotenv.config();
 const mongoUri = process.env.MONGO_URL || "mongodb://localhost:27017";
 
-export const client: MongoClient = new MongoClient(mongoUri);
-export const dbName = "blogs-posts";
-
-export const mongoDB: Db = client.db(dbName);
+const client: MongoClient = new MongoClient(mongoUri);
+const dbName = "blogs-posts";
+const mongoDB: Db = client.db(dbName);
 
 export const blogsCollection = mongoDB.collection<BlogDBType>("blogs");
-export const postsCollection = mongoDB.collection<PostViewModel[]>("posts");
+export const postsCollection = mongoDB.collection<PostDBType>("posts");
 
 export const runDB = async () => {
   try {

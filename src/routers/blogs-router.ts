@@ -10,14 +10,14 @@ import {
   getBlogsById,
   updateBlogById,
 } from "../controllers/blogsController";
-import { validateParamsID } from "../utils/common-utils/validateParamsID";
+import { validateObjectIdParams } from "../middlewares/validateObjectIdParams";
 export const blogsRouter = express.Router({});
 
 //TODO: GET LIST OF BLOGS
 blogsRouter.get("/", getBlogs);
 
 //TODO: GET BLOG BY ID
-blogsRouter.get("/:id", validateParamsID, getBlogsById);
+blogsRouter.get("/:id", validateObjectIdParams, getBlogsById);
 
 //TODO: CREATE A NEW BLOG
 blogsRouter.post(
@@ -32,7 +32,7 @@ blogsRouter.post(
 blogsRouter.put(
   "/:id",
   basicAuthMiddleware,
-  validateParamsID,
+  validateObjectIdParams,
   blogsValidator,
   responseErrorValidationMiddleware,
   updateBlogById
@@ -42,6 +42,6 @@ blogsRouter.put(
 blogsRouter.delete(
   "/:id",
   basicAuthMiddleware,
-  validateParamsID,
+  validateObjectIdParams,
   deleteBlogById
 );

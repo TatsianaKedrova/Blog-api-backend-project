@@ -2,7 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { ObjectId } from "mongodb";
 
-export const validateParamsID = async (
+/** This middleware should be added only for MongoDB,
+ *  cos' it check the validity of ObjectId
+ */
+export const validateObjectIdParams = async (
   req: Request,
   res: Response,
   next: NextFunction
