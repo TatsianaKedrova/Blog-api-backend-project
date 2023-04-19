@@ -5,6 +5,7 @@ import {
 } from "../dto/blogsDTO/BlogModel";
 import { db } from "../temporal-database/project-db";
 import { transformBlogsResponse } from "../utils/blogs-utils/transformBlogsResponse";
+import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { blogsCollection } from "./db";
 import { ObjectId } from "mongodb";
 
@@ -16,17 +17,13 @@ export const blogsRepository = {
     );
   },
   async findBlogById(id: string): Promise<BlogViewModel | null> {
-    if (ObjectId.isValid(id)) {
-      const foundBlog = await blogsCollection.findOne<BlogDBType>({
-        _id: new ObjectId(id),
-      });
-      if (foundBlog) {
-        return transformBlogsResponse(foundBlog);
-      }
-      return foundBlog;
-    } else {
-      return null;
+    const foundBlog = await blogsCollection.findOne<BlogDBType>({
+      _id: new ObjectId(id),
+    });
+    if (foundBlog) {
+      return transformBlogsResponse(foundBlog);
     }
+    return foundBlog;
   },
   async createNewBlog(body: BlogInputModel): Promise<BlogViewModel> {
     const { name, description, websiteUrl } = body;
@@ -34,47 +31,32 @@ export const blogsRepository = {
       name,
       description,
       websiteUrl,
+      createdAt: creationDate,
+      isMembership: false,
     };
     const result = await blogsCollection.insertOne(newBlog);
 
-    return {
-      description: newBlog.description,
-      name: newBlog.name,
-      websiteUrl: newBlog.websiteUrl,
-      id: result.insertedId.toString(),
-    };
+    return transformBlogsResponse(newBlog, result.insertedId.toString());
   },
   async updateBlogById(id: string, body: BlogInputModel): Promise<boolean> {
     const { description, name, websiteUrl } = body;
-    if (ObjectId.isValid(id)) {
-      const foundBlog = await blogsCollection.findOne({
-        _id: new ObjectId(id),
-      });
-      if (!foundBlog) {
-        return false;
-      } else {
-        await blogsCollection.updateOne(
-          { _id: foundBlog._id },
-          { $set: { name, description, websiteUrl } }
-        );
-        return true;
-      }
-    } else {
+    const foundBlog = await blogsCollection.findOne({
+      _id: new ObjectId(id),
+    });
+    if (!foundBlog) {
       return false;
+    } else {
+      const updatedResult = await blogsCollection.updateOne(
+        { _id: foundBlog._id },
+        { $set: { name, description, websiteUrl } }
+      );
+      return updatedResult.matchedCount === 1;
     }
   },
   async deleteBlogById(id: string): Promise<boolean> {
-    if (ObjectId.isValid(id)) {
-      const deleteResult = await blogsCollection.deleteOne({
-        _id: new ObjectId(id),
-      });
-      if (deleteResult.deletedCount === 0) {
-        return false;
-      } else {
-        return true;
-      }
-    } else {
-      return false;
-    }
+    const deleteResult = await blogsCollection.deleteOne({
+      _id: new ObjectId(id),
+    });
+    return deleteResult.deletedCount === 1;
   },
 };

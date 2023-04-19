@@ -10,13 +10,14 @@ import {
   getBlogsById,
   updateBlogById,
 } from "../controllers/blogsController";
+import { validateParamsID } from "../utils/common-utils/validateParamsID";
 export const blogsRouter = express.Router({});
 
 //TODO: GET LIST OF BLOGS
 blogsRouter.get("/", getBlogs);
 
 //TODO: GET BLOG BY ID
-blogsRouter.get("/:id", getBlogsById);
+blogsRouter.get("/:id", validateParamsID, getBlogsById);
 
 //TODO: CREATE A NEW BLOG
 blogsRouter.post(
@@ -31,10 +32,16 @@ blogsRouter.post(
 blogsRouter.put(
   "/:id",
   basicAuthMiddleware,
+  validateParamsID,
   blogsValidator,
   responseErrorValidationMiddleware,
   updateBlogById
 );
 
 //TODO: DELETE BLOG BY ID
-blogsRouter.delete("/:id", basicAuthMiddleware, deleteBlogById);
+blogsRouter.delete(
+  "/:id",
+  basicAuthMiddleware,
+  validateParamsID,
+  deleteBlogById
+);

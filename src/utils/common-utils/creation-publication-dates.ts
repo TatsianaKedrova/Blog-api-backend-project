@@ -1,6 +1,6 @@
 import { TFieldError } from "../../dto/common/ErrorResponseModel";
 
-export const creationVideoDate = new Date().toISOString();
+export const creationDate = new Date().toISOString();
 export const publicationVideoDate = new Date(
   new Date().setDate(new Date().getDate() + 1)
 ).toISOString();
@@ -20,7 +20,7 @@ export const dateValidator = (publicationDate: string): TFieldError[] => {
       message: "Publication date should be of type String",
       field: "Publication date",
     });
-  } else if (!dateISOPattern.test(creationVideoDate)) {
+  } else if (!dateISOPattern.test(creationDate)) {
     errors.push({
       message:
         "Publication date should match this format: '/d{4}-[01]d-[0-3]dT[0-2]d:[0-5]d:[0-5]d.d+([+-][0-2]d:[0-5]d|Z)/'",

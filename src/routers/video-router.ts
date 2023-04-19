@@ -10,7 +10,7 @@ import {
   TVideo,
 } from "../dto/videosDTO/CreateVideoModel";
 import {
-  creationVideoDate,
+  creationDate,
   publicationVideoDate,
 } from "../utils/common-utils/creation-publication-dates";
 import {
@@ -78,7 +78,7 @@ videosRouter.post(
         availableResolutions,
         canBeDownloaded: false,
         minAgeRestriction: null,
-        createdAt: creationVideoDate,
+        createdAt: creationDate,
         publicationDate: publicationVideoDate,
       };
 
