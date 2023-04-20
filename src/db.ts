@@ -1,6 +1,6 @@
 import { Db, MongoClient } from "mongodb";
 import { PostDBType } from "./dto/postsDTO/PostModel";
-import dotenv from "dotenv";
+import  * as dotenv from "dotenv";
 import { BlogDBType } from "./dto/blogsDTO/BlogModel";
 dotenv.config();
 const mongoUri = process.env.MONGO_URL || "mongodb://localhost:27017";
