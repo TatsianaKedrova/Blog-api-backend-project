@@ -1,12 +1,11 @@
 import express from "express";
 import { StatusCodes } from "http-status-codes";
-import { TDataBase, db } from "../temporal-database/project-db";
+import { mongoDB } from "../db";
 export const testingRouter = express.Router({});
 
 //TODO REMOVE ALL COURSES
-testingRouter.delete("/all-data", (req, res) => {
-  Object.keys(db).forEach((database) => {
-    db[database as keyof TDataBase] = [];
-  });
+testingRouter.delete("/all-data", async (req, res) => {
+  const result = await mongoDB.collections();
+  result.map((collection) => collection.deleteMany({}));
   res.sendStatus(StatusCodes.NO_CONTENT);
 });
