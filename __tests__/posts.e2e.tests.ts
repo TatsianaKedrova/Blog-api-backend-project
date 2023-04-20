@@ -1,31 +1,27 @@
 import request from "supertest";
 import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
-import { PostViewModel } from "../src/dto/postsDTO/PostViewModel";
 import { db } from "../src/temporal-database/project-db";
+import { PostViewModel } from "../src/dto/postsDTO/PostModel";
+import { BlogViewModel } from "../src/dto/blogsDTO/BlogModel";
 
 const correctAuthToken = "YWRtaW46cXdlcnR5";
 const incorrectAuthToken = "YWRtaW46c864XdlcnR5=5";
-
+let createdBlog: BlogViewModel;
 describe("API for posts", () => {
   beforeAll(async () => {
     await request(app).delete("/api/testing/all-data");
-    db.blogs.push(
-      {
-        id: "12345",
-        name: "Blog1",
-        description: "Blog1 description",
-        websiteUrl: "https://ghYYYhkhkhkdld79.yuuecvmjxm",
-      },
-      {
-        id: "6789",
-        name: "Blog2",
-        description: "Blog2 description",
-        websiteUrl: "https://valerykharlamov.loveyouforever",
-      }
-    );
+    const blogsInfo = await request(app)
+      .post("/api/blogs")
+      .set("Authorization", `Basic ${correctAuthToken}`)
+      .send({
+        name: "fff",
+        description: "koala is about blog 1. That's it",
+        websiteUrl:
+          "https://MbkyQDhuICIaHnYLc7ws51KEn5wrp7cYHuVZEHlP9ADc3.uZDiBjA8F",
+      });
+    createdBlog = blogsInfo.body;
   });
-
   test("GET list of posts with status 200", async () => {
     await request(app).get("/api/posts").expect(StatusCodes.OK, []);
   });
@@ -95,7 +91,7 @@ describe("API for posts", () => {
       title: "Tatiana",
       shortDescription: "Who run the world",
       content: "ggggggggggggggggggggggggggggggg",
-      blogId: db.blogs[0].id,
+      blogId: createdBlog.id,
     };
     const postResponse = await request(app)
       .post("/api/posts")
@@ -103,9 +99,7 @@ describe("API for posts", () => {
       .send(inputData)
       .expect(StatusCodes.CREATED);
     createdPost1 = postResponse.body;
-    expect(postResponse.body.content).toEqual(
-      "ggggggggggggggggggggggggggggggg"
-    );
+    expect(createdPost1.content).toEqual("ggggggggggggggggggggggggggggggg");
     const getAllExistingCourses = await request(app)
       .get("/api/posts")
       .expect(StatusCodes.OK);
@@ -171,7 +165,7 @@ describe("API for posts", () => {
         shortDescription: "Valery is the Hockey World Champion",
         content:
           "I love Valery so much - he is the symbol of bravery and power and talent and hard work and Passion",
-        blogId: db.blogs[1].id,
+        blogId: createdBlog.id,
       })
       .expect(StatusCodes.CREATED);
     createdPost2 = postResponse.body;
@@ -224,7 +218,7 @@ describe("API for posts", () => {
         title: "new jumanji",
         shortDescription: "experimenting with life",
         content: "that is a great story",
-        blogId: db.blogs[0].id,
+        blogId: createdBlog.id,
       })
       .expect(StatusCodes.NO_CONTENT);
     expect(postResponse.body).toEqual({});
@@ -247,7 +241,7 @@ describe("API for posts", () => {
         title: "old jumanji movie",
         shortDescription: "experimenting with MY life",
         content: "that is a great story to be discussed",
-        blogId: db.blogs[0].id,
+        blogId: createdBlog.id,
       })
       .expect(StatusCodes.UNAUTHORIZED);
     expect(postResponse.body).toEqual({});
@@ -270,7 +264,7 @@ describe("API for posts", () => {
         title: "old wine is better",
         shortDescription: "experimenting with MY life",
         content: "that is a great story to be discussed",
-        blogId: db.blogs[0].id,
+        blogId: createdBlog.id,
       })
       .expect(StatusCodes.UNAUTHORIZED);
     expect(postResponse.body).toEqual({});
@@ -338,6 +332,11 @@ describe("API for posts", () => {
           {
             message: "content field is required",
             field: "content",
+          },
+          {
+            message:
+              "This blogId is invalid and doesn't fit the ObjectId 24 hex characters structure",
+            field: "blogId",
           },
         ],
       });

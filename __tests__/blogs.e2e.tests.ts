@@ -1,7 +1,7 @@
 import request from "supertest";
 import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
-import { BlogViewModel } from "../src/dto/blogsDTO/BlogViewModel";
+import { BlogViewModel } from "../src/dto/blogsDTO/BlogModel";
 
 const correctAuthToken = "YWRtaW46cXdlcnR5";
 const incorrectAuthToken = "YWRtaW46c864XdlcnR5=5";
@@ -82,8 +82,8 @@ describe("API for blogs", () => {
       })
       .expect(StatusCodes.CREATED);
     createdBlog1 = postResponse.body;
-    console.log(createdBlog1);
-    expect(postResponse.body.name).toEqual("fff");
+    expect(createdBlog1.name).toEqual("fff");
+    expect(createdBlog1.isMembership).toEqual(false);
 
     const getAllExistingCourses = await request(app)
       .get("/api/blogs")
@@ -168,7 +168,6 @@ describe("API for blogs", () => {
       })
       .expect(StatusCodes.CREATED);
     createdBlog2 = postResponse.body;
-    console.log(createdBlog2);
     expect(postResponse.body.description).toEqual("Cats can cure - CCC");
 
     const getAllExistingCourses = await request(app)
