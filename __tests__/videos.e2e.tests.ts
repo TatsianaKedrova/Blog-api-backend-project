@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { app } from "../src/settings";
 import { TVideo } from "../src/dto/videosDTO/CreateVideoModel";
 import {
-  creationVideoDate,
+  creationDate,
   publicationVideoDate,
 } from "../src/utils/common-utils/creation-publication-dates";
 
@@ -147,7 +147,7 @@ describe("videos router", () => {
       availableResolutions: ["P144"],
       canBeDownloaded: false,
       minAgeRestriction: null,
-      createdAt: creationVideoDate,
+      createdAt: creationDate,
       publicationDate: publicationVideoDate,
     });
     const getAllExistingCourses = await request(app)
