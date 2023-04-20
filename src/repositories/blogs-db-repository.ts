@@ -5,11 +5,10 @@ import {
   BlogViewModel,
 } from "../dto/blogsDTO/BlogModel";
 import { transformBlogsResponse } from "../utils/blogs-utils/transformBlogsResponse";
-import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { ObjectId } from "mongodb";
 
 export const blogsRepository = {
-  async getListOfBlogs(): Promise<BlogViewModel[]> {
+  async findBlogs(): Promise<BlogViewModel[]> {
     //   const filter: any = {};
     //   if(title) {
     //     filter.title = {$regex: title}
@@ -17,6 +16,7 @@ export const blogsRepository = {
     //   return  return (await blogsCollection.find<BlogDBType>(filter).toArray()).map((doc) =>
     //   transformBlogsResponse(doc)
     // );
+    // await blogsCollection.deleteMany({});
     return (await blogsCollection.find<BlogDBType>({}).toArray()).map((doc) =>
       transformBlogsResponse(doc)
     );
@@ -30,15 +30,7 @@ export const blogsRepository = {
     }
     return foundBlog;
   },
-  async createNewBlog(body: BlogInputModel): Promise<BlogViewModel> {
-    const { name, description, websiteUrl } = body;
-    const newBlog = {
-      name,
-      description,
-      websiteUrl,
-      createdAt: creationDate,
-      isMembership: false,
-    };
+  async createNewBlog(newBlog: BlogDBType): Promise<BlogViewModel> {
     const result = await blogsCollection.insertOne(newBlog);
 
     return transformBlogsResponse(newBlog, result.insertedId.toString());

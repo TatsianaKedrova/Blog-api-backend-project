@@ -8,7 +8,7 @@ import {
 } from "../dto/common/RequestModels";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
-import { blogsRepository } from "../repositories/blogs-db-repository";
+import { blogsService } from "../domain/blogs-service";
 
 // @desc Get all blogs
 // @route GET /api/blogs
@@ -17,7 +17,7 @@ export const getBlogs = async (
   req: Request,
   res: Response<BlogViewModel[]>
 ) => {
-  const blogs: BlogViewModel[] = await blogsRepository.getListOfBlogs();
+  const blogs: BlogViewModel[] = await blogsService.findBlogs();
   res.status(StatusCodes.OK).send(blogs);
 };
 
@@ -28,7 +28,7 @@ export const getBlogsById = async (
   req: RequestWithURIParam<URIParamsRequest>,
   res: Response<BlogViewModel>
 ) => {
-  const foundBlog = await blogsRepository.findBlogById(req.params.id);
+  const foundBlog = await blogsService.findBlogById(req.params.id);
   if (!foundBlog) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   } else {
@@ -43,7 +43,8 @@ export const createNewBlog = async (
   req: RequestBodyModel<BlogInputModel>,
   res: Response<BlogViewModel | TApiErrorResultObject>
 ) => {
-  const newBlog = await blogsRepository.createNewBlog(req.body);
+  debugger;
+  const newBlog = await blogsService.createNewBlog(req.body);
   res.status(StatusCodes.CREATED).send(newBlog);
 };
 
@@ -54,7 +55,7 @@ export const updateBlogById = async (
   req: RequestWithURIParamsAndBody<URIParamsRequest, BlogInputModel>,
   res: Response<TApiErrorResultObject>
 ) => {
-  const updatedBlog = await blogsRepository.updateBlogById(
+  const updatedBlog = await blogsService.updateBlogById(
     req.params.id,
     req.body
   );
@@ -72,7 +73,7 @@ export const deleteBlogById = async (
   req: RequestWithURIParam<URIParamsRequest>,
   res: Response
 ) => {
-  const foundBlog = await blogsRepository.deleteBlogById(req.params.id);
+  const foundBlog = await blogsService.deleteBlogById(req.params.id);
   if (!foundBlog) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   } else res.sendStatus(StatusCodes.NO_CONTENT);

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { PostInputModel, PostViewModel } from "../dto/postsDTO/PostModel";
-import { postsRepository } from "../repositories/posts-db-repository";
+import { postsService } from "../domain/posts-service";
 import {
   RequestBodyModel,
   RequestWithURIParam,
@@ -17,7 +17,7 @@ export const getPosts = async (
   req: Request,
   res: Response<PostViewModel[]>
 ) => {
-  const posts = await postsRepository.getListOfPosts();
+  const posts = await postsService.findPosts();
   res.status(StatusCodes.OK).send(posts);
 };
 
@@ -28,7 +28,7 @@ export const getPostsById = async (
   req: RequestWithURIParam<URIParamsRequest>,
   res: Response<PostViewModel>
 ) => {
-  const foundPost = await postsRepository.findPostById(req.params.id);
+  const foundPost = await postsService.findPostById(req.params.id);
   if (!foundPost) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   } else {
@@ -43,7 +43,7 @@ export const createNewPost = async (
   req: RequestBodyModel<PostInputModel>,
   res: Response<PostViewModel | TApiErrorResultObject>
 ) => {
-  const newPost = await postsRepository.createNewPost(req.body);
+  const newPost = await postsService.createNewPost(req.body);
   res.status(StatusCodes.CREATED).send(newPost);
 };
 
@@ -54,10 +54,7 @@ export const updatePostById = async (
   req: RequestWithURIParamsAndBody<URIParamsRequest, PostInputModel>,
   res: Response<TApiErrorResultObject>
 ) => {
-  const isUpdated = await postsRepository.updatePostById(
-    req.params.id,
-    req.body
-  );
+  const isUpdated = await postsService.updatePostById(req.params.id, req.body);
   if (!isUpdated) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   } else {
@@ -72,7 +69,7 @@ export const deletePostById = async (
   req: RequestWithURIParam<URIParamsRequest>,
   res: Response
 ) => {
-  const isDeleted = await postsRepository.deletePostById(req.params.id);
+  const isDeleted = await postsService.deletePostById(req.params.id);
 
   if (!isDeleted) {
     res.sendStatus(StatusCodes.NOT_FOUND);

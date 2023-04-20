@@ -3,15 +3,12 @@ import {
   PostInputModel,
   PostViewModel,
 } from "../dto/postsDTO/PostModel";
-import { db } from "../temporal-database/project-db";
 import { blogsCollection, postsCollection } from "../db";
 import { transformPostsResponse } from "../utils/posts-utils/transformPostsResponse";
-import { blogsRepository } from "./blogs-db-repository";
-import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { ObjectId } from "mongodb";
 
 export const postsRepository = {
-  async getListOfPosts(): Promise<PostViewModel[]> {
+  async findPosts(): Promise<PostViewModel[]> {
     return (await postsCollection.find<PostDBType>({}).toArray()).map((doc) =>
       transformPostsResponse(doc)
     );
@@ -25,17 +22,7 @@ export const postsRepository = {
     }
     return foundPost;
   },
-  async createNewPost(body: PostInputModel): Promise<PostViewModel> {
-    const { title, shortDescription, content, blogId } = body;
-    const blog = await blogsRepository.findBlogById(blogId);
-    const newPost = {
-      title,
-      shortDescription,
-      content,
-      blogId: new ObjectId(blogId),
-      blogName: blog!.name,
-      createdAt: creationDate,
-    };
+  async createNewPost(newPost: PostDBType): Promise<PostViewModel> {
     const result = await postsCollection.insertOne(newPost);
     return transformPostsResponse(newPost, result.insertedId.toString());
   },
