@@ -1,13 +1,14 @@
 import { BlogInputModel, BlogViewModel } from "../dto/blogsDTO/BlogModel";
+import { blogsCommandsRepository } from "../repositories/commands-repository/blogsCommandsRepository";
+import { blogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
-import { blogsRepository } from "../repositories/blogs-db-repository";
 
 export const blogsService = {
   async findBlogs(): Promise<BlogViewModel[]> {
-    return await blogsRepository.findBlogs();
+    return await blogsQueryRepository.findBlogs();
   },
   async findBlogById(id: string): Promise<BlogViewModel | null> {
-    return await blogsRepository.findBlogById(id);
+    return await blogsQueryRepository.findBlogById(id);
   },
   async createNewBlog(body: BlogInputModel): Promise<BlogViewModel> {
     const { name, description, websiteUrl } = body;
@@ -18,13 +19,13 @@ export const blogsService = {
       createdAt: creationDate,
       isMembership: false,
     };
-    const result = await blogsRepository.createNewBlog(newBlog);
+    const result = await blogsCommandsRepository.createNewBlog(newBlog);
     return result;
   },
   async updateBlogById(id: string, body: BlogInputModel): Promise<boolean> {
-    return await blogsRepository.updateBlogById(id, body);
+    return await blogsCommandsRepository.updateBlogById(id, body);
   },
   async deleteBlogById(id: string): Promise<boolean> {
-    return await blogsRepository.deleteBlogById(id);
+    return await blogsCommandsRepository.deleteBlogById(id);
   },
 };

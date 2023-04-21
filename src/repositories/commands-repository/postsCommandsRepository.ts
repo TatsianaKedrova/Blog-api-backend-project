@@ -2,26 +2,12 @@ import {
   PostDBType,
   PostInputModel,
   PostViewModel,
-} from "../dto/postsDTO/PostModel";
-import { blogsCollection, postsCollection } from "../db";
-import { transformPostsResponse } from "../utils/posts-utils/transformPostsResponse";
+} from "../../dto/postsDTO/PostModel";
+import { blogsCollection, postsCollection } from "../../db";
+import { transformPostsResponse } from "../../utils/posts-utils/transformPostsResponse";
 import { ObjectId } from "mongodb";
 
-export const postsRepository = {
-  async findPosts(): Promise<PostViewModel[]> {
-    return (await postsCollection.find<PostDBType>({}).toArray()).map((doc) =>
-      transformPostsResponse(doc)
-    );
-  },
-  async findPostById(id: string): Promise<PostViewModel | null> {
-    const foundPost = await postsCollection.findOne<PostDBType>({
-      _id: new ObjectId(id),
-    });
-    if (foundPost) {
-      return transformPostsResponse(foundPost);
-    }
-    return foundPost;
-  },
+export const postsCommandsRepository = {
   async createNewPost(newPost: PostDBType): Promise<PostViewModel> {
     const result = await postsCollection.insertOne(newPost);
     return transformPostsResponse(newPost, result.insertedId.toString());

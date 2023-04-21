@@ -6,14 +6,15 @@ import {
 import { blogsService } from "./blogs-service";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { ObjectId } from "mongodb";
-import { postsRepository } from "../repositories/posts-db-repository";
+import { postsCommandsRepository } from "../repositories/commands-repository/postsCommandsRepository";
+import { postsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
 
 export const postsService = {
   async findPosts(): Promise<PostViewModel[]> {
-    return await postsRepository.findPosts();
+    return await postsQueryRepository.findPosts();
   },
   async findPostById(id: string): Promise<PostViewModel | null> {
-    return await postsRepository.findPostById(id);
+    return await postsQueryRepository.findPostById(id);
   },
   async createNewPost(body: PostInputModel): Promise<PostViewModel> {
     const { title, shortDescription, content, blogId } = body;
@@ -26,12 +27,12 @@ export const postsService = {
       blogName: blog!.name,
       createdAt: creationDate,
     };
-    return await postsRepository.createNewPost(newPost);
+    return await postsCommandsRepository.createNewPost(newPost);
   },
   async updatePostById(id: string, body: PostInputModel): Promise<boolean> {
-    return await postsRepository.updatePostById(id, body);
+    return await postsCommandsRepository.updatePostById(id, body);
   },
   async deletePostById(id: string): Promise<boolean> {
-    return await postsRepository.deletePostById(id);
+    return await postsCommandsRepository.deletePostById(id);
   },
 };
