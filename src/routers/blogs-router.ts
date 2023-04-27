@@ -6,6 +6,7 @@ import { responseErrorValidationMiddleware } from "../middlewares/responseErrorV
 import {
   createNewBlog,
   deleteBlogById,
+  getBlogPosts,
   getBlogs,
   getBlogsById,
   updateBlogById,
@@ -15,6 +16,8 @@ export const blogsRouter = express.Router({});
 
 //TODO: GET LIST OF BLOGS
 blogsRouter.get("/", getBlogs);
+
+blogsRouter.get("/:blogId/posts", getBlogPosts)
 
 //TODO: GET BLOG BY ID
 blogsRouter.get("/:id", validateObjectIdParams, getBlogsById);

@@ -1,24 +1,42 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { BlogInputModel, BlogViewModel } from "../dto/blogsDTO/BlogModel";
 import { StatusCodes } from "http-status-codes";
 import {
   RequestBodyModel,
+  RequestQueryParamsModel,
   RequestWithURIParam,
+  RequestWithURIParamAndQueryParam,
   RequestWithURIParamsAndBody,
 } from "../dto/common/RequestModels";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { blogsService } from "../domain/blogs-service";
+import { BlogsQueryParamsType } from "../dto/blogsDTO/BlogsQueryParamsModel";
+import { Paginator } from "../dto/common/PaginatorModel";
+import { PostViewModel } from "../dto/postsDTO/PostModel";
+import { blogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
 
 // @desc Get all blogs
 // @route GET /api/blogs
 // @access Public
 export const getBlogs = async (
-  req: Request,
-  res: Response<BlogViewModel[]>
+  req: RequestQueryParamsModel<BlogsQueryParamsType>,
+  res: Response<Paginator<BlogViewModel>>
 ) => {
-  const blogs: BlogViewModel[] = await blogsService.findBlogs();
+  const blogs: Paginator<BlogViewModel> = await blogsQueryRepository.findBlogs(
+    req.query
+  );
   res.status(StatusCodes.OK).send(blogs);
+};
+
+// @desc Get all blogs
+// @route GET /api/blogs/:blogId/posts
+// @access Public
+export const getBlogPosts = async (
+  req: RequestWithURIParamAndQueryParam<URIParamsRequest, BlogsQueryParamsType>,
+  res: Response<Paginator<PostViewModel>>
+) => {
+  const {} = req.query;
 };
 
 // @desc Get blog by ID

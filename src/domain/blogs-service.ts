@@ -4,9 +4,6 @@ import { blogsQueryRepository } from "../repositories/query-repository/blogsQuer
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 
 export const blogsService = {
-  async findBlogs(): Promise<BlogViewModel[]> {
-    return await blogsQueryRepository.findBlogs();
-  },
   async findBlogById(id: string): Promise<BlogViewModel | null> {
     return await blogsQueryRepository.findBlogById(id);
   },
