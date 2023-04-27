@@ -11,6 +11,7 @@ export const blogsQueryRepository = {
   ): Promise<Paginator<BlogViewModel>> {
     const { searchNameTerm, sortBy, sortDirection, pageNumber, pageSize } =
       queryParams;
+    let sortByTransformed = sortBy === "id" ? "_id" : sortBy;
     let skip = ((pageNumber || 1) - 1) * (pageSize || 10);
     let filter: Filter<BlogDBType> = {};
     if (searchNameTerm) {
@@ -19,6 +20,7 @@ export const blogsQueryRepository = {
     const totalCount = await blogsCollection.countDocuments(filter);
     const foundBlogs: BlogViewModel[] = await blogsCollection
       .find<BlogDBType>(filter)
+      .sort(sortByTransformed, sortDirection ? sortDirection : "desc")
       .skip(skip)
       .limit(+pageSize)
       .toArray();

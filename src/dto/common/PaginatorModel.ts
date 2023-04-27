@@ -6,4 +6,4 @@ export type Paginator<T> = {
   items: T[];
 };
 
-export type SortDirections = Array<"asc" | "desc">;
+export type SortDirections = "asc" | "desc";
