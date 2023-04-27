@@ -15,12 +15,16 @@ export const blogsQueryRepository = {
     let skip = ((pageNumber || 1) - 1) * (pageSize || 10);
     let filter: Filter<BlogDBType> = {};
     if (searchNameTerm) {
-      filter.name = { $regex: searchNameTerm };
+      filter.name = { $regex: searchNameTerm, $options: "i" };
     }
     const totalCount = await blogsCollection.countDocuments(filter);
     const foundBlogs: BlogViewModel[] = await blogsCollection
       .find<BlogDBType>(filter)
-      .sort(sortByTransformed, sortDirection ? sortDirection : "desc")
+      .collation({ locale: "en" })
+      .sort(
+        sortByTransformed ? sortByTransformed : "createdAt",
+        sortDirection ? sortDirection : "desc"
+      )
       .skip(skip)
       .limit(+pageSize)
       .toArray();
