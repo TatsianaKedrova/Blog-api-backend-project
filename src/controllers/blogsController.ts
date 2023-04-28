@@ -1,24 +1,83 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { BlogInputModel, BlogViewModel } from "../dto/blogsDTO/BlogModel";
 import { StatusCodes } from "http-status-codes";
 import {
   RequestBodyModel,
+  RequestQueryParamsModel,
   RequestWithURIParam,
+  RequestWithURIParamAndQueryParam,
   RequestWithURIParamsAndBody,
 } from "../dto/common/RequestModels";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
-import { blogsRepository } from "../repositories/blogs-db-repository";
+import { blogsService } from "../domain/blogs-service";
+import { BlogsQueryParamsType } from "../dto/blogsDTO/BlogsQueryParamsModel";
+import { Paginator } from "../dto/common/PaginatorModel";
+import { PostViewModel } from "../dto/postsDTO/PostModel";
+import { blogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
 
 // @desc Get all blogs
 // @route GET /api/blogs
 // @access Public
 export const getBlogs = async (
-  req: Request,
-  res: Response<BlogViewModel[]>
+  req: RequestQueryParamsModel<BlogsQueryParamsType<BlogViewModel>>,
+  res: Response<Paginator<BlogViewModel>>
 ) => {
-  const blogs: BlogViewModel[] = await blogsRepository.getListOfBlogs();
+  let {
+    searchNameTerm = null,
+    pageNumber = 1,
+    sortBy = "createdAt",
+    pageSize = 10,
+    sortDirection = "desc",
+  } = req.query;
+
+  const blogs: Paginator<BlogViewModel> = await blogsQueryRepository.findBlogs(
+    searchNameTerm,
+    pageNumber,
+    sortBy,
+    Number(pageSize),
+    sortDirection
+  );
   res.status(StatusCodes.OK).send(blogs);
+};
+
+// @desc Return all posts for specified blog
+// @route GET /api/blogs/:blogId/posts
+// @access Public
+export const getBlogPosts = async (
+  req: RequestWithURIParamAndQueryParam<URIParamsRequest, BlogsQueryParamsType<PostViewModel>>,
+  res: Response<Paginator<PostViewModel>>
+) => {
+  let {
+    pageNumber = 1,
+    sortBy = "createdAt",
+    pageSize = 10,
+    sortDirection = "desc",
+  } = req.query;
+
+  const foundBlog = await blogsQueryRepository.findBlogById(req.params.id);
+  if (!foundBlog) {
+    res.sendStatus(StatusCodes.NOT_FOUND);
+  } else {
+    const postsFromSpecificBlog =
+      await blogsQueryRepository.findPostsForSpecificBlog(
+        req.params.id,
+        pageNumber,
+        sortBy,
+        Number(pageSize),
+        sortDirection
+      );
+    res.status(StatusCodes.OK).send(postsFromSpecificBlog);
+  }
+};
+
+// @desc Create new post for specified blog
+// @route GET /api/blogs/:blogId/posts
+// @access Private
+export const createPostForSpecificBlog = async (
+  req: RequestWithURIParamsAndBody<URIParamsRequest, any>,
+  res: Response<Paginator<PostViewModel>>
+) => {
 };
 
 // @desc Get blog by ID
@@ -28,7 +87,7 @@ export const getBlogsById = async (
   req: RequestWithURIParam<URIParamsRequest>,
   res: Response<BlogViewModel>
 ) => {
-  const foundBlog = await blogsRepository.findBlogById(req.params.id);
+  const foundBlog = await blogsQueryRepository.findBlogById(req.params.id);
   if (!foundBlog) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   } else {
@@ -43,7 +102,8 @@ export const createNewBlog = async (
   req: RequestBodyModel<BlogInputModel>,
   res: Response<BlogViewModel | TApiErrorResultObject>
 ) => {
-  const newBlog = await blogsRepository.createNewBlog(req.body);
+  debugger;
+  const newBlog = await blogsService.createNewBlog(req.body);
   res.status(StatusCodes.CREATED).send(newBlog);
 };
 
@@ -54,7 +114,7 @@ export const updateBlogById = async (
   req: RequestWithURIParamsAndBody<URIParamsRequest, BlogInputModel>,
   res: Response<TApiErrorResultObject>
 ) => {
-  const updatedBlog = await blogsRepository.updateBlogById(
+  const updatedBlog = await blogsService.updateBlogById(
     req.params.id,
     req.body
   );
@@ -72,7 +132,7 @@ export const deleteBlogById = async (
   req: RequestWithURIParam<URIParamsRequest>,
   res: Response
 ) => {
-  const foundBlog = await blogsRepository.deleteBlogById(req.params.id);
+  const foundBlog = await blogsService.deleteBlogById(req.params.id);
   if (!foundBlog) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   } else res.sendStatus(StatusCodes.NO_CONTENT);

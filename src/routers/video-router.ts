@@ -78,8 +78,8 @@ videosRouter.post(
         availableResolutions,
         canBeDownloaded: false,
         minAgeRestriction: null,
-        createdAt: creationDate,
-        publicationDate: publicationVideoDate,
+        createdAt: creationDate(),
+        publicationDate: publicationVideoDate(),
       };
 
       db.videos.push(newVideo);
