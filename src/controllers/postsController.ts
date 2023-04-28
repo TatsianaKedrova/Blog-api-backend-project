@@ -9,6 +9,7 @@ import {
 } from "../dto/common/RequestModels";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
+import { postsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
 
 // @desc Get all posts
 // @route GET /api/posts
@@ -17,7 +18,7 @@ export const getPosts = async (
   req: Request,
   res: Response<PostViewModel[]>
 ) => {
-  const posts = await postsService.findPosts();
+  const posts = await postsQueryRepository.findPosts();
   res.status(StatusCodes.OK).send(posts);
 };
 
@@ -28,7 +29,7 @@ export const getPostsById = async (
   req: RequestWithURIParam<URIParamsRequest>,
   res: Response<PostViewModel>
 ) => {
-  const foundPost = await postsService.findPostById(req.params.id);
+  const foundPost = await postsQueryRepository.findPostById(req.params.id);
   if (!foundPost) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   } else {

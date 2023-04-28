@@ -3,22 +3,15 @@ import {
   PostInputModel,
   PostViewModel,
 } from "../dto/postsDTO/PostModel";
-import { blogsService } from "./blogs-service";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { ObjectId } from "mongodb";
 import { postsCommandsRepository } from "../repositories/commands-repository/postsCommandsRepository";
-import { postsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
+import { blogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
 
 export const postsService = {
-  async findPosts(): Promise<PostViewModel[]> {
-    return await postsQueryRepository.findPosts();
-  },
-  async findPostById(id: string): Promise<PostViewModel | null> {
-    return await postsQueryRepository.findPostById(id);
-  },
   async createNewPost(body: PostInputModel): Promise<PostViewModel> {
     const { title, shortDescription, content, blogId } = body;
-    const blog = await blogsService.findBlogById(blogId);
+    const blog = await blogsQueryRepository.findBlogById(blogId);
     const newPost: PostDBType = {
       title,
       shortDescription,

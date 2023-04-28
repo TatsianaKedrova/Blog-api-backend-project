@@ -20,23 +20,64 @@ import { blogsQueryRepository } from "../repositories/query-repository/blogsQuer
 // @route GET /api/blogs
 // @access Public
 export const getBlogs = async (
-  req: RequestQueryParamsModel<BlogsQueryParamsType>,
+  req: RequestQueryParamsModel<BlogsQueryParamsType<BlogViewModel>>,
   res: Response<Paginator<BlogViewModel>>
 ) => {
+  let {
+    searchNameTerm = null,
+    pageNumber = 1,
+    sortBy = "createdAt",
+    pageSize = 10,
+    sortDirection = "desc",
+  } = req.query;
+
   const blogs: Paginator<BlogViewModel> = await blogsQueryRepository.findBlogs(
-    req.query
+    searchNameTerm,
+    pageNumber,
+    sortBy,
+    Number(pageSize),
+    sortDirection
   );
   res.status(StatusCodes.OK).send(blogs);
 };
 
-// @desc Get all blogs
+// @desc Return all posts for specified blog
 // @route GET /api/blogs/:blogId/posts
 // @access Public
 export const getBlogPosts = async (
-  req: RequestWithURIParamAndQueryParam<URIParamsRequest, BlogsQueryParamsType>,
+  req: RequestWithURIParamAndQueryParam<URIParamsRequest, BlogsQueryParamsType<PostViewModel>>,
   res: Response<Paginator<PostViewModel>>
 ) => {
-  const {} = req.query;
+  let {
+    pageNumber = 1,
+    sortBy = "createdAt",
+    pageSize = 10,
+    sortDirection = "desc",
+  } = req.query;
+
+  const foundBlog = await blogsQueryRepository.findBlogById(req.params.id);
+  if (!foundBlog) {
+    res.sendStatus(StatusCodes.NOT_FOUND);
+  } else {
+    const postsFromSpecificBlog =
+      await blogsQueryRepository.findPostsForSpecificBlog(
+        req.params.id,
+        pageNumber,
+        sortBy,
+        Number(pageSize),
+        sortDirection
+      );
+    res.status(StatusCodes.OK).send(postsFromSpecificBlog);
+  }
+};
+
+// @desc Create new post for specified blog
+// @route GET /api/blogs/:blogId/posts
+// @access Private
+export const createPostForSpecificBlog = async (
+  req: RequestWithURIParamsAndBody<URIParamsRequest, any>,
+  res: Response<Paginator<PostViewModel>>
+) => {
 };
 
 // @desc Get blog by ID
@@ -46,7 +87,7 @@ export const getBlogsById = async (
   req: RequestWithURIParam<URIParamsRequest>,
   res: Response<BlogViewModel>
 ) => {
-  const foundBlog = await blogsService.findBlogById(req.params.id);
+  const foundBlog = await blogsQueryRepository.findBlogById(req.params.id);
   if (!foundBlog) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   } else {

@@ -1,44 +1,68 @@
-import { Filter, ObjectId } from "mongodb";
-import { blogsCollection } from "../../db";
+import { Filter, ObjectId, SortDirection } from "mongodb";
+import { blogsCollection, postsCollection } from "../../db";
 import { BlogDBType, BlogViewModel } from "../../dto/blogsDTO/BlogModel";
-import { BlogsQueryParamsType } from "../../dto/blogsDTO/BlogsQueryParamsModel";
 import { Paginator } from "../../dto/common/PaginatorModel";
 import { transformBlogsResponse } from "../../utils/blogs-utils/transformBlogsResponse";
+import { PostDBType, PostViewModel } from "../../dto/postsDTO/PostModel";
+import { transformPostsResponse } from "../../utils/posts-utils/transformPostsResponse";
+import { paginationHandler } from "../../utils/common-utils/paginationHandler";
+import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 
 export const blogsQueryRepository = {
   async findBlogs(
-    queryParams: BlogsQueryParamsType
+    searchNameTerm: string | null,
+    pageNumber: number,
+    sortBy: string,
+    pageSize: number,
+    sortDirection: SortDirection
   ): Promise<Paginator<BlogViewModel>> {
-    const { searchNameTerm, sortBy, sortDirection, pageNumber, pageSize } =
-      queryParams;
-    let sortByTransformed = sortBy === "id" ? "_id" : sortBy;
-    let skip = ((pageNumber || 1) - 1) * (pageSize || 10);
     let filter: Filter<BlogDBType> = {};
+    const skip = paginationHandler(pageNumber, pageSize);
     if (searchNameTerm) {
       filter.name = { $regex: searchNameTerm, $options: "i" };
     }
     const totalCount = await blogsCollection.countDocuments(filter);
-    const foundBlogs: BlogViewModel[] = await blogsCollection
-      .find<BlogDBType>(filter)
+    const foundBlogs = await blogsCollection
+      .find(filter)
       .collation({ locale: "en" })
-      .sort(
-        sortByTransformed ? sortByTransformed : "createdAt",
-        sortDirection ? sortDirection : "desc"
-      )
+      .sort(sortBy, sortDirection)
       .skip(skip)
-      .limit(+pageSize)
+      .limit(pageSize)
       .toArray();
-    const transformedData = foundBlogs.map((doc) =>
-      transformBlogsResponse(doc)
-    );
-    let pagesCount = Math.ceil(totalCount / pageSize);
-    return {
-      pagesCount,
-      page: pageNumber || 1,
-      pageSize: pageSize || 10,
+    return paginatorReturnObject<BlogDBType>(
+      foundBlogs,
+      transformBlogsResponse,
       totalCount,
-      items: transformedData,
-    };
+      pageSize,
+      pageNumber
+    );
+  },
+  async findPostsForSpecificBlog(
+    id: string,
+    pageNumber: number,
+    sortBy: string,
+    pageSize: number,
+    sortDirection: SortDirection
+  ): Promise<Paginator<PostViewModel>> {
+    const skip = paginationHandler(pageNumber, pageSize);
+
+    const totalCount = await postsCollection.countDocuments({
+      blogId: new ObjectId(id),
+    });
+    const foundPosts = await postsCollection
+      .find({ blogId: new ObjectId(id) })
+      .collation({ locale: "en" })
+      .sort(sortBy, sortDirection)
+      .skip(skip)
+      .limit(pageSize)
+      .toArray();
+    return paginatorReturnObject<PostDBType>(
+      foundPosts,
+      transformPostsResponse,
+      totalCount,
+      pageSize,
+      pageNumber
+    );
   },
   async findBlogById(id: string): Promise<BlogViewModel | null> {
     const foundBlog = await blogsCollection.findOne<BlogDBType>({
