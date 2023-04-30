@@ -28,7 +28,7 @@ export const getPosts = async (
     sortDirection = "desc",
   } = req.query;
   const posts: Paginator<PostViewModel> = await postsQueryRepository.findPosts(
-    pageNumber,
+    Number(pageNumber),
     sortBy,
     Number(pageSize),
     sortDirection

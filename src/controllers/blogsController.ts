@@ -36,7 +36,7 @@ export const getBlogs = async (
 
   const blogs: Paginator<BlogViewModel> = await blogsQueryRepository.findBlogs(
     searchNameTerm,
-    pageNumber,
+    Number(pageNumber),
     sortBy,
     Number(pageSize),
     sortDirection
@@ -68,7 +68,7 @@ export const getBlogPosts = async (
     const postsFromSpecificBlog =
       await blogsQueryRepository.findPostsForSpecificBlog(
         req.params.id,
-        pageNumber,
+        Number(pageNumber),
         sortBy,
         Number(pageSize),
         sortDirection
