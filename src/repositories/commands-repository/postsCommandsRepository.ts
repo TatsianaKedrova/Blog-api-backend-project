@@ -12,6 +12,10 @@ export const postsCommandsRepository = {
     const result = await postsCollection.insertOne(newPost);
     return transformPostsResponse(newPost, result.insertedId.toString());
   },
+  // async createNewPostForSpecificBlog(newPost: PostDBType): Promise<PostViewModel> {
+  //   const result = await postsCollection.insertOne(newPost);
+  //   return transformPostsResponse(newPost, result.insertedId.toString());
+  // },
   async updatePostById(id: string, body: PostInputModel): Promise<boolean> {
     const { blogId, content, shortDescription, title } = body;
     const foundPostById = await postsCollection.findOne({

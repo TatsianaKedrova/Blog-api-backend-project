@@ -26,3 +26,5 @@ export type PostInputModel = {
   content: string; //required, maxLength = 1000
   blogId: string; //required
 };
+
+export type CreatePostForSpecificBlogType = Omit<PostInputModel, "blogId">;

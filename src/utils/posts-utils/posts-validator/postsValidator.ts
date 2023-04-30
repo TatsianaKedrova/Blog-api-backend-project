@@ -13,9 +13,7 @@ export const isValidBlogIdHardcodedDB: CustomValidator = (blogId: string) => {
 };
 
 /** This blogId validator is for MONGO DB*/
-export const isValidBlogId: CustomValidator = async (
-  blogId: string
-) => {
+export const isValidBlogId: CustomValidator = async (blogId: string) => {
   try {
     const blog = await blogsCollection.findOne({ _id: new ObjectId(blogId) });
     if (!blog) {
@@ -51,4 +49,10 @@ export const postsValidator = [
   stringsInputValidator("shortDescription", 100),
   stringsInputValidator("content", 1000),
   stringInputValidatorCommon("blogId").custom(isValidBlogId),
+];
+
+export const postsValidatorForSpecificBlog = [
+  stringsInputValidator("title", 30),
+  stringsInputValidator("shortDescription", 100),
+  stringsInputValidator("content", 1000),
 ];

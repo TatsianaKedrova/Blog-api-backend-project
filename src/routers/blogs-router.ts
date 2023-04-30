@@ -13,26 +13,26 @@ import {
   updateBlogById,
 } from "../controllers/blogsController";
 import { validateObjectIdParams } from "../middlewares/validateObjectIdParams";
-import { stringsInputValidator } from "../utils/posts-utils/posts-validator/postsValidator";
+import {
+  postsValidatorForSpecificBlog,
+} from "../utils/posts-utils/posts-validator/postsValidator";
 export const blogsRouter = express.Router({});
 
 //TODO: GET LIST OF BLOGS
 blogsRouter.get("/", getBlogs);
-
-blogsRouter.get("/:id/posts", validateObjectIdParams, getBlogPosts as any);
-
 //TODO: GET BLOG BY ID
 blogsRouter.get("/:id", validateObjectIdParams, getBlogsById);
+//TODO: GET ALL POSTS FOR SPECIFIC BLOG
+blogsRouter.get("/:id/posts", validateObjectIdParams, getBlogPosts as any);
 
+//TODO: CREATE POST FOR SPECIFIC BLOG
 blogsRouter.post(
   "/:id/posts",
   basicAuthMiddleware,
-  stringsInputValidator("title", 30),
-  stringsInputValidator("shortDescription", 100),
-  stringsInputValidator("content", 1000),
+  postsValidatorForSpecificBlog,
+  responseErrorValidationMiddleware,
   createPostForSpecificBlog
 );
-
 //TODO: CREATE A NEW BLOG
 blogsRouter.post(
   "/",

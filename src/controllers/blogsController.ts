@@ -13,7 +13,10 @@ import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { blogsService } from "../domain/blogs-service";
 import { BlogsQueryParamsType } from "../dto/blogsDTO/BlogsQueryParamsModel";
 import { Paginator } from "../dto/common/PaginatorModel";
-import { PostViewModel } from "../dto/postsDTO/PostModel";
+import {
+  CreatePostForSpecificBlogType,
+  PostViewModel,
+} from "../dto/postsDTO/PostModel";
 import { blogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
 
 // @desc Get all blogs
@@ -45,7 +48,10 @@ export const getBlogs = async (
 // @route GET /api/blogs/:blogId/posts
 // @access Public
 export const getBlogPosts = async (
-  req: RequestWithURIParamAndQueryParam<URIParamsRequest, BlogsQueryParamsType<PostViewModel>>,
+  req: RequestWithURIParamAndQueryParam<
+    URIParamsRequest,
+    BlogsQueryParamsType<PostViewModel>
+  >,
   res: Response<Paginator<PostViewModel>>
 ) => {
   let {
@@ -75,9 +81,19 @@ export const getBlogPosts = async (
 // @route GET /api/blogs/:blogId/posts
 // @access Private
 export const createPostForSpecificBlog = async (
-  req: RequestWithURIParamsAndBody<URIParamsRequest, any>,
-  res: Response<Paginator<PostViewModel>>
+  req: RequestWithURIParamsAndBody<
+    URIParamsRequest,
+    CreatePostForSpecificBlogType
+  >,
+  res: Response<PostViewModel>
 ) => {
+  const createdPost = await blogsService.createNewPostForSpecificBlog(
+    req.body,
+    req.params.id
+  );
+  if (!createdPost) {
+    res.sendStatus(StatusCodes.NOT_FOUND);
+  } else res.status(StatusCodes.CREATED).send(createdPost);
 };
 
 // @desc Get blog by ID
@@ -102,7 +118,6 @@ export const createNewBlog = async (
   req: RequestBodyModel<BlogInputModel>,
   res: Response<BlogViewModel | TApiErrorResultObject>
 ) => {
-  debugger;
   const newBlog = await blogsService.createNewBlog(req.body);
   res.status(StatusCodes.CREATED).send(newBlog);
 };
