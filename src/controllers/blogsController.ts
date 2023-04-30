@@ -11,7 +11,7 @@ import {
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { blogsService } from "../domain/blogs-service";
-import { BlogsQueryParamsType } from "../dto/blogsDTO/BlogsQueryParamsModel";
+import { SortPaginatorQueryParamsType } from "../dto/blogsDTO/SortPaginatorQueryParamsType";
 import { Paginator } from "../dto/common/PaginatorModel";
 import {
   CreatePostForSpecificBlogType,
@@ -23,7 +23,7 @@ import { blogsQueryRepository } from "../repositories/query-repository/blogsQuer
 // @route GET /api/blogs
 // @access Public
 export const getBlogs = async (
-  req: RequestQueryParamsModel<BlogsQueryParamsType<BlogViewModel>>,
+  req: RequestQueryParamsModel<SortPaginatorQueryParamsType<BlogViewModel>>,
   res: Response<Paginator<BlogViewModel>>
 ) => {
   let {
@@ -50,7 +50,7 @@ export const getBlogs = async (
 export const getBlogPosts = async (
   req: RequestWithURIParamAndQueryParam<
     URIParamsRequest,
-    BlogsQueryParamsType<PostViewModel>
+    SortPaginatorQueryParamsType<PostViewModel>
   >,
   res: Response<Paginator<PostViewModel>>
 ) => {

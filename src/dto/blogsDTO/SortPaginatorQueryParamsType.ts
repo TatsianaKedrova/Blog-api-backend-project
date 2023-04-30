@@ -1,6 +1,6 @@
 import { SortDirections } from "../common/PaginatorModel";
 
-export type BlogsQueryParamsType<T> = {
+export type SortPaginatorQueryParamsType<T> = {
   searchNameTerm: string | null; //default = null
   sortBy: keyof T; //default = createdAt
   sortDirection: SortDirections; //default = desc
