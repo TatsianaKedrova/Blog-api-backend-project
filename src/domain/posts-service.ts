@@ -18,7 +18,7 @@ export const postsService = {
       content,
       blogId: new ObjectId(blogId),
       blogName: blog!.name,
-      createdAt: creationDate,
+      createdAt: creationDate(),
     };
     return await postsCommandsRepository.createNewPost(newPost);
   },

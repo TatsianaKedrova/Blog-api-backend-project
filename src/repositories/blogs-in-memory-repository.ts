@@ -21,7 +21,7 @@ export const blogsRepository = {
       name,
       description,
       websiteUrl,
-      createdAt: creationDate,
+      createdAt: creationDate(),
       isMembership: false,
     };
     db.blogs.push(newBlog);

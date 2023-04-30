@@ -17,7 +17,7 @@ export let db: TDataBase = {
       description: "Tania loves backend",
       websiteUrl: "string.com",
       isMembership: false,
-      createdAt: creationDate,
+      createdAt: creationDate(),
     },
     {
       id: "456",
@@ -25,7 +25,7 @@ export let db: TDataBase = {
       description: "Prince loves to read",
       websiteUrl: "prince.com",
       isMembership: false,
-      createdAt: creationDate,
+      createdAt: creationDate(),
     },
     {
       id: "789",
@@ -33,7 +33,7 @@ export let db: TDataBase = {
       description: "Dear Baby loves to play",
       websiteUrl: "dear-baby.com",
       isMembership: false,
-      createdAt: creationDate,
+      createdAt: creationDate(),
     },
   ],
   posts: [
@@ -44,7 +44,7 @@ export let db: TDataBase = {
       content: "Content - this is content! Love you so much",
       blogId: "123",
       blogName: "Tania",
-      createdAt: creationDate,
+      createdAt: creationDate(),
     },
   ],
 };

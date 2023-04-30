@@ -25,7 +25,7 @@ export const postsRepository = {
       content,
       blogId,
       blogName: blog!.name,
-      createdAt: creationDate,
+      createdAt: creationDate(),
     };
     db.posts.push(newPost);
     return newPost;
