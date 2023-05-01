@@ -24,7 +24,6 @@ export const blogsQueryRepository = {
     const totalCount = await blogsCollection.countDocuments(filter);
     const foundBlogs = await blogsCollection
       .find(filter)
-      // .collation({ locale: "en" })
       .sort(sortBy, sortDirection)
       .skip(skip)
       .limit(pageSize)
@@ -51,7 +50,6 @@ export const blogsQueryRepository = {
     });
     const foundPosts = await postsCollection
       .find({ blogId: new ObjectId(id) })
-      .collation({ locale: "en" })
       .sort(sortBy, sortDirection)
       .skip(skip)
       .limit(pageSize)

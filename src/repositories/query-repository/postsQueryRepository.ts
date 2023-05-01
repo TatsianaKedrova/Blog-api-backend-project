@@ -17,7 +17,6 @@ export const postsQueryRepository = {
     const totalCount = await postsCollection.countDocuments();
     const foundPosts = await postsCollection
       .find()
-      .collation({ locale: "en" })
       .sort(sortBy, sortDirection)
       .skip(skip)
       .limit(pageSize)

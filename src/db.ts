@@ -2,6 +2,7 @@ import { Db, MongoClient } from "mongodb";
 import { PostDBType } from "./dto/postsDTO/PostModel";
 import * as dotenv from "dotenv";
 import { BlogDBType } from "./dto/blogsDTO/BlogModel";
+import { UserDBType } from "./dto/usersDTO/usersDTO";
 dotenv.config();
 const mongoUri = process.env.MONGO_URL /*|| "mongodb://localhost:27017/"*/
 
@@ -11,7 +12,8 @@ export const mongoDB: Db = client.db(dbName);
 
 export const blogsCollection = mongoDB.collection<BlogDBType>("blogs");
 export const postsCollection = mongoDB.collection<PostDBType>("posts");
-export const videosCollection = mongoDB.collection<PostDBType>("videos");
+export const videosCollection = mongoDB.collection<any>("videos");
+export const usersCollection = mongoDB.collection<UserDBType>("users");
 
 export const runDB = async () => {
   try {
