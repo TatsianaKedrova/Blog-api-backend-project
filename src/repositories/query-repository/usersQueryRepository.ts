@@ -17,15 +17,19 @@ export const usersQueryRepository = {
   ): Promise<Paginator<UserViewModel>> {
     const skip = paginationHandler(pageNumber, pageSize);
     const totalCount = await usersCollection.countDocuments();
-    const filter: Filter<UserDBType> = {};
+    const filter1: Filter<UserDBType> = {};
+    const filter2: Filter<UserDBType> = {};
+
     if (searchEmailTerm) {
-      filter.email = { $regex: searchEmailTerm };
+      filter1.email = { $regex: searchEmailTerm, $options: "i" };
     }
     if (searchLoginTerm) {
-      filter.login = { $regex: searchLoginTerm };
+      filter2.login = { $regex: searchLoginTerm, $options: "i" };
     }
     const foundUsers = await usersCollection
-      .find(filter)
+      .find({
+        $or: [filter1, filter2],
+      })
       .sort(sortBy, sortDirection)
       .skip(skip)
       .limit(pageSize)
