@@ -12,13 +12,13 @@ import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { postsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
 import { Paginator } from "../dto/common/PaginatorModel";
-import { SortPaginatorQueryParamsType } from "../dto/blogsDTO/SortPaginatorQueryParamsType";
+import { BlogsPostsQueryParams } from "../dto/common/SortPaginatorQueryParamsType";
 
 // @desc Get all posts
 // @route GET /api/posts
 // @access Public
 export const getPosts = async (
-  req: RequestQueryParamsModel<SortPaginatorQueryParamsType<PostViewModel>>,
+  req: RequestQueryParamsModel<BlogsPostsQueryParams<PostViewModel>>,
   res: Response<Paginator<PostViewModel>>
 ) => {
   let {

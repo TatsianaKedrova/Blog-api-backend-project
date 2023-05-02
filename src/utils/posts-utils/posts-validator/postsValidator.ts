@@ -1,7 +1,8 @@
-import { CustomValidator, body } from "express-validator";
+import { CustomValidator } from "express-validator";
 import { db } from "../../../temporal-database/project-db";
 import { blogsCollection } from "../../../db";
 import { ObjectId } from "mongodb";
+import { stringInputValidatorCommon, stringsInputValidatorWithLength } from "../../common-utils/validatorForStrings";
 
 /** This blogId validator is for hardcoded db */
 export const isValidBlogIdHardcodedDB: CustomValidator = (blogId: string) => {
@@ -27,32 +28,15 @@ export const isValidBlogId: CustomValidator = async (blogId: string) => {
   }
 };
 
-export const stringInputValidatorCommon = (field: string) => {
-  return body(field)
-    .exists()
-    .withMessage(`${field} field is required`)
-    .isString()
-    .trim()
-    .withMessage(`${field} should be of type String`)
-    .notEmpty()
-    .withMessage(`${field} must be included in request body`);
-};
-
-export const stringsInputValidator = (field: string, maxLength: number) => {
-  return stringInputValidatorCommon(field)
-    .isLength({ max: maxLength })
-    .withMessage(`${field}'s max length is ${maxLength}`);
-};
-
 export const postsValidator = [
-  stringsInputValidator("title", 30),
-  stringsInputValidator("shortDescription", 100),
-  stringsInputValidator("content", 1000),
+  stringsInputValidatorWithLength("title", 30),
+  stringsInputValidatorWithLength("shortDescription", 100),
+  stringsInputValidatorWithLength("content", 1000),
   stringInputValidatorCommon("blogId").custom(isValidBlogId),
 ];
 
 export const postsValidatorForSpecificBlog = [
-  stringsInputValidator("title", 30),
-  stringsInputValidator("shortDescription", 100),
-  stringsInputValidator("content", 1000),
+  stringsInputValidatorWithLength("title", 30),
+  stringsInputValidatorWithLength("shortDescription", 100),
+  stringsInputValidatorWithLength("content", 1000),
 ];
