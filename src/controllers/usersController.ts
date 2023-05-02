@@ -39,7 +39,11 @@ export const addNewUser = async (
   req: RequestBodyModel<UserInputModel>,
   res: Response<UserViewModel>
 ) => {
-  const newUser = await usersService.createUser(req.body);
+  const newUser = await usersService.createUser(
+    req.body.email,
+    req.body.login,
+    req.body.password
+  );
   res.status(StatusCodes.CREATED).send(newUser);
 };
 

@@ -5,6 +5,7 @@ import { usersCollection } from "../../db";
 import { Paginator } from "../../dto/common/PaginatorModel";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { transformUsersResponse } from "../../utils/usersUtils/transformUsersResponse";
+import { getTotalCountOfDocuments } from "../../utils/common-utils/getTotalCountOfDocuments";
 
 export const usersQueryRepository = {
   async getUsers(
@@ -16,20 +17,26 @@ export const usersQueryRepository = {
     searchLoginTerm: string | null
   ): Promise<Paginator<UserViewModel>> {
     const skip = paginationHandler(pageNumber, pageSize);
-    const totalCount = await usersCollection.countDocuments();
-    const filter1: Filter<UserDBType> = {};
-    const filter2: Filter<UserDBType> = {};
+    const filterEmail: Filter<UserDBType> = {};
+    const filterLogin: Filter<UserDBType> = {};
 
     if (searchEmailTerm) {
-      filter1.email = { $regex: searchEmailTerm, $options: "i" };
+      filterEmail.email = { $regex: searchEmailTerm, $options: "i" };
     }
     if (searchLoginTerm) {
-      filter2.login = { $regex: searchLoginTerm, $options: "i" };
+      filterLogin.login = { $regex: searchLoginTerm, $options: "i" };
     }
+    const filter = {
+      $or: [filterEmail, filterLogin],
+    };
+    const totalCount = await usersCollection.countDocuments(filter);
+    const totalCount1 = await getTotalCountOfDocuments<UserDBType>(
+      usersCollection,
+      filter
+    );
+
     const foundUsers = await usersCollection
-      .find({
-        $or: [filter1, filter2],
-      })
+      .find(filter)
       .sort(sortBy, sortDirection)
       .skip(skip)
       .limit(pageSize)
@@ -41,5 +48,11 @@ export const usersQueryRepository = {
       pageSize,
       pageNumber
     );
+  },
+  async findByLoginOrEmail(loginOrEmail: string) {
+    const isUserExist = await usersCollection.findOne({
+      $or: [{ login: loginOrEmail }, { email: loginOrEmail }],
+    });
+    return isUserExist;
   },
 };

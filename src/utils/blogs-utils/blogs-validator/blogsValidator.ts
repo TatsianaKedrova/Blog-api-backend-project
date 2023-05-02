@@ -1,7 +1,7 @@
-import { stringsInputValidator } from "../../posts-utils/posts-validator/postsValidator";
+import { stringsInputValidatorWithLength } from "../../common-utils/validatorForStrings";
 
 export const blogsURLValidator = () => {
-  return stringsInputValidator("websiteUrl", 100).custom((url) => {
+  return stringsInputValidatorWithLength("websiteUrl", 100).custom((url) => {
     const urlRegex = new RegExp(
       "^https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$"
     );
@@ -13,7 +13,7 @@ export const blogsURLValidator = () => {
 };
 
 export const blogsValidator = [
-  stringsInputValidator("name", 15),
-  stringsInputValidator("description", 500),
+  stringsInputValidatorWithLength("name", 15),
+  stringsInputValidatorWithLength("description", 500),
   blogsURLValidator(),
 ];
