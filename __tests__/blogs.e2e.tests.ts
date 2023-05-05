@@ -11,9 +11,14 @@ describe("API for blogs", () => {
     await request(app).delete("/api/testing/all-data");
   });
   test("GET list of blogs with status 200", async () => {
-    await request(app).get("/api/blogs").expect(StatusCodes.OK, []);
+    await request(app).get("/api/blogs").expect(StatusCodes.OK, {
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 0,
+      items: [],
+    });
   });
-
   test("SHOULD NOT create a new blog with incorrect input data and return status 400", async () => {
     await request(app)
       .post("/api/blogs")
@@ -39,7 +44,13 @@ describe("API for blogs", () => {
     const getAllExistingCourses = await request(app)
       .get("/api/blogs")
       .expect(StatusCodes.OK);
-    expect(getAllExistingCourses.body).toEqual([]);
+    expect(getAllExistingCourses.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 0,
+      items: [],
+    });
   });
 
   test("SHOULD NOT create a new blog with incorrect AUTH TYPE and return status 401", async () => {
@@ -52,7 +63,13 @@ describe("API for blogs", () => {
     const getAllExistingCourses = await request(app)
       .get("/api/blogs")
       .expect(StatusCodes.OK);
-    expect(getAllExistingCourses.body).toEqual([]);
+    expect(getAllExistingCourses.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 0,
+      items: [],
+    });
   });
 
   test("SHOULD NOT create a new blog with incorrect Auth token and return status 401", async () => {
@@ -65,7 +82,13 @@ describe("API for blogs", () => {
     const getAllExistingCourses = await request(app)
       .get("/api/blogs")
       .expect(StatusCodes.OK);
-    expect(getAllExistingCourses.body).toEqual([]);
+    expect(getAllExistingCourses.body).toEqual({
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 0,
+      items: [],
+    });
   });
 
   let createdBlog1: BlogViewModel;
@@ -89,7 +112,7 @@ describe("API for blogs", () => {
       .get("/api/blogs")
       .expect(StatusCodes.OK);
 
-    expect(getAllExistingCourses.body.length).toEqual(1);
+    expect(getAllExistingCourses.body.items.length).toEqual(1);
   });
   test("Create a new blog with incorrect input name and return status 400", async () => {
     const postResponse = await request(app)
@@ -115,7 +138,7 @@ describe("API for blogs", () => {
       .get("/api/blogs")
       .expect(StatusCodes.OK);
 
-    expect(getAllExistingCourses.body.length).toEqual(1);
+    expect(getAllExistingCourses.body.items.length).toEqual(1);
   });
 
   test("Create a new blog with incorrect input website and description and return status 400", async () => {
@@ -143,8 +166,7 @@ describe("API for blogs", () => {
     const getAllExistingCourses = await request(app)
       .get("/api/blogs")
       .expect(StatusCodes.OK);
-
-    expect(getAllExistingCourses.body.length).toEqual(1);
+    expect(getAllExistingCourses.body.items.length).toEqual(1);
   });
 
   test("GET blog ID with 404 status", async () => {
@@ -162,7 +184,7 @@ describe("API for blogs", () => {
       .post("/api/blogs")
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({
-        name: "Nadine",
+        name: "Aadine",
         description: "Cats can cure - CCC",
         websiteUrl: "https://HnYLc7ws51KEn5wrp7cYHuVZEHlP9ADc3.uZDiBjA8F",
       })
@@ -174,7 +196,7 @@ describe("API for blogs", () => {
       .get("/api/blogs")
       .expect(StatusCodes.OK);
 
-    expect(getAllExistingCourses.body.length).toEqual(2);
+    expect(getAllExistingCourses.body.items.length).toEqual(2);
   });
 
   test("Should return Unauthorized status 401 cos' auth token is incorrect", async () => {
@@ -182,9 +204,9 @@ describe("API for blogs", () => {
       .delete(`/api/blogs/${createdBlog2.id}`)
       .set("Authorization", `Basic ${incorrectAuthToken}`)
       .expect(StatusCodes.UNAUTHORIZED);
-    const getResponse = (await request(app).get("/api/blogs")).body;
+    const getResponse = (await request(app).get("/api/blogs")).body.items;
     expect(getResponse.length).toEqual(2);
-    expect(getResponse[1].name).toEqual("Nadine");
+    expect(getResponse[0].name).toEqual("Aadine");
   });
 
   test("Should return NOT_FOUND status 404 with incorrect ID", async () => {
@@ -192,9 +214,9 @@ describe("API for blogs", () => {
       .delete("/api/blogs/123")
       .set("Authorization", `Basic ${correctAuthToken}`)
       .expect(StatusCodes.NOT_FOUND);
-    const getResponse = (await request(app).get("/api/blogs")).body;
+    const getResponse = (await request(app).get("/api/blogs")).body.items;
     expect(getResponse.length).toEqual(2);
-    expect(getResponse[1].name).toEqual("Nadine");
+    expect(getResponse[1].name).toEqual("fff");
   });
 
   test("Should delete blog by ID with correct ID", async () => {
@@ -202,7 +224,7 @@ describe("API for blogs", () => {
       .delete(`/api/blogs/${createdBlog2.id}`)
       .set("Authorization", `Basic ${correctAuthToken}`)
       .expect(StatusCodes.NO_CONTENT);
-    const getResponse = (await request(app).get("/api/blogs")).body;
+    const getResponse = (await request(app).get("/api/blogs")).body.items;
     expect(getResponse[0].name).toEqual("fff");
     expect(getResponse.length).toBe(1);
   });
@@ -223,8 +245,8 @@ describe("API for blogs", () => {
       .get("/api/blogs")
       .expect(StatusCodes.OK);
 
-    expect(getAllExistingCourses.body[0].name).toEqual("Tania");
-    expect(getAllExistingCourses.body[0].description).toEqual(
+    expect(getAllExistingCourses.body.items[0].name).toEqual("Tania");
+    expect(getAllExistingCourses.body.items[0].description).toEqual(
       "Dog don't drive - DDD"
     );
   });
@@ -245,8 +267,8 @@ describe("API for blogs", () => {
       .get("/api/blogs")
       .expect(StatusCodes.OK);
 
-    expect(getAllExistingCourses.body[0].name).toEqual("Tania");
-    expect(getAllExistingCourses.body[0].description).toEqual(
+    expect(getAllExistingCourses.body.items[0].name).toEqual("Tania");
+    expect(getAllExistingCourses.body.items[0].description).toEqual(
       "Dog don't drive - DDD"
     );
   });
@@ -267,8 +289,8 @@ describe("API for blogs", () => {
       .get("/api/blogs")
       .expect(StatusCodes.OK);
 
-    expect(getAllExistingCourses.body[0].name).toEqual("Tania");
-    expect(getAllExistingCourses.body[0].description).toEqual(
+    expect(getAllExistingCourses.body.items[0].name).toEqual("Tania");
+    expect(getAllExistingCourses.body.items[0].description).toEqual(
       "Dog don't drive - DDD"
     );
   });
@@ -297,8 +319,8 @@ describe("API for blogs", () => {
       .get("/api/blogs")
       .expect(StatusCodes.OK);
 
-    expect(getAllExistingCourses.body[0].name).toEqual("Tania");
-    expect(getAllExistingCourses.body[0].description).toEqual(
+    expect(getAllExistingCourses.body.items[0].name).toEqual("Tania");
+    expect(getAllExistingCourses.body.items[0].description).toEqual(
       "Dog don't drive - DDD"
     );
   });
@@ -333,9 +355,140 @@ describe("API for blogs", () => {
       .get("/api/blogs")
       .expect(StatusCodes.OK);
 
-    expect(getAllExistingCourses.body[0].name).toEqual("Tania");
-    expect(getAllExistingCourses.body[0].description).toEqual(
+    expect(getAllExistingCourses.body.items[0].name).toEqual("Tania");
+    expect(getAllExistingCourses.body.items[0].description).toEqual(
       "Dog don't drive - DDD"
     );
+  });
+  test("Create a new blog with correct input data and return status 201", async () => {
+    const postResponse = await request(app)
+      .post("/api/blogs")
+      .set("Authorization", `Basic ${correctAuthToken}`)
+      .send({
+        name: "Maria",
+        description: "Maria is mother of Jesus Christ",
+        websiteUrl: "https://MbkyQDhuI51KEn5wrp7cYHuVZEHlP9ADc3.uZDiBjA8F",
+      })
+      .expect(StatusCodes.CREATED);
+    expect(postResponse.body.name).toEqual("Maria");
+    expect(postResponse.body.isMembership).toEqual(false);
+
+    const getAllExistingCourses = await request(app)
+      .get("/api/blogs")
+      .expect(StatusCodes.OK);
+
+    expect(getAllExistingCourses.body.items.length).toEqual(2);
+  });
+  let createdBlog3: BlogViewModel;
+
+  test("Create a new blog with correct input data and return status 201", async () => {
+    const postResponse = await request(app)
+      .post("/api/blogs")
+      .set("Authorization", `Basic ${correctAuthToken}`)
+      .send({
+        name: "Lida",
+        description: "Lida will be my friend in Future",
+        websiteUrl: "https://MbkyQD51KEn5wrp7cYHuVZEHlP9ADc3.uZDiBjA8F",
+      })
+      .expect(StatusCodes.CREATED);
+    createdBlog3 = postResponse.body;
+    expect(createdBlog3.name).toEqual("Lida");
+    expect(createdBlog3.isMembership).toEqual(false);
+
+    const getAllExistingCourses = await request(app)
+      .get("/api/blogs")
+      .expect(StatusCodes.OK);
+
+    expect(getAllExistingCourses.body.items.length).toEqual(3);
+  });
+  test("GET list of blogs that match searchNameTerm filtering", async () => {
+    const filterResult = await request(app)
+      .get("/api/blogs?searchNameTerm=li")
+      .expect(StatusCodes.OK);
+    expect(filterResult.body.items[0].name).toEqual("Lida");
+  });
+  test("Should get the particular page with particular blogs", async () => {
+    const paginationResult = await request(app).get(
+      "/api/blogs?pageSize=1&pageNumber=3"
+    );
+    expect(paginationResult.body.items.length).toEqual(1);
+    expect(paginationResult.body.items[0].name).toEqual("Tania");
+  });
+  test("Default page number should be 1 and page size should be 10", async () => {
+    const filterResult = await request(app)
+      .get("/api/blogs")
+      .expect(StatusCodes.OK);
+    expect(filterResult.body.page).toEqual(1);
+    expect(filterResult.body.pageSize).toEqual(10);
+  });
+  test("Should sort blogs in ascending order", async () => {
+    const paginationResult = await request(app).get(
+      "/api/blogs?sortBy=name&sortDirection=asc"
+    );
+    expect(paginationResult.body.items.length).toEqual(3);
+    expect(paginationResult.body.items[0].name).toEqual("Lida");
+    expect(paginationResult.body.items[2].name).toEqual("Tania");
+  });
+  test("Should sort blogs in descending order if sortDirection query param is no t provided", async () => {
+    const paginationResult = await request(app).get("/api/blogs?sortBy=name");
+    expect(paginationResult.body.items.length).toEqual(3);
+    expect(paginationResult.body.items[0].name).toEqual("Tania");
+    expect(paginationResult.body.items[2].name).toEqual("Lida");
+  });
+  test("CREATE post for specific blog", async () => {
+    const result = await request(app)
+      .post(`/api/blogs/${createdBlog3.id}/posts`)
+      .set("Authorization", `Basic ${correctAuthToken}`)
+      .send({
+        title: "Stas",
+        content: "Stas is my friend",
+        shortDescription: "What can I say - love lives long!!!",
+      })
+      .expect(StatusCodes.CREATED);
+    expect(result.body.blogName).toEqual("Lida");
+    expect(result.body.title).toEqual("Stas");
+  });
+  test("SHOULDN'T CREATE post for specific blog with invalid authToken", async () => {
+    await request(app)
+      .post(`/api/blogs/${createdBlog3.id}/posts`)
+      .set("Authorization", `Basic ${incorrectAuthToken}`)
+      .send({
+        title: "Jenia",
+        content: "Jenia is my friend",
+        shortDescription: "What can I say - Jenia lives long!!!",
+      })
+      .expect(StatusCodes.UNAUTHORIZED, {});
+  });
+  test("SHOULD CREATE post for specific blog with valid authToken", async () => {
+    const result = await request(app)
+      .post(`/api/blogs/${createdBlog3.id}/posts`)
+      .set("Authorization", `Basic ${correctAuthToken}`)
+      .send({
+        title: "Jenia",
+        content: "Jenia is my friend",
+        shortDescription: "What can I say - Jenia lives long!!!",
+      })
+      .expect(StatusCodes.CREATED);
+    expect(result.body.blogName).toEqual("Lida");
+    expect(result.body.title).toEqual("Jenia");
+  });
+  test("GET all posts for specific blog with sorting by name with default descending order", async () => {
+    const result = await request(app)
+      .get(`/api/blogs/${createdBlog3.id}/posts?sortBy=title`)
+      .expect(StatusCodes.OK);
+    expect(result.body.items.length).toEqual(2);
+    expect(result.body.items[0].title).toEqual("Stas");
+    expect(result.body.items[1].content).toEqual("Jenia is my friend");
+  });
+  test("GET all posts for specific blog with paging", async () => {
+    await request(app)
+      .get(`/api/blogs/${createdBlog3.id}/posts?pageSize=2&pageNumber=2`)
+      .expect(StatusCodes.OK, {
+        pagesCount: 1,
+        page: 2,
+        pageSize: 2,
+        totalCount: 2,
+        items: [],
+      });
   });
 });

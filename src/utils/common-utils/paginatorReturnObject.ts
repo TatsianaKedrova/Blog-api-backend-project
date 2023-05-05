@@ -6,7 +6,7 @@ export const paginatorReturnObject = <T>(
   pageNumber: number
 ) => {
   const transformedData = data.map((doc) => mapperTransformer(doc));
-  let pagesCount = Math.ceil(totalCount / pageSize);
+  let pagesCount = totalCount === 0 ? 1 : Math.ceil(totalCount / pageSize);
   return {
     pagesCount,
     page: pageNumber,
