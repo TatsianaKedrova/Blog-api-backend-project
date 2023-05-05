@@ -4,7 +4,7 @@ import * as dotenv from "dotenv";
 import { BlogDBType } from "./dto/blogsDTO/BlogModel";
 import { UserDBType } from "./dto/usersDTO/usersDTO";
 dotenv.config();
-const mongoUri = process.env.MONGO_URL /*|| "mongodb://localhost:27017/"*/
+const mongoUri = /*process.env.MONGO_URL ||*/ "mongodb://127.0.0.1:27017";
 
 const client: MongoClient = new MongoClient(mongoUri as string);
 const dbName = "blogs-posts";
