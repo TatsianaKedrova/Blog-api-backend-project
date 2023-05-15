@@ -1,7 +1,4 @@
-import {
-  UserDBType,
-  UserViewModel,
-} from "../dto/usersDTO/usersDTO";
+import { UserDBType, UserViewModel } from "../dto/usersDTO/usersDTO";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import bcrypt from "bcrypt";
@@ -37,6 +34,6 @@ export const usersService = {
     if (user.passwordHash !== passwordHash) {
       return false;
     }
-    return true;
+    return user;
   },
 };

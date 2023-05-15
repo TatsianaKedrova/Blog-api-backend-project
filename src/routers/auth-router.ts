@@ -5,6 +5,7 @@ import { LoginInputModel } from "../dto/authDTO/authDTO";
 import { StatusCodes } from "http-status-codes";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import { authValidator } from "../utils/auth-utils/auth-validator";
+import { jwtService } from "../application/jwt-service";
 export const authRouter = express.Router({});
 
 authRouter.post(
@@ -12,12 +13,13 @@ authRouter.post(
   authValidator,
   responseErrorValidationMiddleware,
   async (req: RequestBodyModel<LoginInputModel>, res: Response) => {
-    const checkResult = await usersService.checkCredentials(
+    const user = await usersService.checkCredentials(
       req.body.loginOrEmail,
       req.body.password
     );
-    if (checkResult) {
-      res.sendStatus(StatusCodes.NO_CONTENT);
+    if (user) {
+      const token = await jwtService.createJWT(user);
+      res.status(StatusCodes.CREATED).send(token);
     } else {
       res.sendStatus(StatusCodes.UNAUTHORIZED);
     }
