@@ -8,9 +8,9 @@ export const usersCommandsRepository = {
     const createdUser = await usersCollection.insertOne(newUser);
     return transformUsersResponse(newUser, createdUser.insertedId.toString());
   },
-  async findUserById(id: string) {
+  async findUserById(id: string): Promise<UserDBType | null> {
     const foundUser = await usersCollection.findOne({ _id: new ObjectId(id) });
-    return !!foundUser;
+    return foundUser;
   },
   async deleteUser(id: string): Promise<boolean> {
     const user = await this.findUserById(id);

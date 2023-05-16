@@ -11,3 +11,10 @@ export type URIParamsCommentId = {
    */
   commentId: string;
 };
+
+export type URIParamsPostId = {
+  /**
+   * URI param postId
+   */
+  postId: string;
+};

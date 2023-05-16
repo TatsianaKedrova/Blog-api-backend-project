@@ -8,11 +8,18 @@ import {
   RequestWithURIParam,
   RequestWithURIParamsAndBody,
 } from "../dto/common/RequestModels";
-import { URIParamsRequest } from "../dto/common/URIParamsRequest";
+import {
+  URIParamsPostId,
+  URIParamsRequest,
+} from "../dto/common/URIParamsRequest";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { postsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
 import { Paginator } from "../dto/common/PaginatorModel";
 import { BlogsPostsQueryParams } from "../dto/common/SortPaginatorQueryParamsType";
+import {
+  CommentInputModel,
+  CommentViewModel,
+} from "../dto/commentsDTO/commentsDTO";
 
 // @desc Get all posts
 // @route GET /api/posts
@@ -92,3 +99,21 @@ export const deletePostById = async (
     res.sendStatus(StatusCodes.NO_CONTENT);
   }
 };
+
+export const createComment = async (
+  req: RequestWithURIParamsAndBody<URIParamsPostId, CommentInputModel>,
+  res: Response<CommentViewModel>
+) => {
+  const { content } = req.body;
+  const createdComment = await postsService.createNewComment(
+    req.params.postId,
+    content
+  );
+  if (!createdComment) {
+    res.sendStatus(StatusCodes.NOT_FOUND);
+  } else {
+    res.status(StatusCodes.CREATED).send(createdComment);
+  }
+};
+
+

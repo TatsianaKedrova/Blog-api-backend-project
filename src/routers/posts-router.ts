@@ -4,6 +4,7 @@ export const postsRouter = express.Router({});
 import { postsValidator } from "../utils/posts-utils/posts-validator/postsValidator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import {
+  createComment,
   createNewPost,
   deletePostById,
   getPosts,
@@ -11,6 +12,7 @@ import {
   updatePostById,
 } from "../controllers/postsController";
 import { validateObjectIdParams } from "../middlewares/validateObjectIdParams";
+import { authMiddleware } from "../middlewares/authMiddleware";
 
 //TODO: GET LIST OF POSTS
 postsRouter.get("/", getPosts);
@@ -44,3 +46,6 @@ postsRouter.delete(
   validateObjectIdParams,
   deletePostById
 );
+
+//TODO: CREATE COMMENT FOR SPECIFIC POST
+postsRouter.post("/:postId/comments", authMiddleware, createComment);

@@ -1,7 +1,16 @@
 import { ObjectId } from "mongodb";
 import { commentsCollection } from "../../db";
-
+import {
+  CommentDBType,
+  CommentViewModel,
+} from "../../dto/commentsDTO/commentsDTO";
+import { transformComment } from "../../utils/comments-utils/transformComment";
 export const commentsCommandsRepository = {
+  async createComment(newComment: CommentDBType): Promise<CommentViewModel> {
+    const result = await commentsCollection.insertOne(newComment);
+
+    return transformComment(newComment, result.insertedId.toString());
+  },
   async _findComment(id: string) {
     const comments = await commentsCollection.findOne({
       _id: new ObjectId(id),

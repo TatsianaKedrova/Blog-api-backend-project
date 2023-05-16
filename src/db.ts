@@ -3,7 +3,7 @@ import { PostDBType } from "./dto/postsDTO/PostModel";
 import * as dotenv from "dotenv";
 import { BlogDBType } from "./dto/blogsDTO/BlogModel";
 import { UserDBType } from "./dto/usersDTO/usersDTO";
-import { CommentViewModel } from "./dto/commentsDTO/commentsDTO";
+import { CommentDBType } from "./dto/commentsDTO/commentsDTO";
 dotenv.config();
 const mongoUri = /*process.env.MONGO_URL ||*/ "mongodb://127.0.0.1:27017";
 
@@ -15,7 +15,7 @@ export const blogsCollection = mongoDB.collection<BlogDBType>("blogs");
 export const postsCollection = mongoDB.collection<PostDBType>("posts");
 export const videosCollection = mongoDB.collection<any>("videos");
 export const usersCollection = mongoDB.collection<UserDBType>("users");
-export const commentsCollection = mongoDB.collection<CommentViewModel>("comments");
+export const commentsCollection = mongoDB.collection<CommentDBType>("comments");
 
 export const runDB = async () => {
   try {

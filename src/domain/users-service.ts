@@ -27,12 +27,15 @@ export const usersService = {
   async _generateHash(password: string, salt: string) {
     return await bcrypt.hash(password, salt);
   },
-  async checkCredentials(loginOrEmail: string, password: string) {
+  async checkCredentials(
+    loginOrEmail: string,
+    password: string
+  ): Promise<UserDBType | null> {
     const user = await usersQueryRepository.findByLoginOrEmail(loginOrEmail);
-    if (!user) return false;
+    if (!user) return null;
     const passwordHash = await this._generateHash(password, user.passwordSalt);
     if (user.passwordHash !== passwordHash) {
-      return false;
+      return null;
     }
     return user;
   },
