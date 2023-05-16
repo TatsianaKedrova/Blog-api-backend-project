@@ -4,3 +4,10 @@ export type URIParamsRequest = {
    */
   id: string;
 };
+
+export type URIParamsCommentId = {
+  /**
+   * URI param commentId
+   */
+  commentId: string;
+};
