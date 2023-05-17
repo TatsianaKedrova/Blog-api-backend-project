@@ -5,7 +5,6 @@ import { usersCollection } from "../../db";
 import { Paginator } from "../../dto/common/PaginatorModel";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { transformUsersResponse } from "../../utils/usersUtils/transformUsersResponse";
-import { getTotalCountOfDocuments } from "../../utils/common-utils/getTotalCountOfDocuments";
 
 export const usersQueryRepository = {
   async getUsers(
@@ -30,10 +29,6 @@ export const usersQueryRepository = {
       $or: [filterEmail, filterLogin],
     };
     const totalCount = await usersCollection.countDocuments(filter);
-    const totalCount1 = await getTotalCountOfDocuments<UserDBType>(
-      usersCollection,
-      filter
-    );
 
     const foundUsers = await usersCollection
       .find(filter)

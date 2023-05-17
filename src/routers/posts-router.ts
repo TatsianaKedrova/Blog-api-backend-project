@@ -1,7 +1,7 @@
 import express from "express";
 import { basicAuthMiddleware } from "../middlewares/basicAuth";
 export const postsRouter = express.Router({});
-import { postsValidator } from "../utils/posts-utils/posts-validator/postsValidator";
+import { postsValidator } from "../utils/posts-utils/postsValidator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import {
   createComment,
@@ -13,6 +13,7 @@ import {
 } from "../controllers/postsController";
 import { validateObjectIdParams } from "../middlewares/validateObjectIdParams";
 import { authMiddleware } from "../middlewares/authMiddleware";
+import { commentValidator } from "../utils/comments-utils/commentValidator";
 
 //TODO: GET LIST OF POSTS
 postsRouter.get("/", getPosts);
@@ -48,4 +49,10 @@ postsRouter.delete(
 );
 
 //TODO: CREATE COMMENT FOR SPECIFIC POST
-postsRouter.post("/:postId/comments", authMiddleware, createComment);
+postsRouter.post(
+  "/:postId/comments",
+  authMiddleware,
+  commentValidator,
+  responseErrorValidationMiddleware,
+  createComment
+);

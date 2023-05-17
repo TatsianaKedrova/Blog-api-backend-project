@@ -1,7 +1,7 @@
 import express from "express";
 
 import { basicAuthMiddleware } from "../middlewares/basicAuth";
-import { blogsValidator } from "../utils/blogs-utils/blogs-validator/blogsValidator";
+import { blogsValidator } from "../utils/blogs-utils/blogsValidator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import {
   createNewBlog,
@@ -13,9 +13,7 @@ import {
   updateBlogById,
 } from "../controllers/blogsController";
 import { validateObjectIdParams } from "../middlewares/validateObjectIdParams";
-import {
-  postsValidatorForSpecificBlog,
-} from "../utils/posts-utils/posts-validator/postsValidator";
+import { postsValidatorForSpecificBlog } from "../utils/posts-utils/postsValidator";
 export const blogsRouter = express.Router({});
 
 //TODO: GET LIST OF BLOGS

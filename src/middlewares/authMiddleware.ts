@@ -8,7 +8,6 @@ export const authMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
-  debugger;
   let authValue = req.headers.authorization;
   if (!authValue || authValue.split(" ")[0].toLowerCase() !== "bearer") {
     res.sendStatus(StatusCodes.UNAUTHORIZED);
@@ -18,8 +17,15 @@ export const authMiddleware = async (
   const token = authValue.split(" ")[1];
   const userId = await jwtService.getUserIdByToken(token);
   if (userId) {
-    req.user = await usersCommandsRepository.findUserById(userId.toString());
-    next();
+    const foundUser = await usersCommandsRepository.findUserById(
+      userId.toString()
+    );
+    if (foundUser) {
+      req.user = foundUser;
+      next();
+    } else {
+      res.sendStatus(StatusCodes.UNAUTHORIZED);
+    }
   } else {
     res.sendStatus(StatusCodes.UNAUTHORIZED);
   }

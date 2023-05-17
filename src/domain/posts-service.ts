@@ -40,7 +40,9 @@ export const postsService = {
   },
   async createNewComment(
     postId: string,
-    content: string
+    content: string,
+    userLogin: string,
+    userId: string
   ): Promise<CommentViewModel | null> {
     const foundPost = this._findPostById(postId);
     if (!foundPost) {
@@ -51,8 +53,8 @@ export const postsService = {
       content,
       createdAt: creationDate(),
       commentatorInfo: {
-        userId: "1",
-        userLogin: "Nadin",
+        userId,
+        userLogin,
       },
     };
     return commentsCommandsRepository.createComment(newComment);

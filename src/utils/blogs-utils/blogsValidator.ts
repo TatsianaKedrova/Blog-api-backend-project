@@ -1,4 +1,4 @@
-import { stringsInputValidatorWithLength } from "../../common-utils/validatorForStrings";
+import { stringsInputValidatorWithLength } from "../common-utils/validatorForStrings";
 
 export const blogsURLValidator = () => {
   return stringsInputValidatorWithLength("websiteUrl", 100).custom((url) => {

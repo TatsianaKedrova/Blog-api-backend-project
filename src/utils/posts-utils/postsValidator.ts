@@ -1,8 +1,11 @@
 import { CustomValidator } from "express-validator";
-import { db } from "../../../temporal-database/project-db";
-import { blogsCollection } from "../../../db";
+import { db } from "../../temporal-database/project-db";
+import { blogsCollection } from "../../db";
 import { ObjectId } from "mongodb";
-import { stringInputValidatorCommon, stringsInputValidatorWithLength } from "../../common-utils/validatorForStrings";
+import {
+  stringInputValidatorCommon,
+  stringsInputValidatorWithLength,
+} from "../common-utils/validatorForStrings";
 
 /** This blogId validator is for hardcoded db */
 export const isValidBlogIdHardcodedDB: CustomValidator = (blogId: string) => {
