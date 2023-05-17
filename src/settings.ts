@@ -16,4 +16,4 @@ app.use("/api/blogs", blogsRouter);
 app.use("/api/posts", postsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
-app.use("api/comments", commentsRouter)
+app.use("/api/comments", commentsRouter)

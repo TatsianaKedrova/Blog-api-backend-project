@@ -48,7 +48,7 @@ export const postsService = {
     if (!foundPost) {
       return null;
     }
-    const newComment: OptionalId<CommentDBType> = {
+    const newComment: CommentDBType = {
       postId,
       content,
       createdAt: creationDate(),

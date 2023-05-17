@@ -15,7 +15,7 @@ import { commentsRepository } from "../repositories/query-repository/commentsRep
 import { StatusCodes } from "http-status-codes";
 import { commentsService } from "../domain/comments-service";
 
-export const getComments = async (
+export const getCommentById = async (
   req: RequestWithURIParam<URIParamsRequest>,
   res: Response<CommentViewModel>
 ) => {
