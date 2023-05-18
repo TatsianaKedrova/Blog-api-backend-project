@@ -7,6 +7,7 @@ import {
   createComment,
   createNewPost,
   deletePostById,
+  findCommentsForSpecifiedPost,
   getPosts,
   getPostsById,
   updatePostById,
@@ -55,4 +56,11 @@ postsRouter.post(
   commentValidator,
   responseErrorValidationMiddleware,
   createComment
+);
+
+//TODO: RETURN COMMENTS FOR SPECIFIED POST
+postsRouter.get(
+  "/:postId/comments",
+  validateObjectIdParams,
+  findCommentsForSpecifiedPost as any
 );

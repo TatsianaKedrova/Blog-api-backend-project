@@ -1,6 +1,6 @@
 import { SortDirections } from "./PaginatorModel";
 
-export type BlogsPostsQueryParams<T> = PagingSortingQueryParams<T> & {
+export type QueryParamsWithSearch<T> = PagingSortingQueryParams<T> & {
   searchNameTerm: string | null; //default = null
 };
 export type PagingSortingQueryParams<T> = {

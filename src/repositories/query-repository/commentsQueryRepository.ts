@@ -1,4 +1,4 @@
-import { transformComment } from "../../utils/comments-utils/transformComment";
+import { transformCommentsResponse } from "../../utils/comments-utils/transformCommentsResponse";
 import { ObjectId } from "mongodb";
 import { commentsCollection } from "../../db";
 import { CommentViewModel } from "../../dto/commentsDTO/commentsDTO";
@@ -11,7 +11,7 @@ export const commentsQueryRepository = {
     if (!comment) {
       return null;
     } else {
-      return transformComment(comment, id);
+      return transformCommentsResponse(comment, id);
     }
   },
 };

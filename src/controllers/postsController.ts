@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { PostInputModel, PostViewModel } from "../dto/postsDTO/PostModel";
 import { postsService } from "../domain/posts-service";
@@ -6,6 +6,7 @@ import {
   RequestBodyModel,
   RequestQueryParamsModel,
   RequestWithURIParam,
+  RequestWithURIParamAndQueryParam,
   RequestWithURIParamsAndBody,
 } from "../dto/common/RequestModels";
 import {
@@ -15,7 +16,10 @@ import {
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { postsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
 import { Paginator } from "../dto/common/PaginatorModel";
-import { BlogsPostsQueryParams } from "../dto/common/SortPaginatorQueryParamsType";
+import {
+  PagingSortingQueryParams,
+  QueryParamsWithSearch,
+} from "../dto/common/SortPaginatorQueryParamsType";
 import {
   CommentInputModel,
   CommentViewModel,
@@ -25,7 +29,7 @@ import {
 // @route GET /api/posts
 // @access Public
 export const getPosts = async (
-  req: RequestQueryParamsModel<BlogsPostsQueryParams<PostViewModel>>,
+  req: RequestQueryParamsModel<QueryParamsWithSearch<PostViewModel>>,
   res: Response<Paginator<PostViewModel>>
 ) => {
   let {
@@ -116,5 +120,33 @@ export const createComment = async (
     res.sendStatus(StatusCodes.NOT_FOUND);
   } else {
     res.status(StatusCodes.CREATED).send(createdComment);
+  }
+};
+
+export const findCommentsForSpecifiedPost = async (
+  req: RequestWithURIParamAndQueryParam<
+    URIParamsPostId,
+    PagingSortingQueryParams<CommentViewModel>
+  >,
+  res: Response<Paginator<CommentViewModel>>
+) => {
+  let {
+    pageNumber = 1,
+    sortBy = "createdAt",
+    pageSize = 10,
+    sortDirection = "desc",
+  } = req.query;
+  const commentsForSpecifiedPost =
+    await postsQueryRepository.findCommentsForSpecifiedPost(
+      req.params.postId,
+      Number(pageNumber),
+      sortBy,
+      Number(pageSize),
+      sortDirection
+    );
+  if (!commentsForSpecifiedPost) {
+    res.sendStatus(StatusCodes.NOT_FOUND);
+  } else {
+    res.status(StatusCodes.OK).send(commentsForSpecifiedPost);
   }
 };

@@ -1,6 +1,9 @@
-import { CommentDBType, CommentViewModel } from "../../dto/commentsDTO/commentsDTO";
+import {
+  CommentDBType,
+  CommentViewModel,
+} from "../../dto/commentsDTO/commentsDTO";
 
-export const transformComment = (
+export const transformCommentsResponse = (
   newComment: CommentDBType,
   id: string
 ): CommentViewModel => {

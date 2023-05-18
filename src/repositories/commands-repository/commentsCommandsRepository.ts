@@ -4,12 +4,12 @@ import {
   CommentDBType,
   CommentViewModel,
 } from "../../dto/commentsDTO/commentsDTO";
-import { transformComment } from "../../utils/comments-utils/transformComment";
+import { transformCommentsResponse } from "../../utils/comments-utils/transformCommentsResponse";
 export const commentsCommandsRepository = {
   async createComment(newComment: CommentDBType): Promise<CommentViewModel> {
     const result = await commentsCollection.insertOne(newComment);
 
-    return transformComment(newComment, result.insertedId.toString());
+    return transformCommentsResponse(newComment, result.insertedId.toString());
   },
   async findCommentById(id: string) {
     const comments = await commentsCollection.findOne({
