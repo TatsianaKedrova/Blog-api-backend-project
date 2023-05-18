@@ -1,11 +1,10 @@
-import { SortDirections } from "./PaginatorModel";
-
-export type BlogsPostsQueryParams<T> = PagingSortingQueryParams<T> & {
-  searchNameTerm: string | null; //default = null
+export type QueryParamsWithSearch = PaginationSortingQueryParams & {
+  searchNameTerm: string; //default = null but ParseQs doesn't accept null so I made empty string as a default value
 };
-export type PagingSortingQueryParams<T> = {
-  sortBy: keyof T; //default = createdAt
-  sortDirection: SortDirections; //default = desc
-  pageNumber: number; //default = 1
-  pageSize: number; //default = 10
+
+export type PaginationSortingQueryParams = {
+  sortBy: string; //default = createdAt
+  sortDirection: "asc" | "desc"; //default = desc
+  pageNumber: string; //default = 1
+  pageSize: string; //default = 10
 };

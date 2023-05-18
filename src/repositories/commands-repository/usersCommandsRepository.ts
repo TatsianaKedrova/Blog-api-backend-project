@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
 import { usersCollection } from "../../db";
 import { UserDBType, UserViewModel } from "../../dto/usersDTO/usersDTO";
 import { transformUsersResponse } from "../../utils/usersUtils/transformUsersResponse";
@@ -6,11 +6,14 @@ import { transformUsersResponse } from "../../utils/usersUtils/transformUsersRes
 export const usersCommandsRepository = {
   async createNewUser(newUser: UserDBType): Promise<UserViewModel> {
     const createdUser = await usersCollection.insertOne(newUser);
-    return transformUsersResponse(newUser, createdUser.insertedId.toString());
+    const newUserFound = await this.findUserById(
+      createdUser.insertedId.toString()
+    );
+    return transformUsersResponse(newUserFound!);
   },
-  async findUserById(id: string) {
+  async findUserById(id: string): Promise<WithId<UserDBType> | null> {
     const foundUser = await usersCollection.findOne({ _id: new ObjectId(id) });
-    return !!foundUser;
+    return foundUser;
   },
   async deleteUser(id: string): Promise<boolean> {
     const user = await this.findUserById(id);

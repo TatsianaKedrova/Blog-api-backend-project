@@ -11,7 +11,7 @@ import {
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { blogsService } from "../domain/blogs-service";
-import { BlogsPostsQueryParams } from "../dto/common/SortPaginatorQueryParamsType";
+import { QueryParamsWithSearch } from "../dto/common/SortPaginatorQueryParamsType";
 import { Paginator } from "../dto/common/PaginatorModel";
 import {
   CreatePostForSpecificBlogType,
@@ -23,11 +23,11 @@ import { blogsQueryRepository } from "../repositories/query-repository/blogsQuer
 // @route GET /api/blogs
 // @access Public
 export const getBlogs = async (
-  req: RequestQueryParamsModel<BlogsPostsQueryParams<BlogViewModel>>,
+  req: RequestQueryParamsModel<QueryParamsWithSearch>,
   res: Response<Paginator<BlogViewModel>>
 ) => {
   let {
-    searchNameTerm = null,
+    searchNameTerm = "",
     pageNumber = 1,
     sortBy = "createdAt",
     pageSize = 10,
@@ -50,7 +50,7 @@ export const getBlogs = async (
 export const getBlogPosts = async (
   req: RequestWithURIParamAndQueryParam<
     URIParamsRequest,
-    BlogsPostsQueryParams<PostViewModel>
+    QueryParamsWithSearch
   >,
   res: Response<Paginator<PostViewModel>>
 ) => {

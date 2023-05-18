@@ -10,7 +10,7 @@ import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnO
 
 export const blogsQueryRepository = {
   async findBlogs(
-    searchNameTerm: string | null,
+    searchNameTerm: string,
     pageNumber: number,
     sortBy: string,
     pageSize: number,

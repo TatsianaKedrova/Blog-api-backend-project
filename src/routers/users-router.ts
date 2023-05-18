@@ -1,3 +1,4 @@
+import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
 import express from "express";
 import {
   addNewUser,
@@ -9,7 +10,7 @@ import { createUserValidator } from "../utils/usersUtils/users-validator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 export const usersRouter = express.Router({});
 
-usersRouter.get("/", basicAuthMiddleware, getAllUsers as any);
+usersRouter.get("/", basicAuthMiddleware, getAllUsers);
 usersRouter.post(
   "/",
   basicAuthMiddleware,
@@ -17,4 +18,9 @@ usersRouter.post(
   responseErrorValidationMiddleware,
   addNewUser
 );
-usersRouter.delete("/:id", basicAuthMiddleware, deleteUser);
+usersRouter.delete(
+  "/:id",
+  basicAuthMiddleware,
+  validateObjectIdMiddleware,
+  deleteUser
+);

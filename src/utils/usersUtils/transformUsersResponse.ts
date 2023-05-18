@@ -1,11 +1,11 @@
+import { WithId } from "mongodb";
 import { UserDBType, UserViewModel } from "../../dto/usersDTO/usersDTO";
 
 export const transformUsersResponse = (
-  user: UserDBType,
-  id?: string
+  user: WithId<UserDBType>
 ): UserViewModel => {
   return {
-    id: (id as string) ?? user._id?.toString(),
+    id: user._id?.toString(),
     login: user.login,
     email: user.email,
     createdAt: user.createdAt,
