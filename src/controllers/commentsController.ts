@@ -7,10 +7,7 @@ import {
   RequestWithURIParam,
   RequestWithURIParamsAndBody,
 } from "../dto/common/RequestModels";
-import {
-  URIParamsCommentId,
-  URIParamsRequest,
-} from "../dto/common/URIParamsRequest";
+import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { commentsQueryRepository } from "../repositories/query-repository/commentsQueryRepository";
 import { StatusCodes } from "http-status-codes";
 import { commentsService } from "../domain/comments-service";
@@ -28,12 +25,10 @@ export const getCommentById = async (
 };
 
 export const deleteComment = async (
-  req: RequestWithURIParam<URIParamsCommentId>,
+  req: RequestWithURIParam<URIParamsRequest>,
   res: Response
 ) => {
-  const deletedComment = commentsService.deleteCommentById(
-    req.params.commentId
-  );
+  const deletedComment = commentsService.deleteCommentById(req.params.id);
   if (!deletedComment) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   } else {
@@ -42,12 +37,12 @@ export const deleteComment = async (
 };
 
 export const updateComment = async (
-  req: RequestWithURIParamsAndBody<URIParamsCommentId, CommentInputModel>,
+  req: RequestWithURIParamsAndBody<URIParamsRequest, CommentInputModel>,
   res: Response
 ) => {
   const { content } = req.body;
   const updatedComment = await commentsService.updateCommentById(
-    req.params.commentId,
+    req.params.id,
     content
   );
   if (!updatedComment) {

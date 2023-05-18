@@ -8,21 +8,24 @@ import {
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { forbiddenResponseMiddleware } from "../middlewares/forbiddenResponseMiddleware";
 import { commentValidator } from "../utils/comments-utils/commentValidator";
+import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
 
 export const commentsRouter = express.Router({});
 
 commentsRouter.get("/:id", getCommentById);
 
 commentsRouter.delete(
-  "/:commentId",
+  "/:id",
   authMiddleware,
+  validateObjectIdMiddleware,
   forbiddenResponseMiddleware,
   deleteComment
 );
 
 commentsRouter.put(
-  "/:commentId",
+  "/:id",
   authMiddleware,
+  validateObjectIdMiddleware,
   forbiddenResponseMiddleware,
   commentValidator,
   responseErrorValidationMiddleware,

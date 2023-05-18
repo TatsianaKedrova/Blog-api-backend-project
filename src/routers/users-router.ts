@@ -1,3 +1,4 @@
+import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
 import express from "express";
 import {
   addNewUser,
@@ -17,4 +18,9 @@ usersRouter.post(
   responseErrorValidationMiddleware,
   addNewUser
 );
-usersRouter.delete("/:id", basicAuthMiddleware, deleteUser);
+usersRouter.delete(
+  "/:id",
+  basicAuthMiddleware,
+  validateObjectIdMiddleware,
+  deleteUser
+);

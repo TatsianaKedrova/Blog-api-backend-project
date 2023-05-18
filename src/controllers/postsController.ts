@@ -9,10 +9,7 @@ import {
   RequestWithURIParamAndQueryParam,
   RequestWithURIParamsAndBody,
 } from "../dto/common/RequestModels";
-import {
-  URIParamsPostId,
-  URIParamsRequest,
-} from "../dto/common/URIParamsRequest";
+import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { postsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
 import { Paginator } from "../dto/common/PaginatorModel";
@@ -105,13 +102,13 @@ export const deletePostById = async (
 };
 
 export const createComment = async (
-  req: RequestWithURIParamsAndBody<URIParamsPostId, CommentInputModel>,
+  req: RequestWithURIParamsAndBody<URIParamsRequest, CommentInputModel>,
   res: Response<CommentViewModel>
 ) => {
   const { login, _id } = req.user;
   const { content } = req.body;
   const createdComment = await postsService.createNewComment(
-    req.params.postId,
+    req.params.id,
     content,
     login,
     _id?.toString()
@@ -124,7 +121,10 @@ export const createComment = async (
 };
 
 export const findCommentsForSpecifiedPost = async (
-  req: RequestWithURIParamAndQueryParam<URIParamsPostId, PaginationSortingQueryParams>,
+  req: RequestWithURIParamAndQueryParam<
+    URIParamsRequest,
+    PaginationSortingQueryParams
+  >,
   res: Response<Paginator<CommentViewModel>>
 ) => {
   let {
@@ -135,7 +135,7 @@ export const findCommentsForSpecifiedPost = async (
   } = req.query;
   const commentsForSpecifiedPost =
     await postsQueryRepository.findCommentsForSpecifiedPost(
-      req.params.postId,
+      req.params.id,
       Number(pageNumber),
       sortBy,
       Number(pageSize),

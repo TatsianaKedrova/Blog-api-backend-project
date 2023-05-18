@@ -12,7 +12,7 @@ import {
   getPostsById,
   updatePostById,
 } from "../controllers/postsController";
-import { validateObjectIdParams } from "../middlewares/validateObjectIdParams";
+import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { commentValidator } from "../utils/comments-utils/commentValidator";
 
@@ -20,7 +20,7 @@ import { commentValidator } from "../utils/comments-utils/commentValidator";
 postsRouter.get("/", getPosts);
 
 //TODO: GET POST BY ID
-postsRouter.get("/:id", validateObjectIdParams, getPostsById);
+postsRouter.get("/:id", validateObjectIdMiddleware, getPostsById);
 
 //TODO: CREATE A NEW POST
 postsRouter.post(
@@ -35,7 +35,7 @@ postsRouter.post(
 postsRouter.put(
   "/:id",
   basicAuthMiddleware,
-  validateObjectIdParams,
+  validateObjectIdMiddleware,
   postsValidator,
   responseErrorValidationMiddleware,
   updatePostById
@@ -45,14 +45,15 @@ postsRouter.put(
 postsRouter.delete(
   "/:id",
   basicAuthMiddleware,
-  validateObjectIdParams,
+  validateObjectIdMiddleware,
   deletePostById
 );
 
 //TODO: CREATE COMMENT FOR SPECIFIC POST
 postsRouter.post(
-  "/:postId/comments",
+  "/:id/comments",
   authMiddleware,
+  validateObjectIdMiddleware,
   commentValidator,
   responseErrorValidationMiddleware,
   createComment
@@ -60,7 +61,7 @@ postsRouter.post(
 
 //TODO: RETURN COMMENTS FOR SPECIFIED POST
 postsRouter.get(
-  "/:postId/comments",
-  validateObjectIdParams,
+  "/:id/comments",
+  validateObjectIdMiddleware,
   findCommentsForSpecifiedPost
 );

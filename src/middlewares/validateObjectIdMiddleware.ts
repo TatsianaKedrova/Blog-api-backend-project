@@ -5,7 +5,7 @@ import { ObjectId } from "mongodb";
 /** This middleware should be added only for MongoDB,
  *  cos' it check the validity of ObjectId
  */
-export const validateObjectIdParams = async (
+export const validateObjectIdMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
