@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { PostInputModel, PostViewModel } from "../dto/postsDTO/PostModel";
 import { postsService } from "../domain/posts-service";
@@ -17,8 +17,8 @@ import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { postsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
 import { Paginator } from "../dto/common/PaginatorModel";
 import {
-  PagingSortingQueryParams,
   QueryParamsWithSearch,
+  PaginationSortingQueryParams,
 } from "../dto/common/SortPaginatorQueryParamsType";
 import {
   CommentInputModel,
@@ -29,7 +29,7 @@ import {
 // @route GET /api/posts
 // @access Public
 export const getPosts = async (
-  req: RequestQueryParamsModel<QueryParamsWithSearch<PostViewModel>>,
+  req: RequestQueryParamsModel<QueryParamsWithSearch>,
   res: Response<Paginator<PostViewModel>>
 ) => {
   let {
@@ -124,10 +124,7 @@ export const createComment = async (
 };
 
 export const findCommentsForSpecifiedPost = async (
-  req: RequestWithURIParamAndQueryParam<
-    URIParamsPostId,
-    PagingSortingQueryParams<CommentViewModel>
-  >,
+  req: RequestWithURIParamAndQueryParam<URIParamsPostId, PaginationSortingQueryParams>,
   res: Response<Paginator<CommentViewModel>>
 ) => {
   let {

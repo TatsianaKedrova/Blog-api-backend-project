@@ -1,3 +1,5 @@
+import { PaginationSortingQueryParams } from "../common/SortPaginatorQueryParamsType";
+
 export type UserInputModel = {
   login: string; // maxLength: 10, minLength: 3, pattern: ^[a-zA-Z0-9_-]*$
   password: string; // maxLength: 20, minLength: 6
@@ -17,4 +19,9 @@ export type UserDBType = {
   createdAt: string;
   passwordHash: string;
   passwordSalt: string;
+};
+
+export type UsersQueryParams = PaginationSortingQueryParams & {
+  searchLoginTerm: string;
+  searchEmailTerm: string;
 };

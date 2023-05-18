@@ -9,7 +9,7 @@ import { createUserValidator } from "../utils/usersUtils/users-validator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 export const usersRouter = express.Router({});
 
-usersRouter.get("/", basicAuthMiddleware, getAllUsers as any);
+usersRouter.get("/", basicAuthMiddleware, getAllUsers);
 usersRouter.post(
   "/",
   basicAuthMiddleware,

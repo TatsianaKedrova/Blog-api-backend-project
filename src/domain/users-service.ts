@@ -3,6 +3,7 @@ import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import bcrypt from "bcrypt";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
+import { WithId } from "mongodb";
 
 export const usersService = {
   async createUser(
@@ -30,7 +31,7 @@ export const usersService = {
   async checkCredentials(
     loginOrEmail: string,
     password: string
-  ): Promise<UserDBType | null> {
+  ): Promise<WithId<UserDBType> | null> {
     const user = await usersQueryRepository.findByLoginOrEmail(loginOrEmail);
     if (!user) return null;
     const passwordHash = await this._generateHash(password, user.passwordSalt);

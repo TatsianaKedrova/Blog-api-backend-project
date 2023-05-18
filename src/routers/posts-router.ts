@@ -62,5 +62,5 @@ postsRouter.post(
 postsRouter.get(
   "/:postId/comments",
   validateObjectIdParams,
-  findCommentsForSpecifiedPost as any
+  findCommentsForSpecifiedPost
 );

@@ -21,7 +21,7 @@ blogsRouter.get("/", getBlogs);
 //TODO: GET BLOG BY ID
 blogsRouter.get("/:id", validateObjectIdParams, getBlogsById);
 //TODO: GET ALL POSTS FOR SPECIFIC BLOG
-blogsRouter.get("/:id/posts", validateObjectIdParams, getBlogPosts as any);
+blogsRouter.get("/:id/posts", validateObjectIdParams, getBlogPosts);
 
 //TODO: CREATE POST FOR SPECIFIC BLOG
 blogsRouter.post(

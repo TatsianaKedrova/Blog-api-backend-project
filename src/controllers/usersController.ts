@@ -1,26 +1,25 @@
 import { StatusCodes } from "http-status-codes";
-import { UsersQueryParams } from "../dto/authDTO/authDTO";
 import { Paginator } from "../dto/common/PaginatorModel";
 import {
   RequestBodyModel,
   RequestQueryParamsModel,
   RequestWithURIParam,
 } from "../dto/common/RequestModels";
-import { UserInputModel, UserViewModel } from "../dto/usersDTO/usersDTO";
+import { UserInputModel, UserViewModel, UsersQueryParams } from "../dto/usersDTO/usersDTO";
 import { Response } from "express";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { usersService } from "../domain/users-service";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 
 export const getAllUsers = async (
-  req: RequestQueryParamsModel<UsersQueryParams<UserViewModel>>,
+  req: RequestQueryParamsModel<UsersQueryParams>,
   res: Response<Paginator<UserViewModel>>
 ) => {
   const {
     pageNumber = 1,
     pageSize = 10,
-    searchEmailTerm = null,
-    searchLoginTerm = null,
+    searchEmailTerm = "",
+    searchLoginTerm = "",
     sortBy = "createdAt",
     sortDirection = "desc",
   } = req.query;
