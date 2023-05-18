@@ -4,7 +4,7 @@ import {
   PostViewModel,
 } from "../dto/postsDTO/PostModel";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
-import { ObjectId, OptionalId } from "mongodb";
+import { ObjectId } from "mongodb";
 import { postsCommandsRepository } from "../repositories/commands-repository/postsCommandsRepository";
 import { blogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
 import { commentsCommandsRepository } from "../repositories/commands-repository/commentsCommandsRepository";
@@ -13,6 +13,7 @@ import {
   CommentViewModel,
 } from "../dto/commentsDTO/commentsDTO";
 import { postsCollection } from "../db";
+import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 
 export const postsService = {
   async _findPostById(id: string): Promise<PostDBType | null> {
@@ -41,20 +42,20 @@ export const postsService = {
   async createNewComment(
     postId: string,
     content: string,
-    userLogin: string,
     userId: string
   ): Promise<CommentViewModel | null> {
     const foundPost = this._findPostById(postId);
     if (!foundPost) {
       return null;
     }
+    const foundUser = await usersCommandsRepository.findUserById(userId);
     const newComment: CommentDBType = {
       postId,
       content,
       createdAt: creationDate(),
       commentatorInfo: {
         userId,
-        userLogin,
+        userLogin: foundUser!.login,
       },
     };
     return commentsCommandsRepository.createComment(newComment);

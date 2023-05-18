@@ -4,7 +4,7 @@ export {};
 declare global {
   namespace Express {
     export interface Request {
-      user: WithId<UserDBType>;
+      userId: string | null;
     }
   }
 }

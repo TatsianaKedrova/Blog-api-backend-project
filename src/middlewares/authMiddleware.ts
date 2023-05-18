@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { jwtService } from "../application/jwt-service";
-import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 
 export const authMiddleware = async (
   req: Request,
@@ -17,15 +16,8 @@ export const authMiddleware = async (
   const token = authValue.split(" ")[1];
   const userId = await jwtService.getUserIdByToken(token);
   if (userId) {
-    const foundUser = await usersCommandsRepository.findUserById(
-      userId.toString()
-    );
-    if (foundUser) {
-      req.user = foundUser;
-      next();
-    } else {
-      res.sendStatus(StatusCodes.UNAUTHORIZED);
-    }
+    req.userId = userId.toString();
+    next();
   } else {
     res.sendStatus(StatusCodes.UNAUTHORIZED);
   }
