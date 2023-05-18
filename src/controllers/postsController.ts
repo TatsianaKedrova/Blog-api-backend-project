@@ -105,13 +105,11 @@ export const createComment = async (
   req: RequestWithURIParamsAndBody<URIParamsRequest, CommentInputModel>,
   res: Response<CommentViewModel>
 ) => {
-  const { login, _id } = req.user;
   const { content } = req.body;
   const createdComment = await postsService.createNewComment(
     req.params.id,
     content,
-    login,
-    _id?.toString()
+    req.userId!
   );
   if (!createdComment) {
     res.sendStatus(StatusCodes.NOT_FOUND);

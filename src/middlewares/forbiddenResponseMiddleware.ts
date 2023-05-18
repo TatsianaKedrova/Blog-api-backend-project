@@ -10,7 +10,7 @@ export const forbiddenResponseMiddleware = async (
   const comment = await commentsCommandsRepository.findCommentById(
     req.params.commentId
   );
-  if (comment && comment.commentatorInfo.userId === req.user._id.toString()) {
+  if (comment && comment.commentatorInfo.userId === req.userId) {
     next();
   } else {
     res.sendStatus(StatusCodes.FORBIDDEN);

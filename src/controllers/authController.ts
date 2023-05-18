@@ -1,3 +1,4 @@
+import { getCurrentUserInfo } from "./../utils/auth-utils/getCurrentUserInfo";
 import { StatusCodes } from "http-status-codes";
 import { jwtService } from "../application/jwt-service";
 import { usersService } from "../domain/users-service";
@@ -5,7 +6,7 @@ import { LoginInputModel, MeViewModel } from "../dto/authDTO/authDTO";
 import { RequestBodyModel } from "../dto/common/RequestModels";
 import { Request, Response } from "express";
 import { makeTokenModel } from "../utils/auth-utils/tokenModel";
-import { getCurrentUserInfo } from "../utils/auth-utils/getCurrentUserInfo";
+import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
@@ -28,6 +29,11 @@ export const getInfoAboutUser = async (
   req: Request,
   res: Response<MeViewModel>
 ) => {
-  const currentUser = getCurrentUserInfo(req.user);
-  res.status(StatusCodes.OK).send(currentUser);
+  const foundUser = await usersCommandsRepository.findUserById(req.userId!);
+  if (foundUser) {
+    const currentUser = getCurrentUserInfo(foundUser);
+    res.status(StatusCodes.OK).send(currentUser);
+  } else {
+    res.sendStatus(StatusCodes.UNAUTHORIZED);
+  }
 };
