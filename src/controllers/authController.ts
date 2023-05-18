@@ -1,10 +1,11 @@
 import { StatusCodes } from "http-status-codes";
 import { jwtService } from "../application/jwt-service";
 import { usersService } from "../domain/users-service";
-import { LoginInputModel } from "../dto/authDTO/authDTO";
+import { LoginInputModel, MeViewModel } from "../dto/authDTO/authDTO";
 import { RequestBodyModel } from "../dto/common/RequestModels";
 import { Request, Response } from "express";
 import { makeTokenModel } from "../utils/auth-utils/tokenModel";
+import { getCurrentUserInfo } from "../utils/auth-utils/getCurrentUserInfo";
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
@@ -23,6 +24,10 @@ export const logIn = async (
   }
 };
 
-export const getInfoAboutUser = async (req: Request, res: Response) => {
-  
+export const getInfoAboutUser = async (
+  req: Request,
+  res: Response<MeViewModel>
+) => {
+  const currentUser = getCurrentUserInfo(req.user);
+  res.status(StatusCodes.OK).send(currentUser);
 };
