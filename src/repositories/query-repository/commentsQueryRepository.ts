@@ -1,9 +1,9 @@
-import { transformComment } from "./../../utils/comments-utils/transformComment";
+import { transformComment } from "../../utils/comments-utils/transformComment";
 import { ObjectId } from "mongodb";
 import { commentsCollection } from "../../db";
 import { CommentViewModel } from "../../dto/commentsDTO/commentsDTO";
 
-export const commentsRepository = {
+export const commentsQueryRepository = {
   async findComment(id: string): Promise<CommentViewModel | null> {
     const comment = await commentsCollection.findOne({
       _id: new ObjectId(id),

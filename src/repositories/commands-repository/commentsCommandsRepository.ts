@@ -11,33 +11,23 @@ export const commentsCommandsRepository = {
 
     return transformComment(newComment, result.insertedId.toString());
   },
-  async _findComment(id: string) {
+  async findCommentById(id: string) {
     const comments = await commentsCollection.findOne({
       _id: new ObjectId(id),
     });
     return comments;
   },
   async deleteComment(commentId: string): Promise<boolean> {
-    const foundComment = this._findComment(commentId);
-    if (!foundComment) {
-      return false;
-    } else {
-      const deletedComment = await commentsCollection.deleteOne({
-        _id: new ObjectId(commentId),
-      });
-      return deletedComment.deletedCount === 1;
-    }
+    const deletedComment = await commentsCollection.findOneAndDelete({
+      _id: new ObjectId(commentId),
+    });
+    return !!deletedComment.ok;
   },
   async updateComment(commentId: string, content: string): Promise<boolean> {
-    const foundComment = this._findComment(commentId);
-    if (!foundComment) {
-      return false;
-    } else {
-      const updatedComment = await commentsCollection.updateOne(
-        { _id: new ObjectId(commentId) },
-        { $set: { content } }
-      );
-      return updatedComment.modifiedCount === 1;
-    }
+    const newUpdatedComment = await commentsCollection.findOneAndUpdate(
+      { _id: new ObjectId(commentId) },
+      { $set: { content } }
+    );
+    return !!newUpdatedComment.ok;
   },
 };

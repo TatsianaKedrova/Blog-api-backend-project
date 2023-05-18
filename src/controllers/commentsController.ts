@@ -11,7 +11,7 @@ import {
   URIParamsCommentId,
   URIParamsRequest,
 } from "../dto/common/URIParamsRequest";
-import { commentsRepository } from "../repositories/query-repository/commentsRepository";
+import { commentsQueryRepository } from "../repositories/query-repository/commentsQueryRepository";
 import { StatusCodes } from "http-status-codes";
 import { commentsService } from "../domain/comments-service";
 
@@ -19,7 +19,7 @@ export const getCommentById = async (
   req: RequestWithURIParam<URIParamsRequest>,
   res: Response<CommentViewModel>
 ) => {
-  const foundComment = await commentsRepository.findComment(req.params.id);
+  const foundComment = await commentsQueryRepository.findComment(req.params.id);
   if (!foundComment) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   } else {
