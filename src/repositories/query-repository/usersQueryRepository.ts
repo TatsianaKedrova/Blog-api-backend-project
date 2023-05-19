@@ -31,7 +31,7 @@ export const usersQueryRepository = {
     const filter = {
       $or: filterTotal.length > 0 ? filterTotal : [{}],
     };
-    const totalCount = await usersCollection.countDocuments(filterEmail);
+    const totalCount = await usersCollection.countDocuments(filter);
 
     const foundUsers = await usersCollection
       .find(filter)
