@@ -1,22 +1,26 @@
 import express from "express";
 import { basicAuthMiddleware } from "../middlewares/basicAuth";
 export const postsRouter = express.Router({});
-import { postsValidator } from "../utils/posts-utils/posts-validator/postsValidator";
+import { postsValidator } from "../utils/posts-utils/postsValidator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import {
+  createComment,
   createNewPost,
   deletePostById,
+  findCommentsForSpecifiedPost,
   getPosts,
   getPostsById,
   updatePostById,
 } from "../controllers/postsController";
-import { validateObjectIdParams } from "../middlewares/validateObjectIdParams";
+import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
+import { authMiddleware } from "../middlewares/authMiddleware";
+import { commentValidator } from "../utils/comments-utils/commentValidator";
 
 //TODO: GET LIST OF POSTS
 postsRouter.get("/", getPosts);
 
 //TODO: GET POST BY ID
-postsRouter.get("/:id", validateObjectIdParams, getPostsById);
+postsRouter.get("/:id", validateObjectIdMiddleware, getPostsById);
 
 //TODO: CREATE A NEW POST
 postsRouter.post(
@@ -31,7 +35,7 @@ postsRouter.post(
 postsRouter.put(
   "/:id",
   basicAuthMiddleware,
-  validateObjectIdParams,
+  validateObjectIdMiddleware,
   postsValidator,
   responseErrorValidationMiddleware,
   updatePostById
@@ -41,6 +45,23 @@ postsRouter.put(
 postsRouter.delete(
   "/:id",
   basicAuthMiddleware,
-  validateObjectIdParams,
+  validateObjectIdMiddleware,
   deletePostById
+);
+
+//TODO: CREATE COMMENT FOR SPECIFIC POST
+postsRouter.post(
+  "/:id/comments",
+  authMiddleware,
+  validateObjectIdMiddleware,
+  commentValidator,
+  responseErrorValidationMiddleware,
+  createComment
+);
+
+//TODO: RETURN COMMENTS FOR SPECIFIED POST
+postsRouter.get(
+  "/:id/comments",
+  validateObjectIdMiddleware,
+  findCommentsForSpecifiedPost
 );

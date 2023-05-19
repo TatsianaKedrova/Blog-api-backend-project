@@ -5,6 +5,7 @@ import { blogsRouter } from "./routers/blogs-router";
 import { postsRouter } from "./routers/posts-router";
 import { authRouter } from "./routers/auth-router";
 import { usersRouter } from "./routers/users-router";
+import { commentsRouter } from "./routers/comments-router";
 
 export const app = express();
 app.use(express.json());
@@ -15,3 +16,4 @@ app.use("/api/blogs", blogsRouter);
 app.use("/api/posts", postsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
+app.use("/api/comments", commentsRouter)

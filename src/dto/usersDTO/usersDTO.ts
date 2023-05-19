@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { PaginationSortingQueryParams } from "../common/SortPaginatorQueryParamsType";
 
 export type UserInputModel = {
   login: string; // maxLength: 10, minLength: 3, pattern: ^[a-zA-Z0-9_-]*$
@@ -14,10 +14,14 @@ export type UserViewModel = {
 };
 
 export type UserDBType = {
-  _id?: ObjectId;
   login: string;
   email: string;
   createdAt: string;
   passwordHash: string;
   passwordSalt: string;
+};
+
+export type UsersQueryParams = PaginationSortingQueryParams & {
+  searchLoginTerm: string;
+  searchEmailTerm: string;
 };
