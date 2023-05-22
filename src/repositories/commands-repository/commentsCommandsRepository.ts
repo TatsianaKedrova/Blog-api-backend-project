@@ -8,8 +8,11 @@ import { transformCommentsResponse } from "../../utils/comments-utils/transformC
 export const commentsCommandsRepository = {
   async createComment(newComment: CommentDBType): Promise<CommentViewModel> {
     const result = await commentsCollection.insertOne(newComment);
+    const findCreatedComment = await commentsCollection.findOne({
+      _id: result.insertedId,
+    });
 
-    return transformCommentsResponse(newComment, result.insertedId.toString());
+    return transformCommentsResponse(findCreatedComment!);
   },
   async findCommentById(id: string) {
     const comments = await commentsCollection.findOne({

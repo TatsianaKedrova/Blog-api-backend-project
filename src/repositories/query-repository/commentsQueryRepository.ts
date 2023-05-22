@@ -11,7 +11,7 @@ export const commentsQueryRepository = {
     if (!comment) {
       return null;
     } else {
-      return transformCommentsResponse(comment, id);
+      return transformCommentsResponse(comment);
     }
   },
 };
