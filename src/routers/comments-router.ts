@@ -12,7 +12,7 @@ import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddl
 
 export const commentsRouter = express.Router({});
 
-commentsRouter.get("/:id", getCommentById);
+commentsRouter.get("/:id", validateObjectIdMiddleware, getCommentById);
 
 commentsRouter.delete(
   "/:id",
