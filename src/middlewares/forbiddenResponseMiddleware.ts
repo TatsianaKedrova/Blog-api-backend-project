@@ -8,7 +8,7 @@ export const forbiddenResponseMiddleware = async (
   next: NextFunction
 ) => {
   const comment = await commentsCommandsRepository.findCommentById(
-    req.params.commentId
+    req.params.id
   );
   if (comment && comment.commentatorInfo.userId === req.userId) {
     next();
