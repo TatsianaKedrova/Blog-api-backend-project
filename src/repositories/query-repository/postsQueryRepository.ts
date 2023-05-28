@@ -55,7 +55,9 @@ export const postsQueryRepository = {
     const foundPost = this.findPostById(postId);
     if (!foundPost) return null;
     const skip = paginationHandler(pageNumber, pageSize);
-    const totalCount = await commentsCollection.countDocuments();
+    const totalCount = await commentsCollection.countDocuments({
+      postId,
+    });
 
     const allCommentsForPost = await commentsCollection
       .find({
