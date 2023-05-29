@@ -17,7 +17,7 @@ import { usersCommandsRepository } from "../repositories/commands-repository/use
 
 export const postsService = {
   async _findPostById(id: string): Promise<PostDBType | null> {
-    const foundPost = postsCollection.findOne({ _id: new ObjectId(id) });
+    const foundPost = await postsCollection.findOne({ _id: new ObjectId(id) });
     return foundPost;
   },
   async createNewPost(body: PostInputModel): Promise<PostViewModel> {
@@ -44,7 +44,7 @@ export const postsService = {
     content: string,
     userId: string
   ): Promise<CommentViewModel | null> {
-    const foundPost = this._findPostById(postId);
+    const foundPost = await this._findPostById(postId);
     if (!foundPost) {
       return null;
     }

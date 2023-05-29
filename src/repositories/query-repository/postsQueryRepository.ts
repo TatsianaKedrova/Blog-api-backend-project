@@ -52,7 +52,7 @@ export const postsQueryRepository = {
     pageSize: number,
     sortDirection: SortDirection
   ): Promise<Paginator<CommentViewModel> | null> {
-    const foundPost = this.findPostById(postId);
+    const foundPost = await this.findPostById(postId);
     if (!foundPost) return null;
     const skip = paginationHandler(pageNumber, pageSize);
     const totalCount = await commentsCollection.countDocuments({
