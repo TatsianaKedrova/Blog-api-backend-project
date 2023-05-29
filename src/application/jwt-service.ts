@@ -12,7 +12,7 @@ export const jwtService = {
       { userId: user._id },
       process.env.TOKEN_SECRET as string,
       {
-        expiresIn: "5d",
+        expiresIn: "10d",
       }
     );
     return token;
