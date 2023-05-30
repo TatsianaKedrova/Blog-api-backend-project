@@ -16,17 +16,20 @@ export const usersQueryRepository = {
     searchLoginTerm: string | null
   ): Promise<Paginator<UserViewModel>> {
     const skip = paginationHandler(pageNumber, pageSize);
+    const filterTotal: Array<Filter<UserDBType>> = [];
     const filterEmail: Filter<UserDBType> = {};
     const filterLogin: Filter<UserDBType> = {};
 
     if (searchEmailTerm) {
       filterEmail.email = { $regex: searchEmailTerm, $options: "i" };
+      filterTotal.push(filterEmail);
     }
     if (searchLoginTerm) {
       filterLogin.login = { $regex: searchLoginTerm, $options: "i" };
+      filterTotal.push(filterLogin);
     }
     const filter = {
-      $or: [filterEmail, filterLogin],
+      $or: filterTotal.length > 0 ? filterTotal : [{}],
     };
     const totalCount = await usersCollection.countDocuments(filter);
 

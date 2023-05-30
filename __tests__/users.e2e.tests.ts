@@ -226,68 +226,6 @@ describe("API for users", () => {
     expect(listOfUsers.body.items[1].login).toEqual("Tania");
     expect(listOfUsers.body.items[0].email).toEqual("lina@mait.au");
   });
-  test("SHOULDN'T DELETE user without authentication", async () => {
-    await request(app).delete("/api/users/4").expect(StatusCodes.UNAUTHORIZED);
-    const listOfUsers = await request(app)
-      .get("/api/users")
-      .set("Authorization", `Basic ${correctAuthToken}`)
-      .expect(StatusCodes.OK);
-    expect(listOfUsers.body.items.length).toEqual(2);
-    expect(listOfUsers.body.items[1].login).toEqual("Tania");
-    expect(listOfUsers.body.items[0].email).toEqual("lina@mait.au");
-  });
-  test("SHOULDN'T DELETE user with incorrect AUTH TOKEN", async () => {
-    await request(app)
-      .delete("/api/users/4")
-      .set("Authorization", `Basic ${incorrectAuthToken}`)
-      .expect(StatusCodes.UNAUTHORIZED);
-    const listOfUsers = await request(app)
-      .get("/api/users")
-      .set("Authorization", `Basic ${correctAuthToken}`)
-      .expect(StatusCodes.OK);
-    expect(listOfUsers.body.items.length).toEqual(2);
-    expect(listOfUsers.body.items[1].login).toEqual("Tania");
-    expect(listOfUsers.body.items[0].email).toEqual("lina@mait.au");
-  });
-  test("SHOULDN'T DELETE user with missing AUTH TYPE", async () => {
-    await request(app)
-      .delete("/api/users/4")
-      .set("Authorization", `Bearer ${correctAuthToken}`)
-      .expect(StatusCodes.UNAUTHORIZED);
-    const listOfUsers = await request(app)
-      .get("/api/users")
-      .set("Authorization", `Basic ${correctAuthToken}`)
-      .expect(StatusCodes.OK);
-    expect(listOfUsers.body.items.length).toEqual(2);
-    expect(listOfUsers.body.items[1].login).toEqual("Tania");
-    expect(listOfUsers.body.items[0].email).toEqual("lina@mait.au");
-  });
-  test("SHOULDN'T DELETE user with incorrect user id", async () => {
-    await request(app)
-      .delete("/api/users/4")
-      .set("Authorization", `Basic ${correctAuthToken}`)
-      .expect(StatusCodes.NOT_FOUND);
-    const listOfUsers = await request(app)
-      .get("/api/users")
-      .set("Authorization", `Basic ${correctAuthToken}`)
-      .expect(StatusCodes.OK);
-    expect(listOfUsers.body.items.length).toEqual(2);
-    expect(listOfUsers.body.items[1].login).toEqual("Tania");
-    expect(listOfUsers.body.items[0].email).toEqual("lina@mait.au");
-  });
-  test("DELETE second user", async () => {
-    await request(app)
-      .delete(`/api/users/${user2.id}`)
-      .set("Authorization", `Basic ${correctAuthToken}`)
-      .expect(StatusCodes.NO_CONTENT);
-    const listOfUsers = await request(app)
-      .get("/api/users")
-      .set("Authorization", `Basic ${correctAuthToken}`)
-      .expect(StatusCodes.OK);
-    expect(listOfUsers.body.items.length).toEqual(1);
-    expect(listOfUsers.body.items[0].login).toEqual("Tania");
-    expect(listOfUsers.body.items[0].email).toEqual("tania@mainModule.org");
-  });
   test("ADD third user", async () => {
     const response = await request(app)
       .post("/api/users")
@@ -304,8 +242,8 @@ describe("API for users", () => {
       .get("/api/users")
       .set("Authorization", `Basic ${correctAuthToken}`)
       .expect(StatusCodes.OK);
-    expect(listOfUsers.body.items.length).toEqual(2);
-    expect(listOfUsers.body.items[1].login).toEqual("Tania");
+    expect(listOfUsers.body.items.length).toEqual(3);
+    expect(listOfUsers.body.items[1].login).toEqual("Lina");
     expect(listOfUsers.body.items[0].email).toEqual("pasha@mait.au");
   });
   test("GET list of users with paging and sorting", async () => {
@@ -322,14 +260,86 @@ describe("API for users", () => {
       .set("Authorization", `Basic ${correctAuthToken}`)
       .expect(StatusCodes.OK);
     expect(response.body.items.length).toEqual(1);
-    expect(response.body.items[0].login).toEqual("Pasha");
+    expect(response.body.items[0].login).toEqual("Lina");
   });
   test("GET list of users with search", async () => {
     const response = await request(app)
       .get("/api/users?searchLoginTerm=t&searchEmailTerm=ha")
       .set("Authorization", `Basic ${correctAuthToken}`)
       .expect(StatusCodes.OK);
-    expect(response.body.items.length).toEqual(1);
+    expect(response.body.items.length).toEqual(2);
     expect(response.body.items[0].login).toEqual("Pasha");
+    expect(response.body.items[1].login).toEqual("Tania");
+  });
+  test("GET list of users with search", async () => {
+    const response = await request(app)
+      .get("/api/users?searchLoginTerm=an&searchEmailTerm=na")
+      .set("Authorization", `Basic ${correctAuthToken}`)
+      .expect(StatusCodes.OK);
+    expect(response.body.items.length).toEqual(2);
+    expect(response.body.items[0].login).toEqual("Lina");
+    expect(response.body.items[1].login).toEqual("Tania");
+  });
+  test("SHOULDN'T DELETE user without authentication", async () => {
+    await request(app).delete("/api/users/4").expect(StatusCodes.UNAUTHORIZED);
+    const listOfUsers = await request(app)
+      .get("/api/users")
+      .set("Authorization", `Basic ${correctAuthToken}`)
+      .expect(StatusCodes.OK);
+    expect(listOfUsers.body.items.length).toEqual(3);
+    expect(listOfUsers.body.items[1].login).toEqual("Lina");
+    expect(listOfUsers.body.items[0].email).toEqual("pasha@mait.au");
+  });
+  test("SHOULDN'T DELETE user with incorrect AUTH TOKEN", async () => {
+    await request(app)
+      .delete("/api/users/4")
+      .set("Authorization", `Basic ${incorrectAuthToken}`)
+      .expect(StatusCodes.UNAUTHORIZED);
+    const listOfUsers = await request(app)
+      .get("/api/users")
+      .set("Authorization", `Basic ${correctAuthToken}`)
+      .expect(StatusCodes.OK);
+    expect(listOfUsers.body.items.length).toEqual(3);
+    expect(listOfUsers.body.items[1].login).toEqual("Lina");
+    expect(listOfUsers.body.items[0].email).toEqual("pasha@mait.au");
+  });
+  test("SHOULDN'T DELETE user with missing AUTH TYPE", async () => {
+    await request(app)
+      .delete("/api/users/4")
+      .set("Authorization", `Bearer ${correctAuthToken}`)
+      .expect(StatusCodes.UNAUTHORIZED);
+    const listOfUsers = await request(app)
+      .get("/api/users")
+      .set("Authorization", `Basic ${correctAuthToken}`)
+      .expect(StatusCodes.OK);
+    expect(listOfUsers.body.items.length).toEqual(3);
+    expect(listOfUsers.body.items[1].login).toEqual("Lina");
+    expect(listOfUsers.body.items[0].email).toEqual("pasha@mait.au");
+  });
+  test("SHOULDN'T DELETE user with incorrect user id", async () => {
+    await request(app)
+      .delete("/api/users/4")
+      .set("Authorization", `Basic ${correctAuthToken}`)
+      .expect(StatusCodes.NOT_FOUND);
+    const listOfUsers = await request(app)
+      .get("/api/users")
+      .set("Authorization", `Basic ${correctAuthToken}`)
+      .expect(StatusCodes.OK);
+    expect(listOfUsers.body.items.length).toEqual(3);
+    expect(listOfUsers.body.items[1].login).toEqual("Lina");
+    expect(listOfUsers.body.items[0].email).toEqual("pasha@mait.au");
+  });
+  test("DELETE second user", async () => {
+    await request(app)
+      .delete(`/api/users/${user2.id}`)
+      .set("Authorization", `Basic ${correctAuthToken}`)
+      .expect(StatusCodes.NO_CONTENT);
+    const listOfUsers = await request(app)
+      .get("/api/users")
+      .set("Authorization", `Basic ${correctAuthToken}`)
+      .expect(StatusCodes.OK);
+    expect(listOfUsers.body.items.length).toEqual(2);
+    expect(listOfUsers.body.items[0].login).toEqual("Pasha");
+    expect(listOfUsers.body.items[1].email).toEqual("tania@mainModule.org");
   });
 });
