@@ -7,6 +7,7 @@ import {
 import { basicAuthMiddleware } from "../middlewares/basicAuth";
 import { createUserValidator } from "../utils/usersUtils/users-validator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
+import { validateObjectIdParams } from "../middlewares/validateObjectIdParams";
 export const usersRouter = express.Router({});
 
 usersRouter.get("/", basicAuthMiddleware, getAllUsers as any);
@@ -17,4 +18,4 @@ usersRouter.post(
   responseErrorValidationMiddleware,
   addNewUser
 );
-usersRouter.delete("/:id", basicAuthMiddleware, deleteUser);
+usersRouter.delete("/:id", basicAuthMiddleware, validateObjectIdParams, deleteUser);
