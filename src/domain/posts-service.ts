@@ -9,9 +9,12 @@ import { postsCommandsRepository } from "../repositories/commands-repository/pos
 import { blogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
 
 export const postsService = {
-  async createNewPost(body: PostInputModel): Promise<PostViewModel> {
+  async createNewPost(body: PostInputModel): Promise<PostViewModel | null> {
     const { title, shortDescription, content, blogId } = body;
     const blog = await blogsQueryRepository.findBlogById(blogId);
+    if (!blog) {
+      return null;
+    }
     const newPost: PostDBType = {
       title,
       shortDescription,

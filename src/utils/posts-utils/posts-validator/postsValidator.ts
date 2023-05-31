@@ -8,12 +8,16 @@ import {
 
 /** This blogId validator is for hardcoded db */
 export const isValidObjectId: CustomValidator = (blogId: string) => {
-  if (ObjectId.isValid(blogId)) {
-    true;
-  } else {
-    throw new Error(
-      "This blogId is invalid and doesn't fit the ObjectId 24 hex characters structure"
-    );
+  try {
+    if (ObjectId.isValid(blogId)) {
+      return true;
+    } else {
+      throw new Error(
+        "This blogId is invalid and doesn't fit the ObjectId 24 hex characters structure"
+      );
+    }
+  } catch (error) {
+    throw new Error("Blog ID is invalid");
   }
 };
 
@@ -36,7 +40,7 @@ export const postsValidator = [
   stringsInputValidatorWithLength("title", 30),
   stringsInputValidatorWithLength("shortDescription", 100),
   stringsInputValidatorWithLength("content", 1000),
-  stringInputValidatorCommon("blogId").custom(isValidBlogId),
+  stringInputValidatorCommon("blogId").custom(isValidObjectId),
 ];
 
 export const postsValidatorForSpecificBlog = [
