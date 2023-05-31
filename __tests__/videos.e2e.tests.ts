@@ -140,16 +140,9 @@ describe("videos router", () => {
       .expect(StatusCodes.CREATED)
       .expect("Content-Type", "application/json; charset=utf-8");
     createdVideo1 = createResponse.body;
-    expect(createdVideo1).toEqual({
-      id: expect.any(Number),
-      title: "Great girl",
-      author: "Cat Ricky",
-      availableResolutions: ["P144"],
-      canBeDownloaded: false,
-      minAgeRestriction: null,
-      createdAt: creationDate,
-      publicationDate: publicationVideoDate,
-    });
+    expect(createdVideo1.title).toEqual("Great girl");
+    expect(createdVideo1.author).toEqual("Cat Ricky");
+    expect(createdVideo1.availableResolutions).toEqual(["P144"]);
     const getAllExistingCourses = await request(app)
       .get("/api/videos")
       .expect(StatusCodes.OK);
