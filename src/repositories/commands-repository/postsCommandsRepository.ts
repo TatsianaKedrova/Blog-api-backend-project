@@ -17,10 +17,10 @@ export const postsCommandsRepository = {
     const foundPostById = await postsCollection.findOne({
       _id: new ObjectId(id),
     });
-    const blog = await blogsCollection.findOne({ _id: new ObjectId(blogId) });
     if (!foundPostById) {
       return false;
     } else {
+      const blog = await blogsCollection.findOne({ _id: new ObjectId(blogId) });
       const updatedResult = await postsCollection.updateOne(
         { _id: foundPostById._id },
         {

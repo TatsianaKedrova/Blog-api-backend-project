@@ -209,7 +209,7 @@ describe("API for blogs", () => {
     expect(getResponse[0].name).toEqual("Aadine");
   });
 
-  test("Should return NOT_FOUND status 404 with incorrect ID", async () => {
+  test("Should NOT DELETE blog with incorrect ID and should return 404", async () => {
     await request(app)
       .delete("/api/blogs/123")
       .set("Authorization", `Basic ${correctAuthToken}`)

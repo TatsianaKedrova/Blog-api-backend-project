@@ -67,7 +67,11 @@ export const createNewPost = async (
   res: Response<PostViewModel | TApiErrorResultObject>
 ) => {
   const newPost = await postsService.createNewPost(req.body);
-  res.status(StatusCodes.CREATED).send(newPost);
+  if (!newPost) {
+    res.sendStatus(StatusCodes.CONFLICT);
+  } else {
+    res.status(StatusCodes.CREATED).send(newPost);
+  }
 };
 
 // @desc Update a post

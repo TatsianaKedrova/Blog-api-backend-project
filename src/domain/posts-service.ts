@@ -20,9 +20,12 @@ export const postsService = {
     const foundPost = await postsCollection.findOne({ _id: new ObjectId(id) });
     return foundPost;
   },
-  async createNewPost(body: PostInputModel): Promise<PostViewModel> {
+  async createNewPost(body: PostInputModel): Promise<PostViewModel | null> {
     const { title, shortDescription, content, blogId } = body;
     const blog = await blogsQueryRepository.findBlogById(blogId);
+    if (!blog) {
+      return null;
+    }
     const newPost: PostDBType = {
       title,
       shortDescription,

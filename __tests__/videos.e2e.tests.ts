@@ -2,10 +2,6 @@ import request from "supertest";
 import { StatusCodes } from "http-status-codes";
 import { app } from "../src/settings";
 import { TVideo } from "../src/dto/videosDTO/CreateVideoModel";
-import {
-  creationDate,
-  publicationVideoDate,
-} from "../src/utils/common-utils/creation-publication-dates";
 
 describe("videos router", () => {
   beforeAll(async () => {
@@ -141,6 +137,8 @@ describe("videos router", () => {
       .expect("Content-Type", "application/json; charset=utf-8");
     createdVideo1 = createResponse.body;
     expect(createdVideo1.title).toEqual("Great girl");
+    expect(createdVideo1.author).toEqual("Cat Ricky");
+    expect(createdVideo1.availableResolutions).toEqual(["P144"]);
     const getAllExistingCourses = await request(app)
       .get("/api/videos")
       .expect(StatusCodes.OK);
@@ -152,7 +150,7 @@ describe("videos router", () => {
       .delete("/api/videos/99999999")
       .expect(StatusCodes.NOT_FOUND);
     await request(app)
-      .get("/api/videos/")
+      .get("/api/videos")
       .expect(StatusCodes.OK, [createdVideo1]);
   });
 
