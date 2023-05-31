@@ -1,26 +1,18 @@
 import request from "supertest";
 import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
-import { db } from "../src/temporal-database/project-db";
 import { PostViewModel } from "../src/dto/postsDTO/PostModel";
 import { BlogViewModel } from "../src/dto/blogsDTO/BlogModel";
 
 const correctAuthToken = "YWRtaW46cXdlcnR5";
 const incorrectAuthToken = "YWRtaW46c864XdlcnR5=5";
-let createdBlog: BlogViewModel;
+
 describe("API for posts", () => {
+  let createdBlog: BlogViewModel;
+  let createdPost1: PostViewModel;
+  let createdPost2: PostViewModel;
   beforeAll(async () => {
     await request(app).delete("/api/testing/all-data");
-    const blog = await request(app)
-      .post("/api/blogs")
-      .set("Authorization", `Basic ${correctAuthToken}`)
-      .send({
-        name: "Tania1",
-        description: "Tania blog for posts tests",
-        websiteUrl:
-          "https://MbkyQDhuICIaHnYLc7ws51KEn5wrp7cYHuVZEHlP9ADc3.uZDiBjA8F",
-      });
-    createdBlog = blog.body;
   });
   test("GET list of posts with status 200", async () => {
     await request(app).get("/api/posts").expect(StatusCodes.OK, {
@@ -108,22 +100,33 @@ describe("API for posts", () => {
     });
   });
 
-  let createdPost1: PostViewModel;
-  let createdPost2: PostViewModel;
-  test("CREATE a new post with CORRECT input data and return status 201", async () => {
+  test("SHOULD CREATE NEW POST", async () => {
+    const blog = await request(app)
+      .post("/api/blogs")
+      .set("Authorization", `Basic ${correctAuthToken}`)
+      .send({
+        name: "Stas",
+        description: "Tania blog for posts tests",
+        websiteUrl:
+          "https://MbkyQDhuICIaHnYLc7ws51KEn5wrp7cYHuVZEHlP9ADc3.uZDiBjA8F",
+      })
+      .expect(StatusCodes.CREATED);
+    createdBlog = blog.body;
     let inputData = {
       title: "Tatiana",
       shortDescription: "Who run the world",
       content: "ggggggggggggggggggggggggggggggg",
-      blogId: createdBlog.id,
+      blogId: blog.body.id,
     };
     const postResponse = await request(app)
       .post("/api/posts")
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send(inputData)
       .expect(StatusCodes.CREATED);
+    expect(postResponse.body.content).toEqual(
+      "ggggggggggggggggggggggggggggggg"
+    );
     createdPost1 = postResponse.body;
-    expect(createdPost1.content).toEqual("ggggggggggggggggggggggggggggggg");
     const getAllExistingCourses = await request(app)
       .get("/api/posts")
       .expect(StatusCodes.OK);
@@ -345,7 +348,7 @@ describe("API for posts", () => {
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({
         title: "old wine is better",
-        blogId: db.blogs[0].id,
+        blogId: createdBlog.id,
       })
       .expect(StatusCodes.BAD_REQUEST, {
         errorsMessages: [
@@ -356,12 +359,7 @@ describe("API for posts", () => {
           {
             message: "content field is required",
             field: "content",
-          },
-          {
-            message:
-              "This blogId is invalid and doesn't fit the ObjectId 24 hex characters structure",
-            field: "blogId",
-          },
+          }
         ],
       });
 
@@ -421,7 +419,7 @@ describe("API for posts", () => {
       .get("/api/posts?sortBy=title&sortDirection=asc")
       .expect(StatusCodes.OK);
     expect(result.body.items[0].title).toEqual("Nadin");
-    expect(result.body.items[2].title).toEqual("Svetlana");
+    expect(result.body.items[2].title).toEqual("new Tania");
     expect(result.body.items.length).toEqual(3);
   });
   test("GET list of posts with paging", async () => {
@@ -431,6 +429,6 @@ describe("API for posts", () => {
     expect(result.body.page).toEqual(2);
     expect(result.body.pagesCount).toEqual(2);
     expect(result.body.items.length).toEqual(1);
-    expect(result.body.items[0].title).toEqual("Svetlana");
+    expect(result.body.items[0].title).toEqual("new Tania");
   });
 });
