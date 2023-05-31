@@ -1,49 +1,28 @@
 import request from "supertest";
 import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
+import { db } from "../src/temporal-database/project-db";
 import { PostViewModel } from "../src/dto/postsDTO/PostModel";
 import { BlogViewModel } from "../src/dto/blogsDTO/BlogModel";
 
 const correctAuthToken = "YWRtaW46cXdlcnR5";
 const incorrectAuthToken = "YWRtaW46c864XdlcnR5=5";
+let createdBlog: BlogViewModel;
 describe("API for posts", () => {
-  afterAll(async () => {
+  beforeAll(async () => {
     await request(app).delete("/api/testing/all-data");
-  });
-
-  test("CREATE a new post with CORRECT input data and return status 201", async () => {
-    let createdPost1: PostViewModel;
     const blog = await request(app)
       .post("/api/blogs")
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({
         name: "Tania1",
-        description: "Taniaw blog for posts tests",
+        description: "Tania blog for posts tests",
         websiteUrl:
           "https://MbkyQDhuICIaHnYLc7ws51KEn5wrp7cYHuVZEHlP9ADc3.uZDiBjA8F",
       });
-    console.log("blog.body: ", blog.body);
-    const postResponse = await request(app)
-      .post("/api/posts")
-      .set("Authorization", `Basic ${correctAuthToken}`)
-      .send({
-        title: "Tatiana",
-        shortDescription: "Who run the world",
-        content: "ggggggggggggggggggggggggggggggg",
-        blogId: blog.body.id,
-      })
-      .expect(StatusCodes.CREATED);
-    createdPost1 = postResponse.body;
-
-    expect(createdPost1.content).toEqual("ggggggggggggggggggggggggggggggg");
-    const getAllExistingCourses = await request(app)
-      .get("/api/posts")
-      .expect(StatusCodes.OK);
-
-    expect(getAllExistingCourses.body.items.length).toEqual(1);
+    createdBlog = blog.body;
   });
-  // let createdPost2: PostViewModel;
-  /*test("GET list of posts with status 200", async () => {
+  test("GET list of posts with status 200", async () => {
     await request(app).get("/api/posts").expect(StatusCodes.OK, {
       pagesCount: 1,
       page: 1,
@@ -127,8 +106,32 @@ describe("API for posts", () => {
       totalCount: 0,
       items: [],
     });
-  });*/
-  /*test("Should not Create a new post with incorrect input values and return status 400", async () => {
+  });
+
+  let createdPost1: PostViewModel;
+  let createdPost2: PostViewModel;
+  test("CREATE a new post with CORRECT input data and return status 201", async () => {
+    let inputData = {
+      title: "Tatiana",
+      shortDescription: "Who run the world",
+      content: "ggggggggggggggggggggggggggggggg",
+      blogId: createdBlog.id,
+    };
+    const postResponse = await request(app)
+      .post("/api/posts")
+      .set("Authorization", `Basic ${correctAuthToken}`)
+      .send(inputData)
+      .expect(StatusCodes.CREATED);
+    createdPost1 = postResponse.body;
+    expect(createdPost1.content).toEqual("ggggggggggggggggggggggggggggggg");
+    const getAllExistingCourses = await request(app)
+      .get("/api/posts")
+      .expect(StatusCodes.OK);
+
+    expect(getAllExistingCourses.body.items.length).toEqual(1);
+  });
+
+  test("Should not Create a new post with incorrect input values and return status 400", async () => {
     const postResponse = await request(app)
       .post("/api/posts")
       .set("Authorization", `Basic ${correctAuthToken}`)
@@ -429,5 +432,5 @@ describe("API for posts", () => {
     expect(result.body.pagesCount).toEqual(2);
     expect(result.body.items.length).toEqual(1);
     expect(result.body.items[0].title).toEqual("Svetlana");
-  });*/
+  });
 });
