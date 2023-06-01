@@ -40,7 +40,7 @@ export const postsValidator = [
   stringsInputValidatorWithLength("title", 30),
   stringsInputValidatorWithLength("shortDescription", 100),
   stringsInputValidatorWithLength("content", 1000),
-  stringInputValidatorCommon("blogId").custom(isValidObjectId),
+  stringInputValidatorCommon("blogId").custom(isValidBlogId),
 ];
 
 export const postsValidatorForSpecificBlog = [
