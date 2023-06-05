@@ -1,7 +1,7 @@
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
 import express from "express";
 import {
-  addNewUser,
+  addNewUserBySuperAdmin,
   deleteUser,
   getAllUsers,
 } from "../controllers/usersController";
@@ -16,7 +16,7 @@ usersRouter.post(
   basicAuthMiddleware,
   createUserValidator,
   responseErrorValidationMiddleware,
-  addNewUser
+  addNewUserBySuperAdmin
 );
 usersRouter.delete(
   "/:id",

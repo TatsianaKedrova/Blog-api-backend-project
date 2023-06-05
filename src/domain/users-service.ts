@@ -9,16 +9,26 @@ export const usersService = {
   async createUser(
     email: string,
     login: string,
-    password: string
+    password: string,
+    confirmationCode: string | null,
+    isConfirmed: boolean,
+    expirationDate: string | null
   ): Promise<UserViewModel> {
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this._generateHash(password, passwordSalt);
     const newUser: UserDBType = {
-      passwordSalt,
-      passwordHash,
-      login,
-      email,
-      createdAt: creationDate(),
+      accountData: {
+        passwordSalt,
+        passwordHash,
+        login,
+        email,
+        createdAt: creationDate(),
+      },
+      emailConfirmation: {
+        confirmationCode,
+        isConfirmed,
+        expirationDate,
+      },
     };
     return await usersCommandsRepository.createNewUser(newUser);
   },
@@ -34,8 +44,11 @@ export const usersService = {
   ): Promise<WithId<UserDBType> | null> {
     const user = await usersQueryRepository.findByLoginOrEmail(loginOrEmail);
     if (!user) return null;
-    const passwordHash = await this._generateHash(password, user.passwordSalt);
-    if (user.passwordHash !== passwordHash) {
+    const passwordHash = await this._generateHash(
+      password,
+      user.accountData.passwordSalt
+    );
+    if (user.accountData.passwordHash !== passwordHash) {
       return null;
     }
     return user;
