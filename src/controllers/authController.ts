@@ -14,8 +14,10 @@ import { makeTokenModel } from "../utils/auth-utils/tokenModel";
 import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import { UserInputModel } from "../dto/usersDTO/usersDTO";
 import { authService } from "../domain/auth-service";
-import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
-import { responseErrorFunction } from "../utils/common-utils/responseErrorUtils";
+import {
+  TApiErrorResultObject,
+} from "../dto/common/ErrorResponseModel";
+import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
@@ -84,7 +86,12 @@ export const confirmRegistration = async (
   req: RequestBodyModel<RegistrationConfirmationCodeModel>,
   res: Response<TApiErrorResultObject>
 ) => {
-  res.sendStatus(StatusCodes.NO_CONTENT);
+  const confirmCodeResult = await authService.confirmCode(req.body.code);
+  if (confirmCodeResult.length > 0) {
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .send(responseErrorFunction(confirmCodeResult));
+  } else res.sendStatus(StatusCodes.NO_CONTENT);
 };
 
 export const resendRegistrationEmail = async (

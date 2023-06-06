@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { TFieldError } from "../dto/common/ErrorResponseModel";
 import { responseErrorTransformerFunction } from "../utils/common-utils/responseErrorTransformerUtil";
-import { responseErrorFunction } from "../utils/common-utils/responseErrorUtils";
+import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
 import { StatusCodes } from "http-status-codes";
 
 export const responseErrorValidationMiddleware = (

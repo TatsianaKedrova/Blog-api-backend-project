@@ -6,6 +6,7 @@ import { usersService } from "./users-service";
 import add from "date-fns/add";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import crypto from "crypto";
+import { TFieldError } from "../dto/common/ErrorResponseModel";
 
 const confirmationCode = crypto.randomUUID();
 
@@ -43,5 +44,38 @@ export const authService = {
       await usersCommandsRepository.deleteUser(createUser.id);
       return false;
     }
+  },
+  async confirmCode(code: string): Promise<TFieldError[]> {
+    const errors: TFieldError[] = [];
+    const user = await usersCommandsRepository.findUserByConfirmationCode(code);
+    if (
+      user &&
+      user.emailConfirmation.confirmationCode === code &&
+      user.emailConfirmation.expirationDate &&
+      user.emailConfirmation.expirationDate > new Date().toISOString()
+    ) {
+      const updateIsConfirmedUser =
+        await usersCommandsRepository.updateUserIsConfirmed(user._id);
+      if (!updateIsConfirmedUser) {
+        errors.push({
+          message: "Something went wrong with update operation",
+          field: "registration-confirmation",
+        });
+      }
+    } else if (!user) {
+      errors.push({
+        message: "Code is incorrect",
+        field: "registration-confirmation",
+      });
+    } else if (
+      user.emailConfirmation.expirationDate &&
+      user.emailConfirmation.expirationDate < new Date().toISOString()
+    ) {
+      errors.push({
+        message: "Code is expired",
+        field: "registration-confirmation",
+      });
+    }
+    return errors;
   },
 };
