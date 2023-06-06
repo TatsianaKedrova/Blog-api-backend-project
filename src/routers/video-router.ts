@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { responseErrorFunction } from "../utils/common-utils/responseErrorUtils";
+import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
 import { db } from "../temporal-database/project-db";
 import { validatePostBody } from "../utils/videoUtils/videoPostRequestValidator";
 import { TUpdateVideoInputModel } from "../dto/videosDTO/UpdateVideoModel";

@@ -15,6 +15,14 @@ export const usersCommandsRepository = {
     const foundUser = await usersCollection.findOne({ _id: new ObjectId(id) });
     return foundUser;
   },
+  async findUserByConfirmationCode(
+    code: string
+  ): Promise<WithId<UserDBType> | null> {
+    const foundUser = await usersCollection.findOne({
+      "emailConfirmation.confirmationCode": code,
+    });
+    return foundUser;
+  },
   async deleteUser(id: string): Promise<boolean> {
     const user = await this.findUserById(id);
     if (!user) return false;
@@ -23,5 +31,18 @@ export const usersCommandsRepository = {
       _id: new ObjectId(id),
     });
     return deleteResult.deletedCount === 1;
+  },
+  async updateUserIsConfirmed(_id: ObjectId): Promise<any> {
+    const updateIsUserConfirmed = await usersCollection.updateOne(
+      { _id },
+      {
+        $set: {
+          "emailConfirmation.isConfirmed": true,
+          "emailConfirmation.confirmationCode": null,
+          "emailConfirmation.expirationDate": null,
+        },
+      }
+    );
+    return updateIsUserConfirmed.modifiedCount === 1;
   },
 };

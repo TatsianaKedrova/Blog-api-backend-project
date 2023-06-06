@@ -5,7 +5,11 @@ import {
   RequestQueryParamsModel,
   RequestWithURIParam,
 } from "../dto/common/RequestModels";
-import { UserInputModel, UserViewModel, UsersQueryParams } from "../dto/usersDTO/usersDTO";
+import {
+  UserInputModel,
+  UserViewModel,
+  UsersQueryParams,
+} from "../dto/usersDTO/usersDTO";
 import { Response } from "express";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { usersService } from "../domain/users-service";
@@ -34,14 +38,17 @@ export const getAllUsers = async (
   res.status(StatusCodes.OK).send(allUsers);
 };
 
-export const addNewUser = async (
+export const addNewUserBySuperAdmin = async (
   req: RequestBodyModel<UserInputModel>,
   res: Response<UserViewModel>
 ) => {
   const newUser = await usersService.createUser(
     req.body.email,
     req.body.login,
-    req.body.password
+    req.body.password,
+    null,
+    true,
+    null
   );
   res.status(StatusCodes.CREATED).send(newUser);
 };

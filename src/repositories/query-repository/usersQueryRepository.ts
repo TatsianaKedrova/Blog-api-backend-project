@@ -49,7 +49,10 @@ export const usersQueryRepository = {
   },
   async findByLoginOrEmail(loginOrEmail: string) {
     const isUserExist = await usersCollection.findOne({
-      $or: [{ login: loginOrEmail }, { email: loginOrEmail }],
+      $or: [
+        { "accountData.login": loginOrEmail },
+        { "accountData.email": loginOrEmail },
+      ],
     });
     return isUserExist;
   },

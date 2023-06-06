@@ -14,11 +14,18 @@ export type UserViewModel = {
 };
 
 export type UserDBType = {
-  login: string;
-  email: string;
-  createdAt: string;
-  passwordHash: string;
-  passwordSalt: string;
+  accountData: {
+    login: string;
+    email: string;
+    createdAt: string;
+    passwordHash: string;
+    passwordSalt: string;
+  };
+  emailConfirmation: {
+    isConfirmed: boolean;
+    confirmationCode: string | null;
+    expirationDate: string | null;
+  };
 };
 
 export type UsersQueryParams = PaginationSortingQueryParams & {

@@ -58,7 +58,7 @@ export const postsService = {
       createdAt: creationDate(),
       commentatorInfo: {
         userId,
-        userLogin: foundUser!.login,
+        userLogin: foundUser!.accountData.login,
       },
     };
     return commentsCommandsRepository.createComment(newComment);
