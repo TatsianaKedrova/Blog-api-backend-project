@@ -30,8 +30,7 @@ export const authService = {
         confirmationCode,
         isConfirmed: false,
         expirationDate: add(new Date(), {
-          hours: 1,
-          minutes: 3,
+          days: 1,
         }).toISOString(),
       },
     };
@@ -64,7 +63,7 @@ export const authService = {
       }
     } else if (!user) {
       errors.push({
-        message: "Code is incorrect",
+        message: "Code is incorrect or has already been applied",
         field: "registration-confirmation",
       });
     } else if (

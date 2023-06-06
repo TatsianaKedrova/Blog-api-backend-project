@@ -32,12 +32,16 @@ export const usersCommandsRepository = {
     });
     return deleteResult.deletedCount === 1;
   },
-  async updateUserIsConfirmed(userId: ObjectId): Promise<any> {
+  async updateUserIsConfirmed(_id: ObjectId): Promise<any> {
     const updateIsUserConfirmed = await usersCollection.updateOne(
+      { _id },
       {
-        _id: userId,
-      },
-      { $set: { "emailConfirmation.isConfirmed": true } }
+        $set: {
+          "emailConfirmation.isConfirmed": true,
+          "emailConfirmation.confirmationCode": null,
+          "emailConfirmation.expirationDate": null,
+        },
+      }
     );
     return updateIsUserConfirmed.modifiedCount === 1;
   },
