@@ -67,16 +67,15 @@ export const registerUser = async (
   } else {
     const createUserResult = await authService.registerNewUser(req.body);
     if (!createUserResult) {
-      res
-        .status(StatusCodes.BAD_REQUEST)
-        .send(
-          responseErrorFunction([
-            {
-              message: "Something went wrong with registration/ User was not created",
-              field: "registration",
-            },
-          ])
-        );
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(
+        responseErrorFunction([
+          {
+            message:
+              "Something went wrong with registration/ User was not created",
+            field: "registration",
+          },
+        ])
+      );
     } else res.sendStatus(StatusCodes.NO_CONTENT);
   }
 };

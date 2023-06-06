@@ -3,11 +3,11 @@ import bcrypt from "bcrypt";
 import { UserDBType, UserInputModel } from "../dto/usersDTO/usersDTO";
 import { emailManager } from "../managers/email-manager";
 import { usersService } from "./users-service";
-import { v1 } from "uuid";
 import add from "date-fns/add";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
+import crypto from "crypto";
 
-const confirmationCode = v1();
+const confirmationCode = crypto.randomUUID();
 
 export const authService = {
   async registerNewUser(body: UserInputModel): Promise<boolean> {
