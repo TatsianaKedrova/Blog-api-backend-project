@@ -32,7 +32,7 @@ export const usersCommandsRepository = {
     });
     return deleteResult.deletedCount === 1;
   },
-  async updateUserIsConfirmed(_id: ObjectId): Promise<any> {
+  async updateUserIsConfirmed(_id: ObjectId): Promise<boolean> {
     const updateIsUserConfirmed = await usersCollection.updateOne(
       { _id },
       {
