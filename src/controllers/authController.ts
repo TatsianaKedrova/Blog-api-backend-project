@@ -15,6 +15,7 @@ import { usersCommandsRepository } from "../repositories/commands-repository/use
 import { UserInputModel } from "../dto/usersDTO/usersDTO";
 import { authService } from "../domain/auth-service";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
+import { responseErrorFunction } from "../utils/common-utils/responseErrorUtils";
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
@@ -64,8 +65,19 @@ export const registerUser = async (
       ],
     });
   } else {
-    await authService.registerNewUser(req.body);
-    res.sendStatus(StatusCodes.NO_CONTENT);
+    const createUserResult = await authService.registerNewUser(req.body);
+    if (!createUserResult) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .send(
+          responseErrorFunction([
+            {
+              message: "Something went wrong with registration/ User was not created",
+              field: "registration",
+            },
+          ])
+        );
+    } else res.sendStatus(StatusCodes.NO_CONTENT);
   }
 };
 
