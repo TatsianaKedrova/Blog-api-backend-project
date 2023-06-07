@@ -14,9 +14,7 @@ import { makeTokenModel } from "../utils/auth-utils/tokenModel";
 import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import { UserInputModel } from "../dto/usersDTO/usersDTO";
 import { authService } from "../domain/auth-service";
-import {
-  TApiErrorResultObject,
-} from "../dto/common/ErrorResponseModel";
+import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
 
 export const logIn = async (
@@ -66,20 +64,20 @@ export const registerUser = async (
         },
       ],
     });
-  } else {
-    const createUserResult = await authService.registerNewUser(req.body);
-    if (!createUserResult) {
-      res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(
-        responseErrorFunction([
-          {
-            message:
-              "Something went wrong with registration/ User was not created",
-            field: "registration",
-          },
-        ])
-      );
-    } else res.sendStatus(StatusCodes.NO_CONTENT);
+    return;
   }
+  const createUserResult = await authService.registerNewUser(req.body);
+  if (!createUserResult) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(
+      responseErrorFunction([
+        {
+          message:
+            "Something went wrong with registration/ User was not created",
+          field: "registration",
+        },
+      ])
+    );
+  } else res.sendStatus(StatusCodes.NO_CONTENT);
 };
 
 export const confirmRegistration = async (

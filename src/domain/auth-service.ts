@@ -47,12 +47,30 @@ export const authService = {
   async confirmCode(code: string): Promise<TFieldError[]> {
     const errors: TFieldError[] = [];
     const user = await usersCommandsRepository.findUserByConfirmationCode(code);
-    if (
-      user &&
-      user.emailConfirmation.confirmationCode === code &&
-      user.emailConfirmation.expirationDate &&
-      user.emailConfirmation.expirationDate > new Date().toISOString()
+    if (!user) {
+      errors.push({
+        message: "Code is incorrect or has already been applied",
+        field: "registration-confirmation",
+      });
+    } else if (user?.emailConfirmation.confirmationCode !== code) {
+      errors.push({
+        message: "Code is incorrect",
+        field: "registration-confirmation",
+      });
+    } else if (user?.emailConfirmation.isConfirmed) {
+      errors.push({
+        message: "Code has already been applied",
+        field: "registration-confirmation",
+      });
+    } else if (
+      user?.emailConfirmation.expirationDate &&
+      user.emailConfirmation.expirationDate < new Date().toISOString()
     ) {
+      errors.push({
+        message: "Code is expired",
+        field: "registration-confirmation",
+      });
+    } else {
       const updateIsConfirmedUser =
         await usersCommandsRepository.updateUserIsConfirmed(user._id);
       if (!updateIsConfirmedUser) {
@@ -61,19 +79,6 @@ export const authService = {
           field: "registration-confirmation",
         });
       }
-    } else if (!user) {
-      errors.push({
-        message: "Code is incorrect or has already been applied",
-        field: "registration-confirmation",
-      });
-    } else if (
-      user.emailConfirmation.expirationDate &&
-      user.emailConfirmation.expirationDate < new Date().toISOString()
-    ) {
-      errors.push({
-        message: "Code is expired",
-        field: "registration-confirmation",
-      });
     }
     return errors;
   },

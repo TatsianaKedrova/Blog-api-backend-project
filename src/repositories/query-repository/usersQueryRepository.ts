@@ -21,11 +21,11 @@ export const usersQueryRepository = {
     const filterLogin: Filter<UserDBType> = {};
 
     if (searchEmailTerm) {
-      filterEmail.email = { $regex: searchEmailTerm, $options: "i" };
+      filterEmail.email = { $regex: searchEmailTerm, $options: "ix" };
       filterTotal.push(filterEmail);
     }
     if (searchLoginTerm) {
-      filterLogin.login = { $regex: searchLoginTerm, $options: "i" };
+      filterLogin.login = { $regex: searchLoginTerm, $options: "ix" };
       filterTotal.push(filterLogin);
     }
     const filter = {
