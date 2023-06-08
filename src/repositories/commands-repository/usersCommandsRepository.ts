@@ -37,4 +37,22 @@ export const usersCommandsRepository = {
     );
     return updateIsUserConfirmed.modifiedCount === 1;
   },
+  async updateUserCodeAndExpirationDate(
+    _id: ObjectId,
+    code: string,
+    expirationDate: string
+  ): Promise<boolean> {
+    const findUser = usersCommandsRepository.findUserById(_id.toString());
+    if (!findUser) return false;
+    const updateIsUserConfirmed = await usersCollection.updateMany(
+      { _id },
+      {
+        $set: {
+          "emailConfirmation.confirmationCode": code,
+          "emailConfirmation.expirationDate": expirationDate,
+        },
+      }
+    );
+    return updateIsUserConfirmed.modifiedCount === 1;
+  },
 };

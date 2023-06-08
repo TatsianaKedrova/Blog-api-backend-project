@@ -3,13 +3,11 @@ import bcrypt from "bcrypt";
 import { UserDBType, UserInputModel } from "../dto/usersDTO/usersDTO";
 import { emailManager } from "../managers/email-manager";
 import { usersService } from "./users-service";
-import add from "date-fns/add";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
-import crypto from "crypto";
 import { TFieldError } from "../dto/common/ErrorResponseModel";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
-
-const confirmationCode = crypto.randomUUID();
+import { createConfirmationCode } from "../utils/auth-utils/create-user-confirmation-code";
+import { createCodeExpirationDate } from "../utils/auth-utils/create-code-expiration-date";
 
 export const authService = {
   async registerNewUser(body: UserInputModel): Promise<boolean> {
@@ -28,11 +26,9 @@ export const authService = {
         createdAt: creationDate(),
       },
       emailConfirmation: {
-        confirmationCode,
+        confirmationCode: createConfirmationCode(),
         isConfirmed: false,
-        expirationDate: add(new Date(), {
-          days: 1,
-        }).toISOString(),
+        expirationDate: createCodeExpirationDate(),
       },
     };
     const createUser = await usersCommandsRepository.createNewUser(newUser);
@@ -84,8 +80,9 @@ export const authService = {
     return errors;
   },
   async resendEmail(email: string): Promise<TFieldError[]> {
-    const user = await usersQueryRepository.findUserByEmail(email);
     const errors: TFieldError[] = [];
+
+    const user = await usersQueryRepository.findUserByEmail(email);
     if (!user) {
       errors.push({
         message: "User with such email doesn't exist",
@@ -97,7 +94,13 @@ export const authService = {
         field: "registration-email-resending",
       });
     } else {
-      await emailManager.sendEmail(user);
+      const resendEmailResult = await emailManager.resendEmailWithCode(user);
+      if (!resendEmailResult) {
+        errors.push({
+          message: "Something went wrong with update process",
+          field: "registration-email-resending",
+        });
+      }
     }
     return errors;
   },
