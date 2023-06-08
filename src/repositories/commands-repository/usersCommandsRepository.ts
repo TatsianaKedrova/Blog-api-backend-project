@@ -15,14 +15,6 @@ export const usersCommandsRepository = {
     const foundUser = await usersCollection.findOne({ _id: new ObjectId(id) });
     return foundUser;
   },
-  async findUserByConfirmationCode(
-    code: string
-  ): Promise<WithId<UserDBType> | null> {
-    const foundUser = await usersCollection.findOne({
-      "emailConfirmation.confirmationCode": code,
-    });
-    return foundUser;
-  },
   async deleteUser(id: string): Promise<boolean> {
     const user = await this.findUserById(id);
     if (!user) return false;

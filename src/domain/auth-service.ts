@@ -7,6 +7,7 @@ import add from "date-fns/add";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import crypto from "crypto";
 import { TFieldError } from "../dto/common/ErrorResponseModel";
+import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 
 const confirmationCode = crypto.randomUUID();
 
@@ -46,7 +47,7 @@ export const authService = {
   },
   async confirmCode(code: string): Promise<TFieldError[]> {
     const errors: TFieldError[] = [];
-    const user = await usersCommandsRepository.findUserByConfirmationCode(code);
+    const user = await usersQueryRepository.findUserByConfirmationCode(code);
     if (!user) {
       errors.push({
         message: "Code is incorrect or has already been applied",
@@ -79,6 +80,24 @@ export const authService = {
           field: "registration-confirmation",
         });
       }
+    }
+    return errors;
+  },
+  async resendEmail(email: string): Promise<TFieldError[]> {
+    const user = await usersQueryRepository.findUserByEmail(email);
+    const errors: TFieldError[] = [];
+    if (!user) {
+      errors.push({
+        message: "User with such email doesn't exist",
+        field: "registration-email-resending",
+      });
+    } else if (user.emailConfirmation.isConfirmed) {
+      errors.push({
+        message: "Email is already confirmed",
+        field: "registration-email-resending",
+      });
+    } else {
+      await emailManager.sendEmail(user);
     }
     return errors;
   },

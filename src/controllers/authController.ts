@@ -16,6 +16,7 @@ import { UserInputModel } from "../dto/usersDTO/usersDTO";
 import { authService } from "../domain/auth-service";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
+import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
@@ -25,13 +26,13 @@ export const logIn = async (
     req.body.loginOrEmail,
     req.body.password
   );
-  if (user) {
-    const token = await jwtService.createJWT(user);
-    const tokenModel = makeTokenModel(token);
-    res.status(StatusCodes.OK).send(tokenModel);
-  } else {
+  if (!user) {
     res.sendStatus(StatusCodes.UNAUTHORIZED);
+    return;
   }
+  const token = await jwtService.createJWT(user);
+  const tokenModel = makeTokenModel(token);
+  res.status(StatusCodes.OK).send(tokenModel);
 };
 
 export const getInfoAboutUser = async (
@@ -51,15 +52,16 @@ export const registerUser = async (
   req: RequestBodyModel<UserInputModel>,
   res: Response<TApiErrorResultObject>
 ) => {
-  const isUserAlreadyExists = await usersService.checkCredentials(
-    req.body.email,
-    req.body.password
-  );
+  const isUserAlreadyExists =
+    await usersQueryRepository.findUserByEmailAndLogin(
+      req.body.email,
+      req.body.login
+    );
   if (isUserAlreadyExists) {
     res.status(StatusCodes.BAD_REQUEST).send({
       errorsMessages: [
         {
-          message: "User with the given email or password already exists",
+          message: "User with the given email or login already exists",
           field: "registration",
         },
       ],
@@ -95,4 +97,13 @@ export const confirmRegistration = async (
 export const resendRegistrationEmail = async (
   req: RequestBodyModel<RegistrationEmailResending>,
   res: Response<TApiErrorResultObject>
-) => {};
+) => {
+  const resendEmailResult = await authService.resendEmail(req.body.email);
+  if (resendEmailResult.length > 0) {
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .send(responseErrorFunction(resendEmailResult));
+    return;
+  }
+  res.sendStatus(StatusCodes.NO_CONTENT);
+};

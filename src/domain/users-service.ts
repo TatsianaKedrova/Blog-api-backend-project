@@ -44,6 +44,10 @@ export const usersService = {
   ): Promise<WithId<UserDBType> | null> {
     const user = await usersQueryRepository.findByLoginOrEmail(loginOrEmail);
     if (!user) return null;
+
+    if (!user?.emailConfirmation.isConfirmed) {
+      return null;
+    }
     const passwordHash = await this._generateHash(
       password,
       user.accountData.passwordSalt
