@@ -13,7 +13,7 @@ export const usersService = {
     confirmationCode: string | null,
     isConfirmed: boolean,
     expirationDate: string | null
-  ): Promise<UserViewModel> {
+  ): Promise<UserViewModel | null> {
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this._generateHash(password, passwordSalt);
     const newUser: UserDBType = {

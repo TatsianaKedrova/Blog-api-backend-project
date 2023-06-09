@@ -14,6 +14,8 @@ import { Response } from "express";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { usersService } from "../domain/users-service";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
+import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
+import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 
 export const getAllUsers = async (
   req: RequestQueryParamsModel<UsersQueryParams>,
@@ -40,7 +42,7 @@ export const getAllUsers = async (
 
 export const addNewUserBySuperAdmin = async (
   req: RequestBodyModel<UserInputModel>,
-  res: Response<UserViewModel>
+  res: Response<UserViewModel | TApiErrorResultObject>
 ) => {
   const newUser = await usersService.createUser(
     req.body.email,
@@ -50,6 +52,17 @@ export const addNewUserBySuperAdmin = async (
     true,
     null
   );
+  if (!newUser) {
+    res.status(StatusCodes.BAD_REQUEST).send(
+      responseErrorFunction([
+        {
+          message: "User with the given email or login already exists",
+          field: "users creation by super admin",
+        },
+      ])
+    );
+    return;
+  }
   res.status(StatusCodes.CREATED).send(newUser);
 };
 
