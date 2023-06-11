@@ -8,10 +8,13 @@ import { TFieldError } from "../dto/common/ErrorResponseModel";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { createConfirmationCode } from "../utils/auth-utils/create-user-confirmation-code";
 import { createCodeExpirationDate } from "../utils/auth-utils/create-code-expiration-date";
+import { UserAlreadyExistsError } from "../utils/errors-utils/UserAlreadyExistsError";
+import { RegistrationError } from "../utils/errors-utils/RegistrationError";
 
 export const authService = {
-  async registerNewUser(body: UserInputModel): Promise<TFieldError[]> {
-    const errors: TFieldError[] = [];
+  async registerNewUser(
+    body: UserInputModel
+  ): Promise<TFieldError | UserDBType> {
     const { login, email, password } = body;
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await usersService._generateHash(
@@ -34,25 +37,17 @@ export const authService = {
     };
     const createUser = await usersCommandsRepository.createNewUser(newUser);
     if (!createUser) {
-      errors.push({
-        message:
-          "User with the given email or login already exists",
-        field: "registration",
-      });
+      return new UserAlreadyExistsError();
     } else {
       try {
         await emailManager.sendEmail(newUser);
+        return newUser;
       } catch (error) {
         console.error(error);
         await usersCommandsRepository.deleteUser(createUser.id);
-        errors.push({
-          message:
-            "Something went wrong with registration/ User was not created",
-          field: "registration",
-        });
+        return new RegistrationError();
       }
     }
-    return errors;
   },
   async confirmCode(code: string): Promise<TFieldError[]> {
     const errors: TFieldError[] = [];

@@ -16,7 +16,8 @@ import { UserInputModel } from "../dto/usersDTO/usersDTO";
 import { authService } from "../domain/auth-service";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
-import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
+import { UserAlreadyExistsError } from "../utils/errors-utils/UserAlreadyExistsError";
+import { RegistrationError } from "../utils/errors-utils/RegistrationError";
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
@@ -52,34 +53,20 @@ export const registerUser = async (
   req: RequestBodyModel<UserInputModel>,
   res: Response<TApiErrorResultObject>
 ) => {
-  const isUserAlreadyExists =
-    await usersQueryRepository.findUserByEmailAndLogin(
-      req.body.email,
-      req.body.login
-    );
-  if (isUserAlreadyExists) {
-    res.status(StatusCodes.BAD_REQUEST).send({
-      errorsMessages: [
-        {
-          message: "User with the given email or login already exists",
-          field: "registration",
-        },
-      ],
-    });
+  const createUserResult = await authService.registerNewUser(req.body);
+  if (createUserResult instanceof UserAlreadyExistsError) {
+    res
+      .status(StatusCodes.BAD_REQUEST)
+      .send(responseErrorFunction([createUserResult]));
     return;
   }
-  const createUserResult = await authService.registerNewUser(req.body);
-  if (!createUserResult) {
-    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(
-      responseErrorFunction([
-        {
-          message:
-            "Something went wrong with registration/ User was not created",
-          field: "registration",
-        },
-      ])
-    );
-  } else res.sendStatus(StatusCodes.NO_CONTENT);
+  if (createUserResult instanceof RegistrationError) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send(responseErrorFunction([createUserResult]));
+    return;
+  }
+  res.sendStatus(StatusCodes.NO_CONTENT);
 };
 
 export const confirmRegistration = async (
