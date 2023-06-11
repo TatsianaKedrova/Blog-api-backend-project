@@ -1,4 +1,4 @@
-import { Filter, SortDirection } from "mongodb";
+import { Filter, SortDirection, WithId } from "mongodb";
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { UserDBType, UserViewModel } from "../../dto/usersDTO/usersDTO";
 import { usersCollection } from "../../db";
@@ -47,12 +47,35 @@ export const usersQueryRepository = {
       pageNumber
     );
   },
-  async findByLoginOrEmail(loginOrEmail: string) {
+  async findByLoginOrEmail(
+    loginOrEmail: string
+  ): Promise<WithId<UserDBType> | null> {
     const isUserExist = await usersCollection.findOne({
       $or: [
         { "accountData.login": loginOrEmail },
         { "accountData.email": loginOrEmail },
       ],
+    });
+    return isUserExist;
+  },
+  async findUserByConfirmationCode(
+    code: string
+  ): Promise<WithId<UserDBType> | null> {
+    const foundUser = await usersCollection.findOne({
+      "emailConfirmation.confirmationCode": code,
+    });
+    return foundUser;
+  },
+  async findUserByEmail(email: string): Promise<WithId<UserDBType> | null> {
+    const user = await usersCollection.findOne({ "accountData.email": email });
+    return user;
+  },
+  async findUserByEmailAndLogin(
+    email: string,
+    login: string
+  ): Promise<WithId<UserDBType> | null> {
+    const isUserExist = await usersCollection.findOne({
+      $or: [{ "accountData.login": login }, { "accountData.email": email }],
     });
     return isUserExist;
   },

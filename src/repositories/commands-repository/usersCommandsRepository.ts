@@ -1,26 +1,32 @@
-import { ObjectId, WithId } from "mongodb";
+import { MongoServerError, ObjectId, WithId } from "mongodb";
 import { usersCollection } from "../../db";
 import { UserDBType, UserViewModel } from "../../dto/usersDTO/usersDTO";
 import { transformUsersResponse } from "../../utils/usersUtils/transformUsersResponse";
 
 export const usersCommandsRepository = {
-  async createNewUser(newUser: UserDBType): Promise<UserViewModel> {
-    const createdUser = await usersCollection.insertOne(newUser);
-    const newUserFound = await this.findUserById(
-      createdUser.insertedId.toString()
-    );
-    return transformUsersResponse(newUserFound!);
+  async createNewUser(newUser: UserDBType): Promise<UserViewModel | null> {
+    try {
+      await usersCollection.createIndex(
+        { "accountData.email": 1 },
+        { name: "email", unique: true }
+      );
+      await usersCollection.createIndex(
+        { "accountData.login": 1 },
+        { name: "login", unique: true }
+      );
+      const createdUser = await usersCollection.insertOne(newUser);
+      const newUserFound = await this.findUserById(
+        createdUser.insertedId.toString()
+      );
+      return transformUsersResponse(newUserFound!);
+    } catch (err) {
+      const error = err as MongoServerError;
+      console.log("error: ", error);
+      return null;
+    }
   },
   async findUserById(id: string): Promise<WithId<UserDBType> | null> {
     const foundUser = await usersCollection.findOne({ _id: new ObjectId(id) });
-    return foundUser;
-  },
-  async findUserByConfirmationCode(
-    code: string
-  ): Promise<WithId<UserDBType> | null> {
-    const foundUser = await usersCollection.findOne({
-      "emailConfirmation.confirmationCode": code,
-    });
     return foundUser;
   },
   async deleteUser(id: string): Promise<boolean> {
@@ -40,6 +46,24 @@ export const usersCommandsRepository = {
           "emailConfirmation.isConfirmed": true,
           "emailConfirmation.confirmationCode": null,
           "emailConfirmation.expirationDate": null,
+        },
+      }
+    );
+    return updateIsUserConfirmed.modifiedCount === 1;
+  },
+  async updateUserCodeAndExpirationDate(
+    _id: ObjectId,
+    code: string,
+    expirationDate: string
+  ): Promise<boolean> {
+    const findUser = usersCommandsRepository.findUserById(_id.toString());
+    if (!findUser) return false;
+    const updateIsUserConfirmed = await usersCollection.updateMany(
+      { _id },
+      {
+        $set: {
+          "emailConfirmation.confirmationCode": code,
+          "emailConfirmation.expirationDate": expirationDate,
         },
       }
     );
