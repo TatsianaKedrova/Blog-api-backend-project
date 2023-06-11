@@ -9,7 +9,11 @@ import { usersQueryRepository } from "../repositories/query-repository/usersQuer
 import { createConfirmationCode } from "../utils/auth-utils/create-user-confirmation-code";
 import { createCodeExpirationDate } from "../utils/auth-utils/create-code-expiration-date";
 import { UserAlreadyExistsError } from "../utils/errors-utils/UserAlreadyExistsError";
-import { RegistrationError } from "../utils/errors-utils/RegistrationError";
+import { RegistrationError } from "../utils/errors-utils/registration-errors/RegistrationError";
+import { IncorrectConfirmationCodeError } from "../utils/errors-utils/registration-confirmation-errors/IncorrectConfirmationCodeError";
+import { UpdateUserError } from "../utils/errors-utils/registration-confirmation-errors/UpdateUserError";
+import { UserIsConfirmedError } from "../utils/errors-utils/registration-confirmation-errors/UserIsConfirmedError";
+import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration-confirmation-errors/ConfirmationCodeExpiredError";
 
 export const authService = {
   async registerNewUser(
@@ -49,43 +53,27 @@ export const authService = {
       }
     }
   },
-  async confirmCode(code: string): Promise<TFieldError[]> {
-    const errors: TFieldError[] = [];
+  async confirmCode(code: string): Promise<TFieldError | string> {
     const user = await usersQueryRepository.findUserByConfirmationCode(code);
-    if (!user) {
-      errors.push({
-        message: "Code is incorrect or has already been applied",
-        field: "registration-confirmation",
-      });
-    } else if (user?.emailConfirmation.confirmationCode !== code) {
-      errors.push({
-        message: "Code is incorrect",
-        field: "registration-confirmation",
-      });
-    } else if (user?.emailConfirmation.isConfirmed) {
-      errors.push({
-        message: "Code has already been applied",
-        field: "registration-confirmation",
-      });
-    } else if (
+    if (!user || user?.emailConfirmation.confirmationCode !== code) {
+      return new IncorrectConfirmationCodeError();
+    }
+    if (user?.emailConfirmation.isConfirmed) {
+      return new UserIsConfirmedError();
+    }
+    if (
       user?.emailConfirmation.expirationDate &&
       user.emailConfirmation.expirationDate < new Date().toISOString()
     ) {
-      errors.push({
-        message: "Code is expired",
-        field: "registration-confirmation",
-      });
+      return new ConfirmationCodeExpiredError();
     } else {
       const updateIsConfirmedUser =
         await usersCommandsRepository.updateUserIsConfirmed(user._id);
       if (!updateIsConfirmedUser) {
-        errors.push({
-          message: "Something went wrong with update operation",
-          field: "registration-confirmation",
-        });
+        return new UpdateUserError();
       }
+      return user.accountData.login;
     }
-    return errors;
   },
   async resendEmail(email: string): Promise<TFieldError[]> {
     const errors: TFieldError[] = [];

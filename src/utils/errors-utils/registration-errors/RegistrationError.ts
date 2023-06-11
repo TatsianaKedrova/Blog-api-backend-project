@@ -1,4 +1,4 @@
-import { CommonErrorResponse } from "./CommonErrorResponse";
+import { CommonErrorResponse } from "../CommonErrorResponse";
 
 export class RegistrationError extends CommonErrorResponse {
   message: string;

@@ -17,7 +17,11 @@ import { authService } from "../domain/auth-service";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
 import { UserAlreadyExistsError } from "../utils/errors-utils/UserAlreadyExistsError";
-import { RegistrationError } from "../utils/errors-utils/RegistrationError";
+import { RegistrationError } from "../utils/errors-utils/registration-errors/RegistrationError";
+import { IncorrectConfirmationCodeError } from "../utils/errors-utils/registration-confirmation-errors/IncorrectConfirmationCodeError";
+import { UpdateUserError } from "../utils/errors-utils/registration-confirmation-errors/UpdateUserError";
+import { UserIsConfirmedError } from "../utils/errors-utils/registration-confirmation-errors/UserIsConfirmedError";
+import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration-confirmation-errors/ConfirmationCodeExpiredError";
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
@@ -74,11 +78,23 @@ export const confirmRegistration = async (
   res: Response<TApiErrorResultObject>
 ) => {
   const confirmCodeResult = await authService.confirmCode(req.body.code);
-  if (confirmCodeResult.length > 0) {
+  if (
+    confirmCodeResult instanceof IncorrectConfirmationCodeError ||
+    confirmCodeResult instanceof UserIsConfirmedError ||
+    confirmCodeResult instanceof ConfirmationCodeExpiredError
+  ) {
     res
       .status(StatusCodes.BAD_REQUEST)
-      .send(responseErrorFunction(confirmCodeResult));
-  } else res.sendStatus(StatusCodes.NO_CONTENT);
+      .send(responseErrorFunction([confirmCodeResult]));
+    return;
+  }
+  if (confirmCodeResult instanceof UpdateUserError) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send(responseErrorFunction([confirmCodeResult]));
+    return;
+  }
+  res.sendStatus(StatusCodes.NO_CONTENT);
 };
 
 export const resendRegistrationEmail = async (
