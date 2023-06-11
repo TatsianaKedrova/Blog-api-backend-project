@@ -3,10 +3,10 @@ import { RegistrationConfirmationError } from "./RegistrationConfirmationError";
 export class UpdateUserError extends RegistrationConfirmationError {
     message: string;
     field: string;
-    constructor() {
+    constructor(field: string) {
       super();
       this.message = "Something went wrong with update operation";
-      this.field = super.getField;
+      this.field = field;
     }
   
     getResult() {

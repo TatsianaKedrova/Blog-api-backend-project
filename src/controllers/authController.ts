@@ -16,12 +16,14 @@ import { UserInputModel } from "../dto/usersDTO/usersDTO";
 import { authService } from "../domain/auth-service";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
-import { UserAlreadyExistsError } from "../utils/errors-utils/UserAlreadyExistsError";
+import { UserAlreadyExistsError } from "../utils/errors-utils/registration-errors/UserAlreadyExistsError";
 import { RegistrationError } from "../utils/errors-utils/registration-errors/RegistrationError";
 import { IncorrectConfirmationCodeError } from "../utils/errors-utils/registration-confirmation-errors/IncorrectConfirmationCodeError";
 import { UpdateUserError } from "../utils/errors-utils/registration-confirmation-errors/UpdateUserError";
 import { UserIsConfirmedError } from "../utils/errors-utils/registration-confirmation-errors/UserIsConfirmedError";
 import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration-confirmation-errors/ConfirmationCodeExpiredError";
+import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
+import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
@@ -102,10 +104,19 @@ export const resendRegistrationEmail = async (
   res: Response<TApiErrorResultObject>
 ) => {
   const resendEmailResult = await authService.resendEmail(req.body.email);
-  if (resendEmailResult.length > 0) {
+  if (
+    resendEmailResult instanceof WrongEmailError ||
+    resendEmailResult instanceof EmailAlreadyConfirmedError
+  ) {
     res
       .status(StatusCodes.BAD_REQUEST)
-      .send(responseErrorFunction(resendEmailResult));
+      .send(responseErrorFunction([resendEmailResult]));
+    return;
+  }
+  if (resendEmailResult instanceof UpdateUserError) {
+    res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send(responseErrorFunction([resendEmailResult]));
     return;
   }
   res.sendStatus(StatusCodes.NO_CONTENT);

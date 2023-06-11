@@ -8,12 +8,14 @@ import { TFieldError } from "../dto/common/ErrorResponseModel";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { createConfirmationCode } from "../utils/auth-utils/create-user-confirmation-code";
 import { createCodeExpirationDate } from "../utils/auth-utils/create-code-expiration-date";
-import { UserAlreadyExistsError } from "../utils/errors-utils/UserAlreadyExistsError";
+import { UserAlreadyExistsError } from "../utils/errors-utils/registration-errors/UserAlreadyExistsError";
 import { RegistrationError } from "../utils/errors-utils/registration-errors/RegistrationError";
 import { IncorrectConfirmationCodeError } from "../utils/errors-utils/registration-confirmation-errors/IncorrectConfirmationCodeError";
 import { UpdateUserError } from "../utils/errors-utils/registration-confirmation-errors/UpdateUserError";
 import { UserIsConfirmedError } from "../utils/errors-utils/registration-confirmation-errors/UserIsConfirmedError";
 import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration-confirmation-errors/ConfirmationCodeExpiredError";
+import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
+import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
 
 export const authService = {
   async registerNewUser(
@@ -70,34 +72,23 @@ export const authService = {
       const updateIsConfirmedUser =
         await usersCommandsRepository.updateUserIsConfirmed(user._id);
       if (!updateIsConfirmedUser) {
-        return new UpdateUserError();
+        return new UpdateUserError("registration-confirmation");
       }
       return user.accountData.login;
     }
   },
-  async resendEmail(email: string): Promise<TFieldError[]> {
-    const errors: TFieldError[] = [];
-
+  async resendEmail(email: string): Promise<TFieldError | string> {
     const user = await usersQueryRepository.findUserByEmail(email);
     if (!user) {
-      errors.push({
-        message: "User with such email doesn't exist",
-        field: "registration-email-resending",
-      });
-    } else if (user.emailConfirmation.isConfirmed) {
-      errors.push({
-        message: "Email is already confirmed",
-        field: "registration-email-resending",
-      });
-    } else {
-      const resendEmailResult = await emailManager.resendEmailWithCode(user);
-      if (!resendEmailResult) {
-        errors.push({
-          message: "Something went wrong with update process",
-          field: "registration-email-resending",
-        });
-      }
+      return new WrongEmailError();
     }
-    return errors;
+    if (user.emailConfirmation.isConfirmed) {
+      return new EmailAlreadyConfirmedError();
+    }
+    const resendEmailResult = await emailManager.resendEmailWithCode(user);
+    if (!resendEmailResult) {
+      return new UpdateUserError("registration-email-resending");
+    }
+    return user.accountData.email;
   },
 };
