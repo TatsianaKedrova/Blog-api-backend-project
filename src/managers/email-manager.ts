@@ -27,13 +27,15 @@ export const emailManager = {
       if (!updatedUser) {
         return false;
       } else {
-        const html = htmlEmailConfirmationCodeLetter(
-          user.emailConfirmation.confirmationCode
-        );
         const foundUpdatedUser = await usersCommandsRepository.findUserById(
           user._id.toString()
         );
         if (!foundUpdatedUser) return false;
+
+        const html = htmlEmailConfirmationCodeLetter(
+          foundUpdatedUser.emailConfirmation.confirmationCode
+        );
+
         await emailAdapter.sendEmail(foundUpdatedUser?.accountData.email, html);
         return true;
       }

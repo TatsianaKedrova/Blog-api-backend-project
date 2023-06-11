@@ -5,7 +5,7 @@ export class IncorrectConfirmationCodeError extends RegistrationConfirmationErro
   field: string;
   constructor() {
     super();
-    this.message = "Confirmation code is incorrect";
+    this.message = "Confirmation code is incorrect or user has already been confirmed";
     this.field = super.getField;
   }
 
