@@ -8,13 +8,13 @@ import { createCodeExpirationDate } from "../utils/auth-utils/create-code-expira
 
 export const emailManager = {
   async resendEmailWithCode(user: WithId<UserDBType>): Promise<boolean> {
-    if (
-      user.emailConfirmation.expirationDate &&
-      user.emailConfirmation.expirationDate > new Date().toISOString()
-    ) {
-      await this.sendEmail(user);
-      return true;
-    } else {
+    // if (
+    //   user.emailConfirmation.expirationDate &&
+    //   user.emailConfirmation.expirationDate > new Date().toISOString()
+    // ) {
+    //   await this.sendEmail(user);
+    //   return true;
+    // } else {
       const newCode = createConfirmationCode();
       const newExpirationDate = createCodeExpirationDate();
 
@@ -39,7 +39,7 @@ export const emailManager = {
         await emailAdapter.sendEmail(foundUpdatedUser?.accountData.email, html);
         return true;
       }
-    }
+    // }
   },
   async sendEmail(user: UserDBType) {
     const code = user.emailConfirmation.confirmationCode;
