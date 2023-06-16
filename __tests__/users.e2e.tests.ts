@@ -9,7 +9,7 @@ const incorrectAuthToken = "YWRtaW46c864XdlcnR5=5";
 describe("API for users", () => {
   beforeAll(async () => {
     await request(app).delete("/api/testing/all-data");
-  }, 15000);
+  });
   afterAll(async () => {
     await request(app).delete("/api/testing/all-data");
   });
