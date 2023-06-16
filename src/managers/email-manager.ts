@@ -8,13 +8,6 @@ import { createCodeExpirationDate } from "../utils/auth-utils/create-code-expira
 
 export const emailManager = {
   async resendEmailWithCode(user: WithId<UserDBType>): Promise<boolean> {
-    // if (
-    //   user.emailConfirmation.expirationDate &&
-    //   user.emailConfirmation.expirationDate > new Date().toISOString()
-    // ) {
-    //   await this.sendEmail(user);
-    //   return true;
-    // } else {
       const newCode = createConfirmationCode();
       const newExpirationDate = createCodeExpirationDate();
 
