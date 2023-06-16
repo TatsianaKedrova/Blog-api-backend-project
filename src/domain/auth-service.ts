@@ -42,8 +42,16 @@ export const authService = {
       },
     };
     const createUser = await usersCommandsRepository.createNewUser(newUser);
-    if (!createUser) {
-      return new UserAlreadyExistsError();
+    if (createUser === "login") {
+      return new UserAlreadyExistsError(
+        createUser,
+        "User with the given login already exists"
+      );
+    } else if (createUser === "email") {
+      return new UserAlreadyExistsError(
+        createUser,
+        "User with the given email already exists"
+      );
     } else {
       try {
         await emailManager.sendEmail(newUser);

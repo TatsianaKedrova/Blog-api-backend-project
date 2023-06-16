@@ -2,9 +2,13 @@ import { MongoServerError, ObjectId, WithId } from "mongodb";
 import { usersCollection } from "../../db";
 import { UserDBType, UserViewModel } from "../../dto/usersDTO/usersDTO";
 import { transformUsersResponse } from "../../utils/usersUtils/transformUsersResponse";
+import { defineFieldMongoError } from "../../utils/errors-utils/defineFieldMongoError";
+import { UserNotRegisteredField } from "../../dto/common/MongoErrorTypes";
 
 export const usersCommandsRepository = {
-  async createNewUser(newUser: UserDBType): Promise<UserViewModel | null> {
+  async createNewUser(
+    newUser: UserDBType
+  ): Promise<UserViewModel | UserNotRegisteredField> {
     try {
       await usersCollection.createIndex(
         { "accountData.email": 1 },
@@ -21,8 +25,7 @@ export const usersCommandsRepository = {
       return transformUsersResponse(newUserFound!);
     } catch (err) {
       const error = err as MongoServerError;
-      console.log("error: ", error);
-      return null;
+      return defineFieldMongoError(error.message);
     }
   },
   async findUserById(id: string): Promise<WithId<UserDBType> | null> {

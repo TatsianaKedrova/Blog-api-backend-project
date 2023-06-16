@@ -1,12 +1,12 @@
 import { CommonErrorResponse } from "../CommonErrorResponse";
 
 export class UserAlreadyExistsError extends CommonErrorResponse {
-  message: string;
+    message: string;
   field: string;
-  constructor() {
+  constructor(field: string, message: string) {
     super();
-    this.message = "User with the given email or login already exists";
-    this.field = "registration";
+    this.field = field;
+    this.message = message;
   }
 
   getResult() {
