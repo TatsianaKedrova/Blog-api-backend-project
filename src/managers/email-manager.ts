@@ -32,7 +32,6 @@ export const emailManager = {
         await emailAdapter.sendEmail(foundUpdatedUser?.accountData.email, html);
         return true;
       }
-    // }
   },
   async sendEmail(user: UserDBType) {
     const code = user.emailConfirmation.confirmationCode;
