@@ -16,6 +16,7 @@ import { usersService } from "../domain/users-service";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
+import { UserAlreadyExistsError } from "../utils/errors-utils/registration-errors/UserAlreadyExistsError";
 
 export const getAllUsers = async (
   req: RequestQueryParamsModel<UsersQueryParams>,
@@ -52,18 +53,12 @@ export const addNewUserBySuperAdmin = async (
     true,
     null
   );
-  if (!newUser) {
-    res.status(StatusCodes.BAD_REQUEST).send(
-      responseErrorFunction([
-        {
-          message: "User with the given email or login already exists",
-          field: "users creation by super admin",
-        },
-      ])
-    );
+  if (newUser instanceof UserAlreadyExistsError) {
+    res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction([newUser]));
     return;
+  } else {
+    res.status(StatusCodes.CREATED).send(newUser as UserViewModel);
   }
-  res.status(StatusCodes.CREATED).send(newUser);
 };
 
 export const deleteUser = async (
