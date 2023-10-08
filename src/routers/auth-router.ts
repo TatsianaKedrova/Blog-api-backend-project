@@ -5,6 +5,7 @@ import {
   confirmRegistration,
   getInfoAboutUser,
   logIn,
+  refreshToken,
   registerUser,
   resendRegistrationEmail,
 } from "../controllers/authController";
@@ -30,3 +31,5 @@ authRouter.post(
   confirmRegistration
 );
 authRouter.post("/registration-email-resending", resendRegistrationEmail);
+
+authRouter.post("/refresh-token", refreshToken)

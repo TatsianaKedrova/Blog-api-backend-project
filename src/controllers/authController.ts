@@ -96,3 +96,6 @@ export const resendRegistrationEmail = async (
   req: RequestBodyModel<RegistrationEmailResending>,
   res: Response<TApiErrorResultObject>
 ) => {};
+
+//@desc Generate new pair of access and refresh tokens (in cookie client must send correct refresh token that will be revoked after refreshing)
+export const refreshToken = async (req: Request, res: Response) => {};

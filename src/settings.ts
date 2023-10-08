@@ -6,9 +6,11 @@ import { postsRouter } from "./routers/posts-router";
 import { authRouter } from "./routers/auth-router";
 import { usersRouter } from "./routers/users-router";
 import { commentsRouter } from "./routers/comments-router";
+import cookieParser from "cookie-parser";
 
 export const app = express();
 app.use(express.json());
+app.use(cookieParser())
 
 app.use("/api/videos", videosRouter);
 app.use("/api/testing", testingRouter);
