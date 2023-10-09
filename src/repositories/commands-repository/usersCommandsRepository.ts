@@ -48,7 +48,6 @@ export const usersCommandsRepository = {
         $set: {
           "emailConfirmation.isConfirmed": true,
           "emailConfirmation.confirmationCode": null,
-          "emailConfirmation.expirationDate": null,
         },
       }
     );
