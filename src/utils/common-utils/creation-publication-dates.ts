@@ -1,7 +1,7 @@
 import { TFieldError } from "../../dto/common/ErrorResponseModel";
 
 export const creationDate = () => {
-  return new Date().toISOString();
+  return new Date(new Date().setHours(new Date().getHours() + 3)).toISOString();
 };
 
 export const publicationVideoDate = () => {
