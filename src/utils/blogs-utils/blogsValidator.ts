@@ -1,11 +1,9 @@
+import { urlBlogsRegex } from "../common-utils/regexes";
 import { stringsInputValidatorWithLength } from "../common-utils/validatorForStrings";
 
 export const blogsURLValidator = () => {
   return stringsInputValidatorWithLength("websiteUrl", 100).custom((url) => {
-    const urlRegex = new RegExp(
-      "^https://([a-zA-Z0-9_-]+.)+[a-zA-Z0-9_-]+(/[a-zA-Z0-9_-]+)*/?$"
-    );
-    const testUrl = urlRegex.test(url);
+    const testUrl = urlBlogsRegex.test(url);
     if (testUrl) {
       return true;
     } else throw new Error("Url is incorrect");

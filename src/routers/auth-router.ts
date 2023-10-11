@@ -12,6 +12,7 @@ import {
 import { authMiddleware } from "../middlewares/authMiddleware";
 import { createUserValidator } from "../utils/usersUtils/users-validator";
 import { confirmationCodeValidator } from "../utils/usersUtils/confirmationCodeValidator";
+import { emailValidator } from "../utils/usersUtils/emailValidator";
 export const authRouter = express.Router({});
 
 authRouter.post(
@@ -23,13 +24,23 @@ authRouter.post(
 
 authRouter.get("/me", authMiddleware, getInfoAboutUser);
 
-authRouter.post("/registration", createUserValidator, registerUser);
+authRouter.post(
+  "/registration",
+  createUserValidator,
+  responseErrorValidationMiddleware,
+  registerUser
+);
 authRouter.post(
   "/registration-confirmation",
   confirmationCodeValidator,
   responseErrorValidationMiddleware,
   confirmRegistration
 );
-authRouter.post("/registration-email-resending", resendRegistrationEmail);
+authRouter.post(
+  "/registration-email-resending",
+  emailValidator,
+  responseErrorValidationMiddleware,
+  resendRegistrationEmail
+);
 
 authRouter.post("/refresh-token", refreshToken)

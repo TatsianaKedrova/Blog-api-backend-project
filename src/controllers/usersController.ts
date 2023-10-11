@@ -14,6 +14,9 @@ import { Response } from "express";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { usersService } from "../domain/users-service";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
+import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
+import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
+import { UserAlreadyExistsError } from "../utils/errors-utils/registration-errors/UserAlreadyExistsError";
 
 export const getAllUsers = async (
   req: RequestQueryParamsModel<UsersQueryParams>,
@@ -40,7 +43,7 @@ export const getAllUsers = async (
 
 export const addNewUserBySuperAdmin = async (
   req: RequestBodyModel<UserInputModel>,
-  res: Response<UserViewModel>
+  res: Response<UserViewModel | TApiErrorResultObject>
 ) => {
   const newUser = await usersService.createUser(
     req.body.email,
@@ -50,7 +53,12 @@ export const addNewUserBySuperAdmin = async (
     true,
     null
   );
-  res.status(StatusCodes.CREATED).send(newUser);
+  if (newUser instanceof UserAlreadyExistsError) {
+    res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction([newUser]));
+    return;
+  } else {
+    res.status(StatusCodes.CREATED).send(newUser as UserViewModel);
+  }
 };
 
 export const deleteUser = async (

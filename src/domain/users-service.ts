@@ -4,6 +4,9 @@ import { usersCommandsRepository } from "../repositories/commands-repository/use
 import bcrypt from "bcrypt";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { WithId } from "mongodb";
+import { UserNotRegisteredField } from "../dto/common/MongoErrorTypes";
+import { UserAlreadyExistsError } from "../utils/errors-utils/registration-errors/UserAlreadyExistsError";
+import { TFieldError } from "../dto/common/ErrorResponseModel";
 
 export const usersService = {
   async createUser(
@@ -13,7 +16,7 @@ export const usersService = {
     confirmationCode: string | null,
     isConfirmed: boolean,
     expirationDate: string | null
-  ): Promise<UserViewModel> {
+  ): Promise<UserViewModel | TFieldError> {
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this._generateHash(password, passwordSalt);
     const newUser: UserDBType = {
@@ -30,7 +33,22 @@ export const usersService = {
         expirationDate,
       },
     };
-    return await usersCommandsRepository.createNewUser(newUser);
+    const createUserResult = await usersCommandsRepository.createNewUser(
+      newUser
+    );
+    if (createUserResult === "login") {
+      return new UserAlreadyExistsError(
+        createUserResult,
+        "User with the given login already exists"
+      );
+    } else if (createUserResult === "email") {
+      return new UserAlreadyExistsError(
+        createUserResult,
+        "User with the given email already exists"
+      );
+    } else {
+      return createUserResult;
+    }
   },
   async deleteUser(id: string) {
     return await usersCommandsRepository.deleteUser(id);
@@ -44,6 +62,10 @@ export const usersService = {
   ): Promise<WithId<UserDBType> | null> {
     const user = await usersQueryRepository.findByLoginOrEmail(loginOrEmail);
     if (!user) return null;
+
+    if (!user?.emailConfirmation.isConfirmed) {
+      return null;
+    }
     const passwordHash = await this._generateHash(
       password,
       user.accountData.passwordSalt
