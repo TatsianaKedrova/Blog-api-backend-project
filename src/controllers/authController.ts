@@ -10,7 +10,7 @@ import {
 } from "../dto/authDTO/authDTO";
 import { RequestBodyModel } from "../dto/common/RequestModels";
 import { Request, Response } from "express";
-import { makeTokenModel } from "../utils/auth-utils/tokenModel";
+import { createTokenModel } from "../utils/auth-utils/tokenModel";
 import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import { UserInputModel } from "../dto/usersDTO/usersDTO";
 import { authService } from "../domain/auth-service";
@@ -38,7 +38,7 @@ export const logIn = async (
     return;
   }
   const token = await jwtService.createJWT(user);
-  const tokenModel = makeTokenModel(token);
+  const tokenModel = createTokenModel(token);
   res.status(StatusCodes.OK).send(tokenModel);
 };
 
@@ -125,4 +125,4 @@ export const resendRegistrationEmail = async (
 //@desc Generate new pair of access and refresh tokens (in cookie client must send correct refresh token that will be revoked after refreshing)
 export const refreshToken = async (req: Request, res: Response) => {};
 
-
+export const logout = async (req: Request, res: Response) => {}

@@ -5,6 +5,7 @@ import {
   confirmRegistration,
   getInfoAboutUser,
   logIn,
+  logout,
   refreshToken,
   registerUser,
   resendRegistrationEmail,
@@ -43,4 +44,6 @@ authRouter.post(
   resendRegistrationEmail
 );
 
-authRouter.post("/refresh-token", refreshToken)
+authRouter.post("/refresh-token", refreshToken);
+
+authRouter.post("/logout", logout);
