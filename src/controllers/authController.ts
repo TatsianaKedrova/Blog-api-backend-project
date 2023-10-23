@@ -24,6 +24,9 @@ import { UserIsConfirmedError } from "../utils/errors-utils/registration-confirm
 import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration-confirmation-errors/ConfirmationCodeExpiredError";
 import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
+import * as dotenv from "dotenv";
+
+dotenv.config();
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
@@ -37,8 +40,18 @@ export const logIn = async (
     res.sendStatus(StatusCodes.UNAUTHORIZED);
     return;
   }
-  const token = await jwtService.createJWT(user);
-  const tokenModel = createTokenModel(token);
+  const accessToken = await jwtService.createJWT(
+    user,
+    process.env.ACCESS_TOKEN_SECRET as string,
+    100
+  );
+  const refreshToken = await jwtService.createJWT(
+    user,
+    process.env.REFRESH_TOKEN_SECRET as string,
+    20
+  );
+  const tokenModel = createTokenModel(accessToken);
+  res.cookie("refresh_token", refreshToken, { httpOnly: true, secure: true });
   res.status(StatusCodes.OK).send(tokenModel);
 };
 
@@ -123,6 +136,10 @@ export const resendRegistrationEmail = async (
 };
 
 //@desc Generate new pair of access and refresh tokens (in cookie client must send correct refresh token that will be revoked after refreshing)
-export const refreshToken = async (req: Request, res: Response) => {};
+export const refreshToken = async (req: Request, res: Response) => {
 
-export const logout = async (req: Request, res: Response) => {}
+  // res.cookie("refresh_token", refreshToken, { httpOnly: true, secure: true });
+  // res.status(StatusCodes.OK).send(accessToken);
+};
+
+export const logout = async (req: Request, res: Response) => {};

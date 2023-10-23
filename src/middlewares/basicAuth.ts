@@ -1,5 +1,4 @@
-import { Request, Response } from "express";
-import { NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 let authValue;
 export let basicAuthMiddleware = (

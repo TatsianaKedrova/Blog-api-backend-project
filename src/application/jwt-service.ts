@@ -7,19 +7,18 @@ import { JwtPayloadResult } from "../dto/common/jwt/JwtPayloadResult";
 dotenv.config();
 
 export const jwtService = {
-  async createJWT(user: WithId<UserDBType>) {
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.TOKEN_SECRET as string,
-      {
-        expiresIn: 10,
-      }
-    );
+  async createJWT(user: WithId<UserDBType>, secret: string, expiresIn: number) {
+    const token = jwt.sign({ userId: user._id }, secret, {
+      expiresIn,
+    });
     return token;
   },
   async getUserIdByToken(token: string) {
     try {
-      const result = jwt.verify(token, process.env.TOKEN_SECRET as string);
+      const result = jwt.verify(
+        token,
+        process.env.ACCESS_TOKEN_SECRET as string
+      );
       return new ObjectId((result as JwtPayloadResult).userId);
     } catch (error) {
       return null;
