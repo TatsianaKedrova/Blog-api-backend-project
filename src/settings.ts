@@ -12,7 +12,9 @@ import morgan from "morgan";
 import { StatusCodes } from "http-status-codes";
 
 export const app = express();
+app.use(morgan("dev"));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(httpMethodsCheckMiddleware);
 app.use(cookieParser());
 
@@ -24,5 +26,5 @@ app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/comments", commentsRouter);
 app.use(async (req: Request, res: Response, next: NextFunction) => {
-      next(StatusCodes.NOT_FOUND);
+  next(StatusCodes.NOT_FOUND);
 });
