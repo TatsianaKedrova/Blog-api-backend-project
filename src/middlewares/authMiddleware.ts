@@ -14,9 +14,12 @@ export const authMiddleware = async (
   }
 
   const token = authValue.split(" ")[1];
-  const userId = await jwtService.getUserIdByToken(token);
-  if (userId) {
-    req.userId = userId.toString();
+  const jwtPayloadResult = await jwtService.getJwtPayloadResult(
+    token,
+    process.env.ACCESS_TOKEN_SECRET as string
+  );
+  if (jwtPayloadResult && jwtPayloadResult.userId) {
+    req.userId = jwtPayloadResult.userId.toString();
     next();
   } else {
     res.sendStatus(StatusCodes.UNAUTHORIZED);

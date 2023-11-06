@@ -1,3 +1,4 @@
+import { creationDate } from "./../utils/common-utils/creation-publication-dates";
 import { getCurrentUserInfo } from "./../utils/auth-utils/getCurrentUserInfo";
 import { StatusCodes } from "http-status-codes";
 import { jwtService } from "../application/jwt-service";
@@ -25,6 +26,7 @@ import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration
 import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
 import * as dotenv from "dotenv";
+import { authCommandsRepository } from "../repositories/commands-repository/authRepository";
 
 dotenv.config();
 
@@ -45,13 +47,16 @@ export const logIn = async (
     process.env.ACCESS_TOKEN_SECRET as string,
     100
   );
-  const refreshToken = await jwtService.createJWT(
+  const newRefreshToken = await jwtService.createJWT(
     user,
     process.env.REFRESH_TOKEN_SECRET as string,
-    20
+    200
   );
   const tokenModel = createTokenModel(accessToken);
-  res.cookie("refresh_token", refreshToken, { httpOnly: true, secure: true });
+  res.cookie("refresh_token", newRefreshToken, {
+    httpOnly: true,
+    secure: true,
+  });
   res.status(StatusCodes.OK).send(tokenModel);
 };
 
@@ -137,9 +142,28 @@ export const resendRegistrationEmail = async (
 
 //@desc Generate new pair of access and refresh tokens (in cookie client must send correct refresh token that will be revoked after refreshing)
 export const refreshToken = async (req: Request, res: Response) => {
-
   // res.cookie("refresh_token", refreshToken, { httpOnly: true, secure: true });
   // res.status(StatusCodes.OK).send(accessToken);
 };
 
-export const logout = async (req: Request, res: Response) => {};
+export const logout = async (req: Request, res: Response) => {
+  const refreshToken = req.cookies.refresh_token;
+  if (!refreshToken || !refreshToken.trim()) {
+    return res.sendStatus(StatusCodes.UNAUTHORIZED);
+  }
+  const jwtRefreshTokenPayload = await jwtService.getJwtPayloadResult(
+    refreshToken,
+    process.env.REFRESH_TOKEN_SECRET as string
+  );
+
+  if (!jwtRefreshTokenPayload) {
+    return res.sendStatus(StatusCodes.UNAUTHORIZED);
+  }
+  const refreshTokenToBlacklist =
+    await authCommandsRepository.placeTokenToBlacklist({
+      refreshToken,
+      invalidationDate: creationDate(),
+    });
+  res.clearCookie("refresh_token", { httpOnly: true, secure: true });
+  return res.sendStatus(StatusCodes.NO_CONTENT);
+};

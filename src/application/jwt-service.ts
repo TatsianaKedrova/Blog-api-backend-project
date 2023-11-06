@@ -21,13 +21,13 @@ export const jwtService = {
     });
     return token;
   },
-  async getUserIdByToken(token: string): Promise<ObjectId | null> {
+  async getJwtPayloadResult(
+    token: string,
+    secret: string
+  ): Promise<JwtPayloadResult | null> {
     try {
-      const result = jwt.verify(
-        token,
-        process.env.ACCESS_TOKEN_SECRET as string
-      );
-      return new ObjectId((result as JwtPayloadResult).userId);
+      const result = jwt.verify(token, secret);
+      return result as JwtPayloadResult;
     } catch (error) {
       if (error instanceof TokenExpiredError) {
         console.log({
