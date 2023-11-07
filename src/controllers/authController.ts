@@ -1,4 +1,3 @@
-import { creationDate } from "./../utils/common-utils/creation-publication-dates";
 import { getCurrentUserInfo } from "./../utils/auth-utils/getCurrentUserInfo";
 import { StatusCodes } from "http-status-codes";
 import { jwtService } from "../application/jwt-service";
@@ -26,7 +25,6 @@ import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration
 import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
 import * as dotenv from "dotenv";
-import { authCommandsRepository } from "../repositories/commands-repository/authRepository";
 
 dotenv.config();
 
@@ -45,12 +43,12 @@ export const logIn = async (
   const accessToken = await jwtService.createJWT(
     user,
     process.env.ACCESS_TOKEN_SECRET as string,
-    100
+    10
   );
   const newRefreshToken = await jwtService.createJWT(
     user,
     process.env.REFRESH_TOKEN_SECRET as string,
-    200
+    20
   );
   const tokenModel = createTokenModel(accessToken);
   res.cookie("refresh_token", newRefreshToken, {
@@ -77,17 +75,17 @@ export const registerUser = async (
   req: RequestBodyModel<UserInputModel>,
   res: Response<TApiErrorResultObject>
 ) => {
-  const createUserResult = await authService.registerNewUser(req.body);
-  if (createUserResult instanceof UserAlreadyExistsError) {
+  const createUser = await authService.registerNewUser(req.body);
+  if (createUser instanceof UserAlreadyExistsError) {
     res
       .status(StatusCodes.BAD_REQUEST)
-      .send(responseErrorFunction([createUserResult]));
+      .send(responseErrorFunction([createUser]));
     return;
   }
-  if (createUserResult instanceof RegistrationError) {
+  if (createUser instanceof RegistrationError) {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send(responseErrorFunction([createUserResult]));
+      .send(responseErrorFunction([createUser]));
     return;
   }
   res.sendStatus(StatusCodes.NO_CONTENT);
@@ -159,11 +157,13 @@ export const logout = async (req: Request, res: Response) => {
   if (!jwtRefreshTokenPayload) {
     return res.sendStatus(StatusCodes.UNAUTHORIZED);
   }
-  const refreshTokenToBlacklist =
-    await authCommandsRepository.placeTokenToBlacklist({
-      refreshToken,
-      invalidationDate: creationDate(),
-    });
+  const revokeRefreshToken = await authService.placeRefreshTokenToBlacklist(
+    refreshToken,
+    jwtRefreshTokenPayload.userId
+  );
+  if (!revokeRefreshToken) {
+    return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+  }
   res.clearCookie("refresh_token", { httpOnly: true, secure: true });
   return res.sendStatus(StatusCodes.NO_CONTENT);
 };

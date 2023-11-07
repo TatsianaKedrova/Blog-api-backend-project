@@ -5,7 +5,7 @@ import jwt, {
   TokenExpiredError,
 } from "jsonwebtoken";
 import * as dotenv from "dotenv";
-import { ObjectId, WithId } from "mongodb";
+import { WithId } from "mongodb";
 import { JwtPayloadResult } from "../dto/common/jwt/JwtPayloadResult";
 
 dotenv.config();

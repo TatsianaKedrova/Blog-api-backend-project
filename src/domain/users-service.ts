@@ -4,7 +4,6 @@ import { usersCommandsRepository } from "../repositories/commands-repository/use
 import bcrypt from "bcrypt";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { WithId } from "mongodb";
-import { UserNotRegisteredField } from "../dto/common/MongoErrorTypes";
 import { UserAlreadyExistsError } from "../utils/errors-utils/registration-errors/UserAlreadyExistsError";
 import { TFieldError } from "../dto/common/ErrorResponseModel";
 

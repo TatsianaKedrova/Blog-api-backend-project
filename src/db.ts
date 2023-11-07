@@ -4,7 +4,7 @@ import * as dotenv from "dotenv";
 import { BlogDBType } from "./dto/blogsDTO/BlogModel";
 import { UserDBType } from "./dto/usersDTO/usersDTO";
 import { CommentDBType } from "./dto/commentsDTO/commentsDTO";
-import { RefreshTokenDB } from "./dto/authDTO/authDTO";
+import { RefreshTokensBlacklistDB } from "./dto/authDTO/authDTO";
 dotenv.config();
 const mongoUri = process.env.MONGO_URL; /*|| "mongodb://0.0.0.0:27017"*/
 
@@ -18,7 +18,7 @@ export const videosCollection = mongoDB.collection<any>("videos");
 export const usersCollection = mongoDB.collection<UserDBType>("users");
 export const commentsCollection = mongoDB.collection<CommentDBType>("comments");
 export const refreshTokensBlacklistedCollection =
-  mongoDB.collection<RefreshTokenDB>("refresh-tokens-blacklisted");
+  mongoDB.collection<RefreshTokensBlacklistDB>("refresh-tokens-blacklisted");
 
 export const runDB = async () => {
   try {
