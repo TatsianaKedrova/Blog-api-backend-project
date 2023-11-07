@@ -1,22 +1,20 @@
-import { UserDBType } from "./../dto/usersDTO/usersDTO";
 import jwt, {
   JsonWebTokenError,
   NotBeforeError,
   TokenExpiredError,
 } from "jsonwebtoken";
 import * as dotenv from "dotenv";
-import { WithId } from "mongodb";
 import { JwtPayloadResult } from "../dto/common/jwt/JwtPayloadResult";
 
 dotenv.config();
 
 export const jwtService = {
   async createJWT(
-    user: WithId<UserDBType>,
+    userId: string,
     secret: string,
     expiresIn: number
   ): Promise<string> {
-    const token = jwt.sign({ userId: user._id }, secret, {
+    const token = jwt.sign({ userId }, secret, {
       expiresIn,
     });
     return token;

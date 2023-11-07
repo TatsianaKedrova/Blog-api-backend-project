@@ -1,6 +1,5 @@
 import { getCurrentUserInfo } from "./../utils/auth-utils/getCurrentUserInfo";
 import { StatusCodes } from "http-status-codes";
-import { jwtService } from "../application/jwt-service";
 import { usersService } from "../domain/users-service";
 import {
   LoginInputModel,
@@ -10,7 +9,6 @@ import {
 } from "../dto/authDTO/authDTO";
 import { RequestBodyModel } from "../dto/common/RequestModels";
 import { Request, Response } from "express";
-import { createTokenModel } from "../utils/auth-utils/tokenModel";
 import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import { UserInputModel } from "../dto/usersDTO/usersDTO";
 import { authService } from "../domain/auth-service";
@@ -25,6 +23,7 @@ import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration
 import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
 import * as dotenv from "dotenv";
+import { create_access_refresh_tokens } from "../utils/auth-utils/create_Access_Refresh_Tokens";
 
 dotenv.config();
 
@@ -40,22 +39,14 @@ export const logIn = async (
     res.sendStatus(StatusCodes.UNAUTHORIZED);
     return;
   }
-  const accessToken = await jwtService.createJWT(
-    user,
-    process.env.ACCESS_TOKEN_SECRET as string,
-    10
+  const { accessTokenModel, refreshToken } = await create_access_refresh_tokens(
+    user._id.toString()
   );
-  const newRefreshToken = await jwtService.createJWT(
-    user,
-    process.env.REFRESH_TOKEN_SECRET as string,
-    20
-  );
-  const tokenModel = createTokenModel(accessToken);
-  res.cookie("refresh_token", newRefreshToken, {
+  res.cookie("refresh_token", refreshToken, {
     httpOnly: true,
     secure: true,
   });
-  res.status(StatusCodes.OK).send(tokenModel);
+  return res.status(StatusCodes.OK).send(accessTokenModel);
 };
 
 export const getInfoAboutUser = async (
@@ -140,26 +131,29 @@ export const resendRegistrationEmail = async (
 
 //@desc Generate new pair of access and refresh tokens (in cookie client must send correct refresh token that will be revoked after refreshing)
 export const refreshToken = async (req: Request, res: Response) => {
-  // res.cookie("refresh_token", refreshToken, { httpOnly: true, secure: true });
-  // res.status(StatusCodes.OK).send(accessToken);
+  const refreshTokenFromClient = req.cookies.refresh_token;
+  const revokeRefreshToken = await authService.placeRefreshTokenToBlacklist(
+    refreshTokenFromClient,
+    req.userId
+  );
+  if (!revokeRefreshToken) {
+    return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+  }
+  const { accessTokenModel, refreshToken } = await create_access_refresh_tokens(
+    req.userId
+  );
+  res.cookie("refresh_token", refreshToken, {
+    httpOnly: true,
+    secure: true,
+  });
+  return res.status(StatusCodes.OK).send(accessTokenModel);
 };
 
 export const logout = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refresh_token;
-  if (!refreshToken || !refreshToken.trim()) {
-    return res.sendStatus(StatusCodes.UNAUTHORIZED);
-  }
-  const jwtRefreshTokenPayload = await jwtService.getJwtPayloadResult(
-    refreshToken,
-    process.env.REFRESH_TOKEN_SECRET as string
-  );
-
-  if (!jwtRefreshTokenPayload) {
-    return res.sendStatus(StatusCodes.UNAUTHORIZED);
-  }
   const revokeRefreshToken = await authService.placeRefreshTokenToBlacklist(
     refreshToken,
-    jwtRefreshTokenPayload.userId
+    req.userId
   );
   if (!revokeRefreshToken) {
     return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);

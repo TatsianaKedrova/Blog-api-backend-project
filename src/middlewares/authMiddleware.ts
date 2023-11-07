@@ -19,7 +19,7 @@ export const authMiddleware = async (
     process.env.ACCESS_TOKEN_SECRET as string
   );
   if (jwtPayloadResult && jwtPayloadResult.userId) {
-    req.userId = jwtPayloadResult.userId.toString();
+    req.userId = jwtPayloadResult.userId;
     next();
   } else {
     res.sendStatus(StatusCodes.UNAUTHORIZED);
