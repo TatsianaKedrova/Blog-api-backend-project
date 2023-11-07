@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { PaginationSortingQueryParams } from "../common/SortPaginatorQueryParamsType";
 
 export type UserInputModel = {
@@ -14,6 +15,7 @@ export type UserViewModel = {
 };
 
 export type UserDBType = {
+  _id?: ObjectId;
   accountData: {
     login: string;
     email: string;

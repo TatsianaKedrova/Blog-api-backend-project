@@ -1,3 +1,4 @@
+import { authCommandsRepository } from "./../repositories/commands-repository/authCommandsRepository";
 import { usersCommandsRepository } from "./../repositories/commands-repository/usersCommandsRepository";
 import bcrypt from "bcrypt";
 import { UserDBType, UserInputModel } from "../dto/usersDTO/usersDTO";
@@ -16,6 +17,7 @@ import { UserIsConfirmedError } from "../utils/errors-utils/registration-confirm
 import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration-confirmation-errors/ConfirmationCodeExpiredError";
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
 import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
+import { ObjectId } from "mongodb";
 
 export const authService = {
   async registerNewUser(
@@ -55,6 +57,9 @@ export const authService = {
     } else {
       try {
         await emailManager.sendEmail(newUser);
+        await this.createRefreshTokenBlacklistForUser(
+          new ObjectId(createUser.id)
+        );
         return newUser;
       } catch (error) {
         console.error(error);
@@ -98,5 +103,23 @@ export const authService = {
       return new UpdateUserError("registration-email-resending");
     }
     return user.accountData.email;
+  },
+  async createRefreshTokenBlacklistForUser(
+    userId: ObjectId
+  ): Promise<string | null> {
+    return await authCommandsRepository.createUserRefreshTokensBlacklist(
+      userId
+    );
+  },
+  async placeRefreshTokenToBlacklist(
+    refreshToken: string,
+    userId: string
+  ): Promise<boolean> {
+    const refreshTokenToBlacklist =
+      await authCommandsRepository.putRefreshTokenToBlacklist(
+        refreshToken,
+        userId
+      );
+    return refreshTokenToBlacklist;
   },
 };

@@ -1,3 +1,4 @@
+import { checkCookieValidityMiddleware } from "../middlewares/checkCookieValidityMiddleware";
 import express from "express";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import { authValidator } from "../utils/auth-utils/auth-validator";
@@ -5,6 +6,8 @@ import {
   confirmRegistration,
   getInfoAboutUser,
   logIn,
+  logout,
+  refreshToken,
   registerUser,
   resendRegistrationEmail,
 } from "../controllers/authController";
@@ -41,3 +44,7 @@ authRouter.post(
   responseErrorValidationMiddleware,
   resendRegistrationEmail
 );
+
+authRouter.post("/refresh-token", checkCookieValidityMiddleware, refreshToken);
+
+authRouter.post("/logout", checkCookieValidityMiddleware, logout);

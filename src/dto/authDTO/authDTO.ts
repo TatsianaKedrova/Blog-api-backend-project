@@ -1,3 +1,5 @@
+import { ObjectId } from "mongodb";
+
 export type LoginInputModel = {
   loginOrEmail: string;
   password: string;
@@ -19,4 +21,9 @@ export type RegistrationConfirmationCodeModel = {
 
 export type RegistrationEmailResending = {
   email: string; //^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$   Email of already registered but not confirmed user
+};
+
+export type RefreshTokensBlacklistDB = {
+  _id: ObjectId;
+  refreshTokensArray: string[];
 };

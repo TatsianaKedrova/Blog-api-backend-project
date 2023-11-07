@@ -1,6 +1,8 @@
 import { LoginSuccessViewModel } from "../../dto/authDTO/authDTO";
 
-export const makeTokenModel = (token: string): LoginSuccessViewModel => {
+export const createAccessTokenModel = (
+  token: string
+): LoginSuccessViewModel => {
   return {
     accessToken: token,
   };
