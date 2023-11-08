@@ -42,7 +42,7 @@ export const logIn = async (
   const { accessTokenModel, refreshToken } = await create_access_refresh_tokens(
     user._id.toString()
   );
-  res.cookie("refresh_token", refreshToken, {
+  res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: true,
   });
@@ -131,7 +131,7 @@ export const resendRegistrationEmail = async (
 
 //@desc Generate new pair of access and refresh tokens (in cookie client must send correct refresh token that will be revoked after refreshing)
 export const refreshToken = async (req: Request, res: Response) => {
-  const refreshTokenFromClient = req.cookies.refresh_token;
+  const refreshTokenFromClient = req.cookies.refreshToken;
   const revokeRefreshToken = await authService.placeRefreshTokenToBlacklist(
     refreshTokenFromClient,
     req.userId
@@ -142,7 +142,7 @@ export const refreshToken = async (req: Request, res: Response) => {
   const { accessTokenModel, refreshToken } = await create_access_refresh_tokens(
     req.userId
   );
-  res.cookie("refresh_token", refreshToken, {
+  res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: true,
   });
@@ -150,7 +150,7 @@ export const refreshToken = async (req: Request, res: Response) => {
 };
 
 export const logout = async (req: Request, res: Response) => {
-  const refreshToken = req.cookies.refresh_token;
+  const refreshToken = req.cookies.refreshToken;
   const revokeRefreshToken = await authService.placeRefreshTokenToBlacklist(
     refreshToken,
     req.userId
@@ -158,6 +158,6 @@ export const logout = async (req: Request, res: Response) => {
   if (!revokeRefreshToken) {
     return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }
-  res.clearCookie("refresh_token", { httpOnly: true, secure: true });
+  res.clearCookie("refreshToken", { httpOnly: true, secure: true });
   return res.sendStatus(StatusCodes.NO_CONTENT);
 };
