@@ -21,10 +21,4 @@ export const authCommandsRepository = {
       );
     return addRefreshTokenToBlacklist.modifiedCount === 1 ? true : false;
   },
-  async _findRefreshTokensBlacklistById(id: ObjectId) {
-    const foundBlacklist = await refreshTokensBlacklistedCollection.findOne({
-      _id: id,
-    });
-    return foundBlacklist;
-  },
 };
