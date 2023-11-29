@@ -1,4 +1,4 @@
-import { checkRefreshTokenValidityMiddleware } from "../middlewares/checkCookieValidityMiddleware";
+import { refreshTokenValidityMiddleware } from "../middlewares/refreshTokenValidityMiddleware";
 import express from "express";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import { authValidator } from "../utils/auth-utils/auth-validator";
@@ -11,7 +11,7 @@ import {
   registerUser,
   resendRegistrationEmail,
 } from "../controllers/authController";
-import { authMiddleware } from "../middlewares/authMiddleware";
+import { accessTokenValidityMiddleware } from "../middlewares/accessTokenValidityMiddleware";
 import { createUserValidator } from "../utils/usersUtils/users-validator";
 import { confirmationCodeValidator } from "../utils/usersUtils/confirmationCodeValidator";
 import { emailValidator } from "../utils/usersUtils/emailValidator";
@@ -24,7 +24,12 @@ authRouter.post(
   logIn
 );
 
-authRouter.get("/me", authMiddleware, getInfoAboutUser);
+authRouter.get(
+  "/me",
+  accessTokenValidityMiddleware,
+  refreshTokenValidityMiddleware,
+  getInfoAboutUser
+);
 
 authRouter.post(
   "/registration",
@@ -45,10 +50,6 @@ authRouter.post(
   resendRegistrationEmail
 );
 
-authRouter.post(
-  "/refresh-token",
-  checkRefreshTokenValidityMiddleware,
-  refreshToken
-);
+authRouter.post("/refresh-token", refreshTokenValidityMiddleware, refreshToken);
 
-authRouter.post("/logout", checkRefreshTokenValidityMiddleware, logout);
+authRouter.post("/logout", refreshTokenValidityMiddleware, logout);

@@ -13,7 +13,7 @@ import {
   updatePostById,
 } from "../controllers/postsController";
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
-import { authMiddleware } from "../middlewares/authMiddleware";
+import { accessTokenValidityMiddleware } from "../middlewares/accessTokenValidityMiddleware";
 import { commentValidator } from "../utils/comments-utils/commentValidator";
 
 //TODO: GET LIST OF POSTS
@@ -52,7 +52,7 @@ postsRouter.delete(
 //TODO: CREATE COMMENT FOR SPECIFIC POST
 postsRouter.post(
   "/:id/comments",
-  authMiddleware,
+  accessTokenValidityMiddleware,
   validateObjectIdMiddleware,
   commentValidator,
   responseErrorValidationMiddleware,
