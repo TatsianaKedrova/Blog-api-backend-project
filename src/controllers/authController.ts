@@ -137,7 +137,7 @@ export const refreshToken = async (req: Request, res: Response) => {
     req.userId
   );
   if (!revokeRefreshToken) {
-    return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
+    return res.sendStatus(StatusCodes.NOT_FOUND);
   }
   const { accessTokenModel, refreshToken } = await create_access_refresh_tokens(
     req.userId
