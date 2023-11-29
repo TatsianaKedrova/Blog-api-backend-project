@@ -4,7 +4,7 @@ import { jwtService } from "../application/jwt-service";
 import { ObjectId } from "mongodb";
 import { authQueryRepository } from "../repositories/query-repository/authQueryRepository";
 
-export const checkRefreshTokenValidityMiddleware = async (
+export const refreshTokenValidityMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -14,25 +14,25 @@ export const checkRefreshTokenValidityMiddleware = async (
     res.sendStatus(StatusCodes.UNAUTHORIZED);
     return;
   }
-  const jwtRefreshTokenPayload = await jwtService.getJwtPayloadResult(
+  const refreshTokenJWTPayloadResult = await jwtService.getJwtPayloadResult(
     refreshTokenFromClient,
     process.env.REFRESH_TOKEN_SECRET as string
   );
 
-  if (!jwtRefreshTokenPayload) {
+  if (!refreshTokenJWTPayloadResult) {
     res.sendStatus(StatusCodes.UNAUTHORIZED);
     return;
-  } else if (jwtRefreshTokenPayload) {
+  } else {
     const checkRefreshTokenIsNotBlacklisted =
       await authQueryRepository.findBlacklistedUserRefreshTokenById(
-        new ObjectId(jwtRefreshTokenPayload.userId),
+        new ObjectId(refreshTokenJWTPayloadResult.userId),
         refreshTokenFromClient
       );
     if (checkRefreshTokenIsNotBlacklisted) {
       res.sendStatus(StatusCodes.UNAUTHORIZED);
       return;
     } else {
-      req.userId = jwtRefreshTokenPayload.userId;
+      req.userId = refreshTokenJWTPayloadResult.userId;
       next();
     }
   }

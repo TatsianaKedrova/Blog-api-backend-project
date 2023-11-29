@@ -5,7 +5,7 @@ import {
   getCommentById,
   updateComment,
 } from "../controllers/commentsController";
-import { authMiddleware } from "../middlewares/authMiddleware";
+import { accessTokenValidityMiddleware } from "../middlewares/accessTokenValidityMiddleware";
 import { forbiddenResponseMiddleware } from "../middlewares/forbiddenResponseMiddleware";
 import { commentValidator } from "../utils/comments-utils/commentValidator";
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
@@ -16,7 +16,7 @@ commentsRouter.get("/:id", validateObjectIdMiddleware, getCommentById);
 
 commentsRouter.delete(
   "/:id",
-  authMiddleware,
+  accessTokenValidityMiddleware,
   validateObjectIdMiddleware,
   forbiddenResponseMiddleware,
   deleteComment
@@ -24,7 +24,7 @@ commentsRouter.delete(
 
 commentsRouter.put(
   "/:id",
-  authMiddleware,
+  accessTokenValidityMiddleware,
   validateObjectIdMiddleware,
   forbiddenResponseMiddleware,
   commentValidator,
