@@ -137,7 +137,7 @@ export const refreshToken = async (req: Request, res: Response) => {
     req.userId
   );
   if (!revokeRefreshToken) {
-    return res.sendStatus(StatusCodes.NOT_FOUND);
+    res.sendStatus(StatusCodes.NOT_FOUND);
   }
   const { accessTokenModel, refreshToken } = await create_access_refresh_tokens(
     req.userId
@@ -146,7 +146,7 @@ export const refreshToken = async (req: Request, res: Response) => {
     httpOnly: true,
     secure: true,
   });
-  return res.status(StatusCodes.OK).send(accessTokenModel);
+  res.status(StatusCodes.OK).send(accessTokenModel);
 };
 
 export const logout = async (req: Request, res: Response) => {
