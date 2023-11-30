@@ -55,7 +55,7 @@ export const getInfoAboutUser = async (
   req: Request,
   res: Response<MeViewModel>
 ) => {
-  const foundUser = await usersCommandsRepository.findUserById(req.userId!);
+  const foundUser = await usersCommandsRepository.findUserById(req.userId);
   if (foundUser) {
     const currentUser = getCurrentUserInfo(foundUser);
     res.status(StatusCodes.OK).send(currentUser);
@@ -146,7 +146,7 @@ export const refreshToken = async (req: Request, res: Response) => {
       new ObjectId(req.userId),
       refreshToken
     );
-    if (!checkOldRefreshTokenIsBlacklisted) {
+  if (!checkOldRefreshTokenIsBlacklisted) {
     res.sendStatus(StatusCodes.UNAUTHORIZED);
   } else {
     res.cookie("refreshToken", refreshToken, {
@@ -165,6 +165,7 @@ export const logout = async (req: Request, res: Response) => {
       new ObjectId(req.userId),
       refreshToken
     );
+  console.log("result from logout: ", checkRefreshTokenIsBlacklisted);
   if (!checkRefreshTokenIsBlacklisted) {
     res.sendStatus(StatusCodes.UNAUTHORIZED);
   } else {
