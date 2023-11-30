@@ -146,15 +146,15 @@ export const refreshToken = async (req: Request, res: Response) => {
       new ObjectId(req.userId),
       refreshToken
     );
-  if (!checkOldRefreshTokenIsBlacklisted) {
+    if (!checkOldRefreshTokenIsBlacklisted) {
     res.sendStatus(StatusCodes.UNAUTHORIZED);
-    return;
+  } else {
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+    });
+    res.status(StatusCodes.OK).send(accessTokenModel);
   }
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: true,
-  });
-  res.status(StatusCodes.OK).send(accessTokenModel);
 };
 
 export const logout = async (req: Request, res: Response) => {
@@ -167,8 +167,8 @@ export const logout = async (req: Request, res: Response) => {
     );
   if (!checkRefreshTokenIsBlacklisted) {
     res.sendStatus(StatusCodes.UNAUTHORIZED);
-    return;
+  } else {
+    res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+    res.sendStatus(StatusCodes.NO_CONTENT);
   }
-  res.clearCookie("refreshToken", { httpOnly: true, secure: true });
-  return res.sendStatus(StatusCodes.NO_CONTENT);
 };
