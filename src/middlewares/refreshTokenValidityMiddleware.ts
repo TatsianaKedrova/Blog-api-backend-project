@@ -23,12 +23,12 @@ export const refreshTokenValidityMiddleware = async (
     res.sendStatus(StatusCodes.UNAUTHORIZED);
     return;
   } else {
-    const checkRefreshTokenIsNotBlacklisted =
+    const checkRefreshTokenIsBlacklisted =
       await authQueryRepository.findBlacklistedUserRefreshTokenById(
         new ObjectId(refreshTokenJWTPayloadResult.userId),
         refreshTokenFromClient
       );
-    if (checkRefreshTokenIsNotBlacklisted) {
+    if (checkRefreshTokenIsBlacklisted) {
       res.sendStatus(StatusCodes.UNAUTHORIZED);
       return;
     } else {
