@@ -165,7 +165,7 @@ export const logout = async (req: Request, res: Response) => {
       new ObjectId(req.userId),
       refreshToken
     );
-  if (checkRefreshTokenIsBlacklisted) {
+  if (!checkRefreshTokenIsBlacklisted) {
     res.sendStatus(StatusCodes.UNAUTHORIZED);
     return;
   }
