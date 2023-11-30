@@ -141,12 +141,12 @@ export const refreshToken = async (req: Request, res: Response) => {
   const { accessTokenModel, refreshToken } = await create_access_refresh_tokens(
     req.userId
   );
-  const checkRefreshTokenIsBlacklisted =
+  const checkOldRefreshTokenIsBlacklisted =
     await authQueryRepository.findBlacklistedUserRefreshTokenById(
       new ObjectId(req.userId),
       refreshToken
     );
-  if (checkRefreshTokenIsBlacklisted) {
+  if (!checkOldRefreshTokenIsBlacklisted) {
     res.sendStatus(StatusCodes.UNAUTHORIZED);
     return;
   }
