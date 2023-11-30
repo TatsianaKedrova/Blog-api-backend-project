@@ -144,7 +144,7 @@ export const refreshToken = async (req: Request, res: Response) => {
   const checkOldRefreshTokenIsBlacklisted =
     await authQueryRepository.findBlacklistedUserRefreshTokenById(
       new ObjectId(req.userId),
-      refreshToken
+      refreshTokenFromClient
     );
   if (!checkOldRefreshTokenIsBlacklisted) {
     res.sendStatus(StatusCodes.UNAUTHORIZED);
@@ -165,7 +165,6 @@ export const logout = async (req: Request, res: Response) => {
       new ObjectId(req.userId),
       refreshToken
     );
-  console.log("result from logout: ", checkRefreshTokenIsBlacklisted);
   if (!checkRefreshTokenIsBlacklisted) {
     res.sendStatus(StatusCodes.UNAUTHORIZED);
   } else {
