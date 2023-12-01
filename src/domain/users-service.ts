@@ -3,9 +3,10 @@ import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import bcrypt from "bcrypt";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
-import { WithId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
 import { UserAlreadyExistsError } from "../utils/errors-utils/registration-errors/UserAlreadyExistsError";
 import { TFieldError } from "../dto/common/ErrorResponseModel";
+import { authService } from "./auth-service";
 
 export const usersService = {
   async createUser(
@@ -46,6 +47,9 @@ export const usersService = {
         "User with the given email already exists"
       );
     } else {
+      await authService.createRefreshTokenBlacklistForUser(
+        new ObjectId(createUserResult.id)
+      );
       return createUserResult;
     }
   },

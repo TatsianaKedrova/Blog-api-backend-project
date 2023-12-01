@@ -24,8 +24,6 @@ import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/Wrong
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
 import * as dotenv from "dotenv";
 import { create_access_refresh_tokens } from "../utils/auth-utils/create_Access_Refresh_Tokens";
-import { authQueryRepository } from "../repositories/query-repository/authQueryRepository";
-import { ObjectId } from "mongodb";
 
 dotenv.config();
 
@@ -41,14 +39,14 @@ export const logIn = async (
     res.sendStatus(StatusCodes.UNAUTHORIZED);
     return;
   }
-  const { accessTokenModel, refreshToken } = await create_access_refresh_tokens(
+  const { accessToken, refreshToken } = await create_access_refresh_tokens(
     user._id.toString()
   );
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: true,
   });
-  return res.status(StatusCodes.OK).send(accessTokenModel);
+  return res.status(StatusCodes.OK).send({ accessToken });
 };
 
 export const getInfoAboutUser = async (
@@ -138,37 +136,19 @@ export const refreshToken = async (req: Request, res: Response) => {
     refreshTokenFromClient,
     req.userId
   );
-  const { accessTokenModel, refreshToken } = await create_access_refresh_tokens(
+  const { accessToken, refreshToken } = await create_access_refresh_tokens(
     req.userId
   );
-  // const checkOldRefreshTokenIsBlacklisted =
-  //   await authQueryRepository.findBlacklistedUserRefreshTokenById(
-  //     new ObjectId(req.userId),
-  //     refreshTokenFromClient
-  //   );
-  // if (!checkOldRefreshTokenIsBlacklisted) {
-  //   res.sendStatus(StatusCodes.UNAUTHORIZED);
-  // } else {
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: true,
   });
-  res.status(StatusCodes.OK).send(accessTokenModel);
+  res.status(StatusCodes.OK).send({ accessToken });
 };
-// };
 
 export const logout = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
   await authService.placeRefreshTokenToBlacklist(refreshToken, req.userId);
-  // const checkRefreshTokenIsBlacklisted =
-  //   await authQueryRepository.findBlacklistedUserRefreshTokenById(
-  //     new ObjectId(req.userId),
-  //     refreshToken
-  //   );
-  // if (!checkRefreshTokenIsBlacklisted) {
-  //   res.sendStatus(StatusCodes.UNAUTHORIZED);
-  // } else {
   res.clearCookie("refreshToken", { httpOnly: true, secure: true });
   res.sendStatus(StatusCodes.NO_CONTENT);
 };
-// };

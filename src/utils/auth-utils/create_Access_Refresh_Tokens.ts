@@ -1,5 +1,4 @@
 import { jwtService } from "../../application/jwt-service";
-import { createAccessTokenModel } from "./tokenModel";
 
 export const create_access_refresh_tokens = async (userId: string) => {
   const accessToken = await jwtService.createJWT(
@@ -12,9 +11,8 @@ export const create_access_refresh_tokens = async (userId: string) => {
     process.env.REFRESH_TOKEN_SECRET as string,
     20
   );
-  const tokenModel = createAccessTokenModel(accessToken);
   return {
-    accessTokenModel: tokenModel,
+    accessToken,
     refreshToken,
   };
 };
