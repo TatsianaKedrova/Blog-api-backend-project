@@ -141,34 +141,34 @@ export const refreshToken = async (req: Request, res: Response) => {
   const { accessTokenModel, refreshToken } = await create_access_refresh_tokens(
     req.userId
   );
-  const checkOldRefreshTokenIsBlacklisted =
-    await authQueryRepository.findBlacklistedUserRefreshTokenById(
-      new ObjectId(req.userId),
-      refreshTokenFromClient
-    );
-  if (!checkOldRefreshTokenIsBlacklisted) {
-    res.sendStatus(StatusCodes.UNAUTHORIZED);
-  } else {
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-    });
-    res.status(StatusCodes.OK).send(accessTokenModel);
-  }
+  // const checkOldRefreshTokenIsBlacklisted =
+  //   await authQueryRepository.findBlacklistedUserRefreshTokenById(
+  //     new ObjectId(req.userId),
+  //     refreshTokenFromClient
+  //   );
+  // if (!checkOldRefreshTokenIsBlacklisted) {
+  //   res.sendStatus(StatusCodes.UNAUTHORIZED);
+  // } else {
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: true,
+  });
+  res.status(StatusCodes.OK).send(accessTokenModel);
 };
+// };
 
 export const logout = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
   await authService.placeRefreshTokenToBlacklist(refreshToken, req.userId);
-  const checkRefreshTokenIsBlacklisted =
-    await authQueryRepository.findBlacklistedUserRefreshTokenById(
-      new ObjectId(req.userId),
-      refreshToken
-    );
-  if (!checkRefreshTokenIsBlacklisted) {
-    res.sendStatus(StatusCodes.UNAUTHORIZED);
-  } else {
-    res.clearCookie("refreshToken", { httpOnly: true, secure: true });
-    res.sendStatus(StatusCodes.NO_CONTENT);
-  }
+  // const checkRefreshTokenIsBlacklisted =
+  //   await authQueryRepository.findBlacklistedUserRefreshTokenById(
+  //     new ObjectId(req.userId),
+  //     refreshToken
+  //   );
+  // if (!checkRefreshTokenIsBlacklisted) {
+  //   res.sendStatus(StatusCodes.UNAUTHORIZED);
+  // } else {
+  res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+  res.sendStatus(StatusCodes.NO_CONTENT);
 };
+// };

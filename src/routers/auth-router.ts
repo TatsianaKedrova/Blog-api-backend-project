@@ -27,7 +27,7 @@ authRouter.post(
 authRouter.get(
   "/me",
   accessTokenValidityMiddleware,
-  refreshTokenValidityMiddleware,
+  // refreshTokenValidityMiddleware,
   getInfoAboutUser
 );
 
