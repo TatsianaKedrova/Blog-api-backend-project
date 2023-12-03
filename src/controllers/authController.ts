@@ -39,21 +39,21 @@ export const logIn = async (
     res.sendStatus(StatusCodes.UNAUTHORIZED);
     return;
   }
-  const { accessTokenModel, refreshToken } = await create_access_refresh_tokens(
+  const { accessToken, refreshToken } = await create_access_refresh_tokens(
     user._id.toString()
   );
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: true,
   });
-  return res.status(StatusCodes.OK).send(accessTokenModel);
+  return res.status(StatusCodes.OK).send({ accessToken });
 };
 
 export const getInfoAboutUser = async (
   req: Request,
   res: Response<MeViewModel>
 ) => {
-  const foundUser = await usersCommandsRepository.findUserById(req.userId!);
+  const foundUser = await usersCommandsRepository.findUserById(req.userId);
   if (foundUser) {
     const currentUser = getCurrentUserInfo(foundUser);
     res.status(StatusCodes.OK).send(currentUser);
@@ -132,32 +132,23 @@ export const resendRegistrationEmail = async (
 //@desc Generate new pair of access and refresh tokens (in cookie client must send correct refresh token that will be revoked after refreshing)
 export const refreshToken = async (req: Request, res: Response) => {
   const refreshTokenFromClient = req.cookies.refreshToken;
-  const revokeRefreshToken = await authService.placeRefreshTokenToBlacklist(
+  await authService.placeRefreshTokenToBlacklist(
     refreshTokenFromClient,
     req.userId
   );
-  if (!revokeRefreshToken) {
-    return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
-  }
-  const { accessTokenModel, refreshToken } = await create_access_refresh_tokens(
+  const { accessToken, refreshToken } = await create_access_refresh_tokens(
     req.userId
   );
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: true,
   });
-  return res.status(StatusCodes.OK).send(accessTokenModel);
+  res.status(StatusCodes.OK).send({ accessToken });
 };
 
 export const logout = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
-  const revokeRefreshToken = await authService.placeRefreshTokenToBlacklist(
-    refreshToken,
-    req.userId
-  );
-  if (!revokeRefreshToken) {
-    return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
-  }
+  await authService.placeRefreshTokenToBlacklist(refreshToken, req.userId);
   res.clearCookie("refreshToken", { httpOnly: true, secure: true });
-  return res.sendStatus(StatusCodes.NO_CONTENT);
+  res.sendStatus(StatusCodes.NO_CONTENT);
 };
