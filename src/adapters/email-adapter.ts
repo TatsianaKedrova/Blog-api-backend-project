@@ -1,30 +1,30 @@
 import smtpTransport from "nodemailer-smtp-transport";
 import nodemailer from "nodemailer";
 import { UserDBType } from "../dto/usersDTO/usersDTO";
-import * as dotenv from "dotenv";
 
-dotenv.config();
 const emailSender = process.env.AUTH_EMAIL;
 const appPassword = process.env.AUTH_PASSWORD;
 
 export const emailAdapter = {
   async sendEmail(email: string, html: string) {
-    try {
-      let transport = nodemailer.createTransport(
-        smtpTransport({
-          service: "gmail",
-          auth: {
-            user: emailSender,
-            pass: appPassword,
-          },
-        })
-      );
-      let mailOptions = {
-        from: "Baletrot",
-        to: email,
-        subject: "Email confirmation code",
-        html,
-      };
+    let transport = nodemailer.createTransport(
+      smtpTransport({
+        service: "gmail",
+        auth: {
+          user: emailSender,
+          pass: appPassword,
+        },
+      })
+    );
+    let mailOptions = {
+      from: "Baletrot",
+      to: email,
+      subject: "Email confirmation code",
+      html,
+    };
+
+    // async..await is not allowed in global scope, must use a wrapper
+    const sendEmailProcess = async () => {
       transport.verify((error, success) => {
         if (error) {
           console.log(error);
@@ -33,13 +33,10 @@ export const emailAdapter = {
           console.log(success);
         }
       });
-
-      transport.sendMail(mailOptions);
+      await transport.sendMail(mailOptions);
       console.log("Email sent successfully");
-    } catch (error) {
-      console.log("Email not sent");
-      console.log(error);
-    }
+    };
+    await sendEmailProcess().catch(console.error);
   },
   async sendConfirmationEmail(user: UserDBType) {},
 };

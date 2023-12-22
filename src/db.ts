@@ -1,13 +1,10 @@
 import { Db, MongoClient } from "mongodb";
 import { PostDBType } from "./dto/postsDTO/PostModel";
-import * as dotenv from "dotenv";
 import { BlogDBType } from "./dto/blogsDTO/BlogModel";
 import { UserDBType } from "./dto/usersDTO/usersDTO";
 import { CommentDBType } from "./dto/commentsDTO/commentsDTO";
 import { RefreshTokensBlacklistDB } from "./dto/authDTO/authDTO";
-dotenv.config();
 const mongoUri = process.env.MONGO_URL; /*|| "mongodb://0.0.0.0:27017"*/
-
 const client: MongoClient = new MongoClient(mongoUri as string);
 const dbName = "blogs-posts";
 export const mongoDB: Db = client.db(dbName);
