@@ -3,10 +3,7 @@ import jwt, {
   NotBeforeError,
   TokenExpiredError,
 } from "jsonwebtoken";
-import * as dotenv from "dotenv";
 import { JwtPayloadResult } from "../dto/common/jwt/JwtPayloadResult";
-
-dotenv.config();
 
 export const jwtService = {
   async createJWT(

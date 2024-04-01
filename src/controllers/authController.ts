@@ -22,10 +22,7 @@ import { UserIsConfirmedError } from "../utils/errors-utils/registration-confirm
 import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration-confirmation-errors/ConfirmationCodeExpiredError";
 import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
-import * as dotenv from "dotenv";
 import { create_access_refresh_tokens } from "../utils/auth-utils/create_Access_Refresh_Tokens";
-
-dotenv.config();
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
