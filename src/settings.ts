@@ -10,6 +10,7 @@ import { commentsRouter } from "./routers/comments-router";
 import { httpMethodsCheckMiddleware } from "./middlewares/httpMethodsCheckMiddleware";
 import morgan from "morgan";
 import { StatusCodes } from "http-status-codes";
+import { securityDevicesRouter } from "./routers/securityDevices-router";
 
 export const app = express();
 app.use(morgan("dev"));
@@ -25,6 +26,7 @@ app.use("/api/posts", postsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/comments", commentsRouter);
+app.use("/api/security", securityDevicesRouter);
 app.use(async (req: Request, res: Response, next: NextFunction) => {
   next(StatusCodes.NOT_FOUND);
 });
