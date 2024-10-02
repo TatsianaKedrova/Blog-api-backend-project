@@ -2,7 +2,7 @@ import express from "express";
 import {
   getAllActiveSessions,
   terminateAllOtherSessions,
-  terminateSpecificSession,
+  terminateSessionById,
 } from "../controllers/securityDevicesController";
 export const securityDevicesRouter = express.Router();
 
@@ -13,4 +13,4 @@ securityDevicesRouter.get("/", getAllActiveSessions);
 securityDevicesRouter.delete("/", terminateAllOtherSessions);
 
 /**terminate specified device session*/
-securityDevicesRouter.delete("/:id", terminateSpecificSession);
+securityDevicesRouter.delete("/:id", terminateSessionById);
