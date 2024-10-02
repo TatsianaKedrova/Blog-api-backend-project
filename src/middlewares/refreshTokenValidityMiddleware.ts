@@ -9,7 +9,7 @@ export const refreshTokenValidityMiddleware = async (
   res: Response,
   next: NextFunction
 ) => {
-  const refreshTokenFromClient = req.cookies.refreshToken;
+  const refreshTokenFromClient: string = req.cookies.refreshToken;
   if (!refreshTokenFromClient || !refreshTokenFromClient.trim()) {
     res.sendStatus(StatusCodes.UNAUTHORIZED);
     return;
