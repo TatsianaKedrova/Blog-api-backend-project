@@ -26,7 +26,7 @@ app.use("/api/posts", postsRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/comments", commentsRouter);
-app.use("/api/security", securityDevicesRouter);
+app.use("/api/security/devices", securityDevicesRouter);
 app.use(async (req: Request, res: Response, next: NextFunction) => {
   next(StatusCodes.NOT_FOUND);
 });
