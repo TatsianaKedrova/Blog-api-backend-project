@@ -5,7 +5,7 @@ export type DeviceViewModel = {
   deviceId: string; //Id of connected device session
 };
 
-export type DevicesCallApi = {
+export type ClientCallingApi = {
   ip: string;
   url: string;
   date: Date;
