@@ -4,3 +4,9 @@ export type DeviceViewModel = {
   lastActiveDate: string; //Date of the last generating of refresh/access tokens
   deviceId: string; //Id of connected device session
 };
+
+export type DevicesCallApi = {
+  ip: string;
+  url: string;
+  date: Date;
+};
