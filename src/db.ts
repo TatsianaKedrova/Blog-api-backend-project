@@ -4,6 +4,7 @@ import { BlogDBType } from "./dto/blogsDTO/BlogModel";
 import { UserDBType } from "./dto/usersDTO/usersDTO";
 import { CommentDBType } from "./dto/commentsDTO/commentsDTO";
 import { RefreshTokensBlacklistDB } from "./dto/authDTO/authDTO";
+import { DeviceViewModel } from "./dto/securityDevicesDTO/securityDevicesDTO";
 const mongoUri = process.env.MONGO_URL; /*|| "mongodb://0.0.0.0:27017"*/
 const client: MongoClient = new MongoClient(mongoUri as string);
 const dbName = "blogs-posts";
@@ -16,6 +17,8 @@ export const usersCollection = mongoDB.collection<UserDBType>("users");
 export const commentsCollection = mongoDB.collection<CommentDBType>("comments");
 export const refreshTokensBlacklistedCollection =
   mongoDB.collection<RefreshTokensBlacklistDB>("refresh-tokens-blacklisted");
+export const securityDevicesCollection =
+  mongoDB.collection<DeviceViewModel>("securityDevices");
 
 export const runDB = async () => {
   try {
