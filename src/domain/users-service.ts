@@ -1,7 +1,7 @@
 import { UserDBType, UserViewModel } from "../dto/usersDTO/usersDTO";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { ObjectId, WithId } from "mongodb";
 import { UserAlreadyExistsError } from "../utils/errors-utils/registration-errors/UserAlreadyExistsError";

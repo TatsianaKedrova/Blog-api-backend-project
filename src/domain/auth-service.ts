@@ -1,6 +1,6 @@
 import { authCommandsRepository } from "./../repositories/commands-repository/authCommandsRepository";
 import { usersCommandsRepository } from "./../repositories/commands-repository/usersCommandsRepository";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { UserDBType, UserInputModel } from "../dto/usersDTO/usersDTO";
 import { emailManager } from "../managers/email-manager";
 import { usersService } from "./users-service";
