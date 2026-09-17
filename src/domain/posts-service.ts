@@ -45,13 +45,14 @@ export const postsService = {
   async createNewComment(
     postId: string,
     content: string,
-    userId: string
+    userId: string,
   ): Promise<CommentViewModel | null> {
     const foundPost = await this._findPostById(postId);
     if (!foundPost) {
       return null;
     }
     const foundUser = await usersCommandsRepository.findUserById(userId);
+    if (!foundUser) return null;
     const newComment: CommentDBType = {
       postId,
       content,

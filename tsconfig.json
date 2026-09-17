@@ -3,16 +3,16 @@
     "target": "es2016",
     "module": "commonjs",
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./",
+    "rootDirs": ["./src", "./__tests__"],
     "strict": true,
     "noImplicitReturns": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "forceConsistentCasingInFileNames": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.test.ts"],
-  "files": ["index.d.ts"]
+  "include": ["src/**/*", "__tests__/**/*", "index.d.ts"],
+  "exclude": ["node_modules", "dist"]
 }
