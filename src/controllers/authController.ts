@@ -39,9 +39,13 @@ export const logIn = async (
   const { accessToken, refreshToken } = await create_access_refresh_tokens(
     user._id.toString(),
   );
+  const isProduction = process.env.NODE_ENV == "production";
+
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: true,
+    secure: isProduction,
+    sameSite: "lax",
+    maxAge: 30 * 60 * 1000,
   });
   return res.status(StatusCodes.OK).send({ accessToken });
 };
@@ -136,9 +140,12 @@ export const refreshToken = async (req: Request, res: Response) => {
   const { accessToken, refreshToken } = await create_access_refresh_tokens(
     req.userId,
   );
+  const isProduction = process.env.NODE_ENV == "production";
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: true,
+    secure: isProduction,
+    sameSite: "lax",
+    maxAge: 30 * 60 * 1000,
   });
   res.status(StatusCodes.OK).send({ accessToken });
 };
