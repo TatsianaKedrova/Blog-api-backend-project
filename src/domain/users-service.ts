@@ -15,7 +15,7 @@ export const usersService = {
     password: string,
     confirmationCode: string | null,
     isConfirmed: boolean,
-    expirationDate: string | null
+    expirationDate: string | null,
   ): Promise<UserViewModel | TFieldError> {
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this._generateHash(password, passwordSalt);
@@ -33,22 +33,20 @@ export const usersService = {
         expirationDate,
       },
     };
-    const createUserResult = await usersCommandsRepository.createNewUser(
-      newUser
-    );
+    const createUserResult = await usersCommandsRepository.createNewUser(newUser);
     if (createUserResult === "login") {
       return new UserAlreadyExistsError(
         createUserResult,
-        "User with the given login already exists"
+        "User with the given login already exists",
       );
     } else if (createUserResult === "email") {
       return new UserAlreadyExistsError(
         createUserResult,
-        "User with the given email already exists"
+        "User with the given email already exists",
       );
     } else {
       await authService.createRefreshTokenBlacklistForUser(
-        new ObjectId(createUserResult.id)
+        new ObjectId(createUserResult.id),
       );
       return createUserResult;
     }
@@ -61,7 +59,7 @@ export const usersService = {
   },
   async checkCredentials(
     loginOrEmail: string,
-    password: string
+    password: string,
   ): Promise<WithId<UserDBType> | null> {
     const user = await usersQueryRepository.findByLoginOrEmail(loginOrEmail);
     if (!user) return null;
@@ -71,7 +69,7 @@ export const usersService = {
     }
     const passwordHash = await this._generateHash(
       password,
-      user.accountData.passwordSalt
+      user.accountData.passwordSalt,
     );
     if (user.accountData.passwordHash !== passwordHash) {
       return null;

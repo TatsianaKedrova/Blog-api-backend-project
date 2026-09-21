@@ -99,7 +99,7 @@ describe("API for auth", () => {
     await request(app).get("/api/auth/me").expect(StatusCodes.UNAUTHORIZED);
     expect(existingUsers.body.items.length).toEqual(1);
   });
-  test("user SHOULD BE REGISTERED", async () => {
+  test("user SHOULD BE REGISTERED if all the auth input fields exist and correct", async () => {
     const userCredentials = {
       login: "Nadeen",
       email: "nadeen17122017@gmail.com",

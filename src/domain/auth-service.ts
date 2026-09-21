@@ -21,13 +21,13 @@ import { ObjectId } from "mongodb";
 
 export const authService = {
   async registerNewUser(
-    body: UserInputModel
+    body: UserInputModel,
   ): Promise<TFieldError | UserDBType> {
     const { login, email, password } = body;
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await usersService._generateHash(
       password,
-      passwordSalt
+      passwordSalt,
     );
     const newUser: UserDBType = {
       accountData: {
@@ -47,18 +47,18 @@ export const authService = {
     if (createUser === "login") {
       return new UserAlreadyExistsError(
         createUser,
-        "User with the given login already exists"
+        "User with the given login already exists",
       );
     } else if (createUser === "email") {
       return new UserAlreadyExistsError(
         createUser,
-        "User with the given email already exists"
+        "User with the given email already exists",
       );
     } else {
       try {
         await emailManager.sendEmail(newUser);
         await this.createRefreshTokenBlacklistForUser(
-          new ObjectId(createUser.id)
+          new ObjectId(createUser.id),
         );
         return newUser;
       } catch (error) {
@@ -105,20 +105,20 @@ export const authService = {
     return user.accountData.email;
   },
   async createRefreshTokenBlacklistForUser(
-    userId: ObjectId
+    userId: ObjectId,
   ): Promise<string | null> {
     return await authCommandsRepository.createUserRefreshTokensBlacklist(
-      userId
+      userId,
     );
   },
   async placeRefreshTokenToBlacklist(
     refreshToken: string,
-    userId: string
+    userId: string,
   ): Promise<boolean> {
     const refreshTokenToBlacklist =
       await authCommandsRepository.putRefreshTokenToBlacklist(
         refreshToken,
-        userId
+        userId,
       );
     return refreshTokenToBlacklist;
   },
