@@ -24,7 +24,7 @@ import { blogsQueryRepository } from "../repositories/query-repository/blogsQuer
 // @access Public
 export const getBlogs = async (
   req: RequestQueryParamsModel<QueryParamsWithSearch>,
-  res: Response<Paginator<BlogViewModel>>
+  res: Response<Paginator<BlogViewModel>>,
 ) => {
   let {
     searchNameTerm = "",
@@ -39,7 +39,7 @@ export const getBlogs = async (
     Number(pageNumber),
     sortBy,
     Number(pageSize),
-    sortDirection
+    sortDirection,
   );
   res.status(StatusCodes.OK).send(blogs);
 };
@@ -52,7 +52,7 @@ export const getBlogPosts = async (
     URIParamsRequest,
     QueryParamsWithSearch
   >,
-  res: Response<Paginator<PostViewModel>>
+  res: Response<Paginator<PostViewModel>>,
 ) => {
   let {
     pageNumber = 1,
@@ -71,7 +71,7 @@ export const getBlogPosts = async (
         Number(pageNumber),
         sortBy,
         Number(pageSize),
-        sortDirection
+        sortDirection,
       );
     res.status(StatusCodes.OK).send(postsFromSpecificBlog);
   }
@@ -85,11 +85,11 @@ export const createPostForSpecificBlog = async (
     URIParamsRequest,
     CreatePostForSpecificBlogType
   >,
-  res: Response<PostViewModel>
+  res: Response<PostViewModel>,
 ) => {
   const createdPost = await blogsService.createNewPostForSpecificBlog(
     req.body,
-    req.params.id
+    req.params.id,
   );
   if (!createdPost) {
     res.sendStatus(StatusCodes.NOT_FOUND);
@@ -101,7 +101,7 @@ export const createPostForSpecificBlog = async (
 // @access Public
 export const getBlogsById = async (
   req: RequestWithURIParam<URIParamsRequest>,
-  res: Response<BlogViewModel>
+  res: Response<BlogViewModel>,
 ) => {
   const foundBlog = await blogsQueryRepository.findBlogById(req.params.id);
   if (!foundBlog) {
@@ -116,7 +116,7 @@ export const getBlogsById = async (
 // @access Private
 export const createNewBlog = async (
   req: RequestBodyModel<BlogInputModel>,
-  res: Response<BlogViewModel | TApiErrorResultObject>
+  res: Response<BlogViewModel | TApiErrorResultObject>,
 ) => {
   const newBlog = await blogsService.createNewBlog(req.body);
   res.status(StatusCodes.CREATED).send(newBlog);
@@ -127,11 +127,11 @@ export const createNewBlog = async (
 // @access Private
 export const updateBlogById = async (
   req: RequestWithURIParamsAndBody<URIParamsRequest, BlogInputModel>,
-  res: Response<TApiErrorResultObject>
+  res: Response<TApiErrorResultObject>,
 ) => {
   const updatedBlog = await blogsService.updateBlogById(
     req.params.id,
-    req.body
+    req.body,
   );
   if (!updatedBlog) {
     res.sendStatus(StatusCodes.NOT_FOUND);
@@ -145,7 +145,7 @@ export const updateBlogById = async (
 // @access Private
 export const deleteBlogById = async (
   req: RequestWithURIParam<URIParamsRequest>,
-  res: Response
+  res: Response,
 ) => {
   const foundBlog = await blogsService.deleteBlogById(req.params.id);
   if (!foundBlog) {

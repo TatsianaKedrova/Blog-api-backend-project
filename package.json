@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "watch": "tsc -w",
-    "dev": "pnpm nodemon --inspect --env-file=.env dist/index.js",
+    "dev": "tsx watch --env-file=.env src/index.ts",
     "build": "tsc",
-    "start": "nodemon --env-file .env dist/index.js",
+    "start": "node --env-file .env dist/index.js",
     "test": "jest --detectOpenHandles --watch --runTestsByPath"
   },
   "keywords": [],
@@ -41,7 +40,7 @@
     "nodemon": "^3.1.14",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.12",
-    "ts-node": "^10.9.1",
+    "tsx": "^4.23.15",
     "typescript": "7.0.2"
   }
 }

@@ -26,18 +26,18 @@ import { create_access_refresh_tokens } from "../utils/auth-utils/create_Access_
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
-  res: Response
+  res: Response,
 ) => {
   const user = await usersService.checkCredentials(
     req.body.loginOrEmail,
-    req.body.password
+    req.body.password,
   );
   if (!user) {
     res.sendStatus(StatusCodes.UNAUTHORIZED);
     return;
   }
   const { accessToken, refreshToken } = await create_access_refresh_tokens(
-    user._id.toString()
+    user._id.toString(),
   );
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
@@ -48,7 +48,7 @@ export const logIn = async (
 
 export const getInfoAboutUser = async (
   req: Request,
-  res: Response<MeViewModel>
+  res: Response<MeViewModel>,
 ) => {
   const foundUser = await usersCommandsRepository.findUserById(req.userId);
   if (foundUser) {
@@ -61,7 +61,7 @@ export const getInfoAboutUser = async (
 
 export const registerUser = async (
   req: RequestBodyModel<UserInputModel>,
-  res: Response<TApiErrorResultObject>
+  res: Response<TApiErrorResultObject>,
 ) => {
   const createUser = await authService.registerNewUser(req.body);
   if (createUser instanceof UserAlreadyExistsError) {
@@ -81,7 +81,7 @@ export const registerUser = async (
 
 export const confirmRegistration = async (
   req: RequestBodyModel<RegistrationConfirmationCodeModel>,
-  res: Response<TApiErrorResultObject>
+  res: Response<TApiErrorResultObject>,
 ) => {
   const confirmCodeResult = await authService.confirmCode(req.body.code);
   if (
@@ -105,7 +105,7 @@ export const confirmRegistration = async (
 
 export const resendRegistrationEmail = async (
   req: RequestBodyModel<RegistrationEmailResending>,
-  res: Response<TApiErrorResultObject>
+  res: Response<TApiErrorResultObject>,
 ) => {
   const resendEmailResult = await authService.resendEmail(req.body.email);
   if (
@@ -131,10 +131,10 @@ export const refreshToken = async (req: Request, res: Response) => {
   const refreshTokenFromClient = req.cookies.refreshToken;
   await authService.placeRefreshTokenToBlacklist(
     refreshTokenFromClient,
-    req.userId
+    req.userId,
   );
   const { accessToken, refreshToken } = await create_access_refresh_tokens(
-    req.userId
+    req.userId,
   );
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,

@@ -8,7 +8,7 @@ import { ObjectId } from "mongodb";
 export const validateObjectIdMiddleware = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { id } = req.params;
   if (ObjectId.isValid(id)) {
