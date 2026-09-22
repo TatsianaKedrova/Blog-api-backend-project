@@ -5,6 +5,12 @@ export type DeviceViewModel = {
   deviceId: string; //Id of connected device session
 };
 
+export type SessionDeviceDBType = Omit<DeviceViewModel, "lastActiveDate"> & {
+  userId: string;
+  lastActiveDate: Date;
+  refreshTokenExpirationDate: Date;
+};
+
 export type ClientCallingApi = {
   ip: string;
   url: string;
