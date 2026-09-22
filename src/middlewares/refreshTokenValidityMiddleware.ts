@@ -3,6 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { jwtService } from "../application/jwt-service";
 import { ObjectId } from "mongodb";
 import { authQueryRepository } from "../repositories/query-repository/authQueryRepository";
+import { securityDevicesService } from "../domain/securityDevices-service";
 
 export const refreshTokenValidityMiddleware = async (
   req: Request,
@@ -29,8 +30,12 @@ export const refreshTokenValidityMiddleware = async (
         refreshTokenFromClient,
       );
     if (checkRefreshTokenIsBlacklisted) {
-      res.sendStatus(StatusCodes.UNAUTHORIZED);
-      return;
+      await securityDevicesService.deleteOneSession(
+        refreshTokenJWTPayloadResult.deviceId,
+        refreshTokenJWTPayloadResult.userId,
+      );
+      res.clearCookie("refreshToken");
+      return res.sendStatus(StatusCodes.FORBIDDEN);
     } else {
       req.userId = refreshTokenJWTPayloadResult.userId;
       req.deviceId = refreshTokenJWTPayloadResult.deviceId;

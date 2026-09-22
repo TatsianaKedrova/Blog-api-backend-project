@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { securityDevicesCommandsRepository } from "../repositories/commands-repository/securityDevicesCommandsRepository";
 
 export const securityDevicesService = {
@@ -17,10 +18,19 @@ export const securityDevicesService = {
       lastActiveDate: tokenCreationDate,
       refreshTokenExpirationDate: refreshTokenExpirationDate,
       deviceId: deviceId,
-      userId: userId,
+      userId: new ObjectId(userId),
     };
     const isSessionCreated =
       await securityDevicesCommandsRepository.createDeviceSession(sessionData);
     return isSessionCreated;
+  },
+  async deleteOneSession(deviceId: string, userId: string) {
+    console.warn(
+      `[SECURITY BREACH DETECTED]: Token reuse attempt for User ID: ${userId} on Device ID: ${deviceId}. Revoking session.`,
+    );
+    return await securityDevicesCommandsRepository.deleteSessionByDeviceAndUserId(
+      deviceId,
+      userId,
+    );
   },
 };

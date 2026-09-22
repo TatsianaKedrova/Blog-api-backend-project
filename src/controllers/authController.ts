@@ -47,7 +47,6 @@ export const logIn = async (
     deviceTitle,
     userId,
   );
-  //Getting new access and refresh tokens
   if (!deviceId) {
     console.error(
       `🔴 Login failed: Could not create device session for user ${user._id}`,
