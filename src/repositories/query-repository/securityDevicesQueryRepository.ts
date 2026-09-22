@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { securityDevicesCollection } from "../../db";
 import { DeviceViewModel } from "../../dto/securityDevicesDTO/securityDevicesDTO";
 
@@ -5,7 +6,7 @@ export const securityDevicesQueryRepository = {
   async getActiveSessions(userId: string): Promise<DeviceViewModel[] | []> {
     try {
       const allActiveSessions = await securityDevicesCollection
-        .find({ userId: userId })
+        .find({ userId: new ObjectId(userId) })
         .toArray();
       return allActiveSessions.map((session) => ({
         ip: session.ip,
