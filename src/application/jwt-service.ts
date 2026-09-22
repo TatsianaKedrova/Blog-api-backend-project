@@ -4,21 +4,22 @@ import jwt, {
   TokenExpiredError,
 } from "jsonwebtoken";
 import { JwtPayloadResult } from "../dto/common/jwt/JwtPayloadResult";
+import { AccessTokenType, RefreshTokenType } from "../dto/authDTO/authDTO";
 
 export const jwtService = {
   async createJWT(
-    userId: string,
+    payload: AccessTokenType | RefreshTokenType,
     secret: string,
-    expiresIn: number
+    expiresIn: number,
   ): Promise<string> {
-    const token = jwt.sign({ userId }, secret, {
+    const token = jwt.sign(payload, secret, {
       expiresIn,
     });
     return token;
   },
   async getJwtPayloadResult(
     token: string,
-    secret: string
+    secret: string,
   ): Promise<JwtPayloadResult | null> {
     try {
       const result = jwt.verify(token, secret);

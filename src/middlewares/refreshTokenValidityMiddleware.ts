@@ -7,7 +7,7 @@ import { authQueryRepository } from "../repositories/query-repository/authQueryR
 export const refreshTokenValidityMiddleware = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const refreshTokenFromClient: string = req.cookies.refreshToken;
   if (!refreshTokenFromClient || !refreshTokenFromClient.trim()) {
@@ -16,7 +16,7 @@ export const refreshTokenValidityMiddleware = async (
   }
   const refreshTokenJWTPayloadResult = await jwtService.getJwtPayloadResult(
     refreshTokenFromClient,
-    process.env.REFRESH_TOKEN_SECRET as string
+    process.env.REFRESH_TOKEN_SECRET as string,
   );
 
   if (!refreshTokenJWTPayloadResult) {
@@ -26,14 +26,15 @@ export const refreshTokenValidityMiddleware = async (
     const checkRefreshTokenIsBlacklisted =
       await authQueryRepository.findBlacklistedUserRefreshTokenById(
         new ObjectId(refreshTokenJWTPayloadResult.userId),
-        refreshTokenFromClient
+        refreshTokenFromClient,
       );
     if (checkRefreshTokenIsBlacklisted) {
       res.sendStatus(StatusCodes.UNAUTHORIZED);
       return;
     } else {
       req.userId = refreshTokenJWTPayloadResult.userId;
-      next();
+      req.deviceId = refreshTokenJWTPayloadResult.deviceId;
+      return next();
     }
   }
 };

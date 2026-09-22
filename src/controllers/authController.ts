@@ -152,13 +152,17 @@ export const resendRegistrationEmail = async (
 //@desc Generate new pair of access and refresh tokens (in cookie client must send correct refresh token that will be revoked after refreshing)
 export const refreshToken = async (req: Request, res: Response) => {
   const refreshTokenFromClient = req.cookies.refreshToken;
-  await authService.placeRefreshTokenToBlacklist(
+  
+  const isBlacklisted = await authService.placeRefreshTokenToBlacklist(
     refreshTokenFromClient,
     req.userId,
   );
-  // const deviceId = await securityDevicesQueryRepository.get
+  if (!isBlacklisted) {
+    return res.sendStatus(StatusCodes.UNAUTHORIZED);
+  }
   const { accessToken, refreshToken } = await create_access_refresh_tokens(
     req.userId,
+    req.deviceId,
   );
   const isProduction = process.env.NODE_ENV == "production";
   res.cookie("refreshToken", refreshToken, {
@@ -167,7 +171,7 @@ export const refreshToken = async (req: Request, res: Response) => {
     sameSite: "lax",
     maxAge: 30 * 60 * 1000,
   });
-  res.status(StatusCodes.OK).send({ accessToken });
+  return res.status(StatusCodes.OK).send({ accessToken });
 };
 
 export const logout = async (req: Request, res: Response) => {
