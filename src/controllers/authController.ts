@@ -23,6 +23,8 @@ import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration
 import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
 import { create_access_refresh_tokens } from "../utils/auth-utils/create_Access_Refresh_Tokens";
+import { securityDevicesService } from "../domain/securityDevices-service";
+import { getDeviceTitle } from "../utils/securityDevices-utils/getDeviceTitle";
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
@@ -33,13 +35,30 @@ export const logIn = async (
     req.body.password,
   );
   if (!user) {
-    res.sendStatus(StatusCodes.UNAUTHORIZED);
-    return;
+    return res.sendStatus(StatusCodes.UNAUTHORIZED);
+  }
+
+  //Getting IP and Device name during LOGIN
+  const clientIP = req.ip || "127.0.0.1";
+  const deviceTitle = getDeviceTitle(req.headers["user-agent"]);
+  const userId = user._id.toString();
+  const deviceId = await securityDevicesService.createDeviceSession(
+    clientIP,
+    deviceTitle,
+    userId,
+  );
+  //Getting new access and refresh tokens
+  if (!deviceId) {
+    console.error(
+      `🔴 Login failed: Could not create device session for user ${user._id}`,
+    );
+    return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
   }
   const { accessToken, refreshToken } = await create_access_refresh_tokens(
     user._id.toString(),
+    deviceId,
   );
-  const isProduction = process.env.NODE_ENV == "production";
+  const isProduction = process.env.NODE_ENV === "production";
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
@@ -137,6 +156,7 @@ export const refreshToken = async (req: Request, res: Response) => {
     refreshTokenFromClient,
     req.userId,
   );
+  // const deviceId = await securityDevicesQueryRepository.get
   const { accessToken, refreshToken } = await create_access_refresh_tokens(
     req.userId,
   );

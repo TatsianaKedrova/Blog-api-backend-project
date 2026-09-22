@@ -27,3 +27,11 @@ export type RefreshTokensBlacklistDB = {
   _id: ObjectId;
   refreshTokensArray: string[];
 };
+
+export type AccessTokenType = {
+  userId: string;
+};
+
+export type RefreshTokenType = AccessTokenType & {
+  deviceId: string;
+};
