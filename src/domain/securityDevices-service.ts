@@ -6,8 +6,7 @@ export const securityDevicesService = {
     clientIP: string,
     deviceTitle: string,
     userId: string,
-  ): Promise<any> {
-    const deviceId = crypto.randomUUID(); // Unique ID for this specific session
+  ): Promise<string> {
     const tokenCreationDate = new Date(); // The token generation date
     const refreshTokenExpirationDate = new Date(
       tokenCreationDate.getTime() + 30 * 60 * 1000,
@@ -17,17 +16,13 @@ export const securityDevicesService = {
       title: deviceTitle,
       lastActiveDate: tokenCreationDate,
       refreshTokenExpirationDate: refreshTokenExpirationDate,
-      deviceId: deviceId,
       userId: new ObjectId(userId),
     };
-    const isSessionCreated =
+    const deviceId =
       await securityDevicesCommandsRepository.createDeviceSession(sessionData);
-    return isSessionCreated;
+    return deviceId;
   },
-  async deleteOneSession(deviceId: string, userId: string) {
-    console.warn(
-      `[SECURITY BREACH DETECTED]: Token reuse attempt for User ID: ${userId} on Device ID: ${deviceId}. Revoking session.`,
-    );
+  async deleteSession(deviceId: string, userId: string): Promise<boolean> {
     return await securityDevicesCommandsRepository.deleteSessionByDeviceAndUserId(
       deviceId,
       userId,
