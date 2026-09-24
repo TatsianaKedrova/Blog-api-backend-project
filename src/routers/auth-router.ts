@@ -21,32 +21,28 @@ authRouter.post(
   "/login",
   authValidator,
   responseErrorValidationMiddleware,
-  logIn
+  logIn,
 );
 
-authRouter.get(
-  "/me",
-  accessTokenValidityMiddleware,
-  getInfoAboutUser
-);
+authRouter.get("/me", accessTokenValidityMiddleware, getInfoAboutUser);
 
 authRouter.post(
   "/registration",
   createUserValidator,
   responseErrorValidationMiddleware,
-  registerUser
+  registerUser,
 );
 authRouter.post(
   "/registration-confirmation",
   confirmationCodeValidator,
   responseErrorValidationMiddleware,
-  confirmRegistration
+  confirmRegistration,
 );
 authRouter.post(
   "/registration-email-resending",
   emailValidator,
   responseErrorValidationMiddleware,
-  resendRegistrationEmail
+  resendRegistrationEmail,
 );
 
 authRouter.post("/refresh-token", refreshTokenValidityMiddleware, refreshToken);

@@ -7,12 +7,14 @@ import { StatusCodes } from "http-status-codes";
 export const responseErrorValidationMiddleware = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const errors: TFieldError[] = responseErrorTransformerFunction(req);
   if (errors.length > 0) {
-    res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction(errors));
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .send(responseErrorFunction(errors));
   } else {
-    next();
+    return next();
   }
 };

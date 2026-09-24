@@ -33,7 +33,8 @@ export const usersService = {
         expirationDate,
       },
     };
-    const createUserResult = await usersCommandsRepository.createNewUser(newUser);
+    const createUserResult =
+      await usersCommandsRepository.createNewUser(newUser);
     if (createUserResult === "login") {
       return new UserAlreadyExistsError(
         createUserResult,
@@ -67,11 +68,11 @@ export const usersService = {
     if (!user?.emailConfirmation.isConfirmed) {
       return null;
     }
-    const passwordHash = await this._generateHash(
+    const isPasswordMatch = await bcrypt.compare(
       password,
-      user.accountData.passwordSalt,
+      user.accountData.passwordHash,
     );
-    if (user.accountData.passwordHash !== passwordHash) {
+    if (!isPasswordMatch) {
       return null;
     }
     return user;

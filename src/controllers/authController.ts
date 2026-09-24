@@ -36,7 +36,7 @@ export const logIn = async (
     req.body.password,
   );
   if (!user) {
-    throw createAppError("Invalid login credentials", StatusCodes.UNAUTHORIZED)
+    throw createAppError("Invalid login credentials", StatusCodes.UNAUTHORIZED);
   }
 
   //Getting IP and Device name during LOGIN
@@ -146,7 +146,7 @@ export const resendRegistrationEmail = async (
 //@desc Generate new pair of access and refresh tokens (in cookie client must send correct refresh token that will be revoked after refreshing)
 export const refreshToken = async (req: Request, res: Response) => {
   const refreshTokenFromClient = req.cookies.refreshToken;
-  
+
   const isBlacklisted = await authService.placeRefreshTokenToBlacklist(
     refreshTokenFromClient,
     req.userId,
