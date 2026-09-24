@@ -14,4 +14,4 @@ securityDevicesRouter.get("/", refreshTokenValidityMiddleware, getAllActiveSessi
 securityDevicesRouter.delete("/", refreshTokenValidityMiddleware, terminateAllOtherSessions);
 
 /**terminate specified device session*/
-securityDevicesRouter.delete("/:id", refreshTokenValidityMiddleware, terminateSessionById);
+securityDevicesRouter.delete("/:deviceId", refreshTokenValidityMiddleware, terminateSessionById);
