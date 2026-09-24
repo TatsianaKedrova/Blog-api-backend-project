@@ -1,14 +1,16 @@
 import { NextFunction, Request, Response } from "express";
 import { commentsCommandsRepository } from "../repositories/commands-repository/commentsCommandsRepository";
 import { StatusCodes } from "http-status-codes";
+import { RequestWithURIParam } from "../dto/common/RequestModels";
+import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 
 export const forbiddenResponseMiddleware = async (
-  req: Request,
+  req: RequestWithURIParam<URIParamsRequest>,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const comment = await commentsCommandsRepository.findCommentById(
-    req.params.id
+    req.params.id,
   );
   if (!comment) {
     res.sendStatus(StatusCodes.NOT_FOUND);

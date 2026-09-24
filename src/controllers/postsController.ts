@@ -113,7 +113,7 @@ export const createComment = async (
   const createdComment = await postsService.createNewComment(
     req.params.id,
     content,
-    req.userId!
+    req.userId
   );
   if (!createdComment) {
     res.sendStatus(StatusCodes.NOT_FOUND);

@@ -4,24 +4,32 @@ import { SessionDeviceDBType } from "../../dto/securityDevicesDTO/securityDevice
 
 export const securityDevicesCommandsRepository = {
   async createDeviceSession(
-    sessionData: SessionDeviceDBType,
-  ): Promise<boolean> {
+    sessionData: Omit<SessionDeviceDBType, "_id">,
+  ): Promise<string> {
     try {
-      const result = await securityDevicesCollection.insertOne(sessionData);
-      return result.acknowledged;
+      const result = await securityDevicesCollection.insertOne({
+        _id: new ObjectId(),
+        ...sessionData,
+      });
+      return result.insertedId.toString();
     } catch (error) {
       console.error("Failed to insert device session:", error);
-      return false;
+      throw error;
     }
   },
   async deleteSessionByDeviceAndUserId(
     deviceId: string,
     userId: string,
   ): Promise<boolean> {
-    const result = await securityDevicesCollection.deleteOne({
-      userId: new ObjectId(userId),
-      deviceId: deviceId,
-    });
-    return result.deletedCount > 0;
+    try {
+      const result = await securityDevicesCollection.deleteOne({
+        userId: new ObjectId(userId),
+        _id: new ObjectId(deviceId),
+      });
+      return result.deletedCount > 0;
+    } catch (error) {
+      console.error("Failed to delete device session:", error);
+      throw error;
+    }
   },
 };

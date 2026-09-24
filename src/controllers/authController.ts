@@ -25,6 +25,7 @@ import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-e
 import { create_access_refresh_tokens } from "../utils/auth-utils/create_Access_Refresh_Tokens";
 import { securityDevicesService } from "../domain/securityDevices-service";
 import { getDeviceTitle } from "../utils/securityDevices-utils/getDeviceTitle";
+import { createAppError } from "../utils/appErrors";
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
@@ -35,7 +36,7 @@ export const logIn = async (
     req.body.password,
   );
   if (!user) {
-    return res.sendStatus(StatusCodes.UNAUTHORIZED);
+    throw createAppError("Invalid login credentials", StatusCodes.UNAUTHORIZED)
   }
 
   //Getting IP and Device name during LOGIN
@@ -47,12 +48,6 @@ export const logIn = async (
     deviceTitle,
     userId,
   );
-  if (!deviceId) {
-    console.error(
-      `🔴 Login failed: Could not create device session for user ${user._id}`,
-    );
-    return res.sendStatus(StatusCodes.INTERNAL_SERVER_ERROR);
-  }
   const { accessToken, refreshToken } = await create_access_refresh_tokens(
     user._id.toString(),
     deviceId,
@@ -161,7 +156,7 @@ export const refreshToken = async (req: Request, res: Response) => {
   }
   const { accessToken, refreshToken } = await create_access_refresh_tokens(
     req.userId,
-    req.deviceId,
+    req.currentDeviceId,
   );
   const isProduction = process.env.NODE_ENV == "production";
   res.cookie("refreshToken", refreshToken, {

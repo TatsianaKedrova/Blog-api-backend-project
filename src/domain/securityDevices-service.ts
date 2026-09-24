@@ -22,10 +22,12 @@ export const securityDevicesService = {
       await securityDevicesCommandsRepository.createDeviceSession(sessionData);
     return deviceId;
   },
-  async deleteSession(deviceId: string, userId: string): Promise<boolean> {
-    return await securityDevicesCommandsRepository.deleteSessionByDeviceAndUserId(
-      deviceId,
-      userId,
-    );
+  async deleteSessionById(deviceId: string, userId: string): Promise<boolean> {
+    const result =
+      await securityDevicesCommandsRepository.deleteSessionByDeviceAndUserId(
+        deviceId,
+        userId,
+      );
+    return result;
   },
 };

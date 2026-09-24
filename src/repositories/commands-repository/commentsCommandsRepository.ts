@@ -15,10 +15,10 @@ export const commentsCommandsRepository = {
     return transformCommentsResponse(findCreatedComment!);
   },
   async findCommentById(id: string) {
-    const comments = await commentsCollection.findOne({
+    const comment = await commentsCollection.findOne({
       _id: new ObjectId(id),
     });
-    return comments;
+    return comment;
   },
   async deleteComment(commentId: string): Promise<boolean> {
     const deletedComment = await commentsCollection.findOneAndDelete({

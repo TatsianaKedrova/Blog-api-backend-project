@@ -4,6 +4,7 @@ import { jwtService } from "../application/jwt-service";
 import { ObjectId } from "mongodb";
 import { authQueryRepository } from "../repositories/query-repository/authQueryRepository";
 import { securityDevicesService } from "../domain/securityDevices-service";
+import { createAppError } from "../utils/appErrors";
 
 export const refreshTokenValidityMiddleware = async (
   req: Request,
@@ -12,8 +13,10 @@ export const refreshTokenValidityMiddleware = async (
 ) => {
   const refreshTokenFromClient: string = req.cookies.refreshToken;
   if (!refreshTokenFromClient || !refreshTokenFromClient.trim()) {
-    res.sendStatus(StatusCodes.UNAUTHORIZED);
-    return;
+    throw createAppError(
+      "Refresh token is missing from requests cookies",
+      StatusCodes.UNAUTHORIZED,
+    );
   }
   const refreshTokenJWTPayloadResult = await jwtService.getJwtPayloadResult(
     refreshTokenFromClient,
@@ -21,8 +24,10 @@ export const refreshTokenValidityMiddleware = async (
   );
 
   if (!refreshTokenJWTPayloadResult) {
-    res.sendStatus(StatusCodes.UNAUTHORIZED);
-    return;
+    throw createAppError(
+      "Invalid or expired refresh token",
+      StatusCodes.UNAUTHORIZED,
+    );
   } else {
     const checkRefreshTokenIsBlacklisted =
       await authQueryRepository.findBlacklistedUserRefreshTokenById(
@@ -30,15 +35,21 @@ export const refreshTokenValidityMiddleware = async (
         refreshTokenFromClient,
       );
     if (checkRefreshTokenIsBlacklisted) {
-      await securityDevicesService.deleteOneSession(
+      await securityDevicesService.deleteSessionById(
         refreshTokenJWTPayloadResult.deviceId,
         refreshTokenJWTPayloadResult.userId,
       );
       res.clearCookie("refreshToken");
-      return res.sendStatus(StatusCodes.FORBIDDEN);
+      console.warn(
+        `🚨 [SECURITY BREACH]: Token reuse attempt! User ID: ${refreshTokenJWTPayloadResult.userId} | Device ID: ${refreshTokenJWTPayloadResult.deviceId}. Session revoked.`,
+      );
+      throw createAppError(
+        "Access denied due to security validation failure",
+        StatusCodes.FORBIDDEN,
+      );
     } else {
       req.userId = refreshTokenJWTPayloadResult.userId;
-      req.deviceId = refreshTokenJWTPayloadResult.deviceId;
+      req.currentDeviceId = refreshTokenJWTPayloadResult.deviceId;
       return next();
     }
   }
