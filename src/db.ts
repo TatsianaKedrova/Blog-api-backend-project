@@ -27,6 +27,11 @@ export const runDB = async () => {
     console.log("Connected successfully to mongo server");
     await mongoDB.command({ ping: 1 });
     console.log("Client connected");
+    await securityDevicesCollection.createIndex(
+      { refreshTokenExpirationDate: 1 },
+      { expireAfterSeconds: 0 },
+    );
+    console.log("TTL Index for securityDevices collection established");
   } catch (e) {
     console.log("Can't connect to DB: ", e);
     await client.close();

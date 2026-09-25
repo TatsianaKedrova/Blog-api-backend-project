@@ -3,3 +3,10 @@ workspace:
 cloudResources:
   globals:
     ../postman/globals/workspace.globals.yaml: 775355af-f5fb-429f-8a1a-0b64f773a9b9
+  collections:
+    ../postman/collections/comments-1: 16361323-d492bd74-1619-4157-9401-b66d00d5f362
+    ../postman/collections/posts-1: 16361323-10f33ba7-6bbd-48e0-8c50-398b38290ef9
+    ../postman/collections/blogs-1: 16361323-47a9b9fd-6607-41fc-bd7a-e512be92d310
+    ../postman/collections/auth-1: 16361323-9aca1ab9-6d27-48f5-b6de-43e2fa37d7f9
+    ../postman/collections/users-1: 16361323-0822fbba-3517-4812-81ff-fc3ed6872d84
+    ../postman/collections/securityDevices-1: 16361323-99902eb7-f970-4edc-839e-2421d98c0333

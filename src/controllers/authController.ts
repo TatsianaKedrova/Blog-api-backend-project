@@ -170,7 +170,20 @@ export const refreshToken = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
-  await authService.placeRefreshTokenToBlacklist(refreshToken, req.userId);
+  const userId = req.userId;
+  const currentDeviceId = req.currentDeviceId;
+  await authService.placeRefreshTokenToBlacklist(refreshToken, userId);
+  const isSessionDeleted = await securityDevicesService.deleteSessionById(
+    currentDeviceId,
+    userId,
+  );
   res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+
+  if (!isSessionDeleted) {
+    throw createAppError(
+      "Session was not deleted or not found",
+      StatusCodes.NOT_FOUND,
+    );
+  }
   res.sendStatus(StatusCodes.NO_CONTENT);
 };

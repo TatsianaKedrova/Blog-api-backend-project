@@ -4,3 +4,8 @@ node_modules
 dist
 /rest.http
 .lock
+
+# Ignore Postman configuration and collection files
+.postman/
+*.postman_collection.json
+*.yaml
