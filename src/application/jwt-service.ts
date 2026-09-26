@@ -1,14 +1,18 @@
 import jwt, {
   JsonWebTokenError,
+  JwtPayload,
   NotBeforeError,
   TokenExpiredError,
 } from "jsonwebtoken";
 import { JwtPayloadResult } from "../dto/common/jwt/JwtPayloadResult";
-import { AccessTokenType, RefreshTokenType } from "../dto/authDTO/authDTO";
+import {
+  AccessTokenPayloadType,
+  RefreshTokenPayloadType,
+} from "../dto/authDTO/authDTO";
 
 export const jwtService = {
   async createJWT(
-    payload: AccessTokenType | RefreshTokenType,
+    payload: AccessTokenPayloadType | RefreshTokenPayloadType,
     secret: string,
     expiresIn: number,
   ): Promise<string> {
@@ -46,5 +50,11 @@ export const jwtService = {
         return null;
       } else return null;
     }
+  },
+  async getTokenCreationDate(token: string): Promise<Date> {
+    const decoded = jwt.decode(token) as JwtPayload;
+    const creationTimestamp = decoded.iat;
+    const refreshTokenCreationDate = new Date(creationTimestamp! * 1000);
+    return refreshTokenCreationDate;
   },
 };

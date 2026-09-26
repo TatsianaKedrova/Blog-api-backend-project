@@ -7,7 +7,7 @@ import {
   getInfoAboutUser,
   logIn,
   logout,
-  refreshToken,
+  refreshTokenFunction,
   registerUser,
   resendRegistrationEmail,
 } from "../controllers/authController";
@@ -45,6 +45,10 @@ authRouter.post(
   resendRegistrationEmail,
 );
 
-authRouter.post("/refresh-token", refreshTokenValidityMiddleware, refreshToken);
+authRouter.post(
+  "/refresh-token",
+  refreshTokenValidityMiddleware,
+  refreshTokenFunction,
+);
 
 authRouter.post("/logout", refreshTokenValidityMiddleware, logout);

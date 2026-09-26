@@ -17,6 +17,22 @@ export const securityDevicesCommandsRepository = {
       throw error;
     }
   },
+  async updateLastActiveDate(
+    deviceId: string,
+    refreshTokenCreationDate: Date,
+    userId: string,
+  ): Promise<boolean> {
+    try {
+      const isLastActiveTimeUpdated = await securityDevicesCollection.updateOne(
+        { _id: new ObjectId(deviceId), userId: new ObjectId(userId) },
+        { $set: { lastActiveDate: refreshTokenCreationDate } },
+      );
+      return isLastActiveTimeUpdated.matchedCount > 0;
+    } catch (error) {
+      console.log("System database error occurred");
+      throw error;
+    }
+  },
   async deleteSessionByDeviceAndUserId(
     deviceId: string,
     userId: string,

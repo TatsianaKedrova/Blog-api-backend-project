@@ -144,20 +144,19 @@ export const resendRegistrationEmail = async (
 };
 
 //@desc Generate new pair of access and refresh tokens (in cookie client must send correct refresh token that will be revoked after refreshing)
-export const refreshToken = async (req: Request, res: Response) => {
-  const refreshTokenFromClient = req.cookies.refreshToken;
-
-  const isBlacklisted = await authService.placeRefreshTokenToBlacklist(
-    refreshTokenFromClient,
-    req.userId,
-  );
-  if (!isBlacklisted) {
-    return res.sendStatus(StatusCodes.UNAUTHORIZED);
-  }
-  const { accessToken, refreshToken } = await create_access_refresh_tokens(
-    req.userId,
-    req.currentDeviceId,
-  );
+export const refreshTokenFunction = async (
+  req: Request,
+  res: Response<{ accessToken: string }>,
+) => {
+  const oldRefreshToken = req.cookies.refreshToken;
+  const userId = req.userId;
+  const deviceId = req.currentDeviceId;
+  const { accessToken, refreshToken } =
+    await securityDevicesService.refreshSession(
+      oldRefreshToken,
+      userId,
+      deviceId,
+    );
   const isProduction = process.env.NODE_ENV == "production";
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
