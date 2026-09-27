@@ -7,20 +7,12 @@ import { UserNotRegisteredField } from "../../dto/common/MongoErrorTypes";
 
 export const usersCommandsRepository = {
   async createNewUser(
-    newUser: UserDBType
+    newUser: UserDBType,
   ): Promise<UserViewModel | UserNotRegisteredField> {
     try {
-      await usersCollection.createIndex(
-        { "accountData.email": 1 },
-        { name: "email", unique: true }
-      );
-      await usersCollection.createIndex(
-        { "accountData.login": 1 },
-        { name: "login", unique: true }
-      );
       const createdUser = await usersCollection.insertOne(newUser);
       const newUserFound = await this.findUserById(
-        createdUser.insertedId.toString()
+        createdUser.insertedId.toString(),
       );
       return transformUsersResponse(newUserFound!);
     } catch (err) {
@@ -50,14 +42,14 @@ export const usersCommandsRepository = {
           "emailConfirmation.confirmationCode": null,
           "emailConfirmation.expirationDate": null,
         },
-      }
+      },
     );
     return updateIsUserConfirmed.modifiedCount === 1;
   },
   async updateUserCodeAndExpirationDate(
     _id: ObjectId,
     code: string,
-    expirationDate: string
+    expirationDate: string,
   ): Promise<boolean> {
     const findUser = usersCommandsRepository.findUserById(_id.toString());
     if (!findUser) return false;
@@ -68,7 +60,7 @@ export const usersCommandsRepository = {
           "emailConfirmation.confirmationCode": code,
           "emailConfirmation.expirationDate": expirationDate,
         },
-      }
+      },
     );
     return updateIsUserConfirmed.modifiedCount === 1;
   },
