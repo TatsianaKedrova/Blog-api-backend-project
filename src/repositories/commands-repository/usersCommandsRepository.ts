@@ -11,10 +11,10 @@ export const usersCommandsRepository = {
   ): Promise<UserViewModel | UserNotRegisteredField> {
     try {
       const createdUser = await usersCollection.insertOne(newUser);
-      const newUserFound = await this.findUserById(
-        createdUser.insertedId.toString(),
-      );
-      return transformUsersResponse(newUserFound!);
+      return transformUsersResponse({
+        _id: createdUser.insertedId,
+        ...newUser,
+      });
     } catch (err) {
       const error = err as MongoServerError;
       return defineFieldMongoError(error.message);
