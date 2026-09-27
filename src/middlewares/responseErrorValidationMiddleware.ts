@@ -14,7 +14,8 @@ export const responseErrorValidationMiddleware = (
     return res
       .status(StatusCodes.BAD_REQUEST)
       .send(responseErrorFunction(errors));
-  } else {
-    return next();
-  }
+  } 
+
+  return next();
+  
 };

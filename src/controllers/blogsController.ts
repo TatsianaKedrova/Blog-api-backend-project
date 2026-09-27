@@ -10,7 +10,7 @@ import {
 } from "../dto/common/RequestModels";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
-import { blogsService } from "../domain/blogs-service";
+import { blogsService } from "../service/blogs-service";
 import { QueryParamsWithSearch } from "../dto/common/SortPaginatorQueryParamsType";
 import { Paginator } from "../dto/common/PaginatorModel";
 import {

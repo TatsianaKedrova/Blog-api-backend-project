@@ -3,14 +3,14 @@ import { DeviceViewModel } from "../dto/securityDevicesDTO/securityDevicesDTO";
 import { StatusCodes } from "http-status-codes";
 import { securityDevicesQueryRepository } from "../repositories/query-repository/securityDevicesQueryRepository";
 import { RequestWithURIParam } from "../dto/common/RequestModels";
-import { securityDevicesService } from "../domain/securityDevices-service";
+import { securityDevicesService } from "../service/securityDevices-service";
 import { createAppError } from "../utils/appErrors";
 
 export const getAllActiveSessions = async (
   req: Request,
-  res: Response<DeviceViewModel[] | undefined>,
+  res: Response<DeviceViewModel[]>,
 ) => {
-  const allActiveSessions: DeviceViewModel[] | undefined =
+  const allActiveSessions: DeviceViewModel[] =
     await securityDevicesQueryRepository.getActiveSessions(req.userId);
   res.status(StatusCodes.OK).send(allActiveSessions);
 };

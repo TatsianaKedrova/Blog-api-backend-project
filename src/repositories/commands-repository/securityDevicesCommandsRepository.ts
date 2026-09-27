@@ -58,12 +58,6 @@ export const securityDevicesCommandsRepository = {
       userId: new ObjectId(userId),
       deviceId: { $ne: currentDeviceId },
     });
-    if (!result.acknowledged) {
-      throw createAppError(
-        "Database write operation was not acknowledged",
-        StatusCodes.INTERNAL_SERVER_ERROR,
-      );
-    }
     return result.deletedCount > 0;
   },
 };

@@ -1,6 +1,6 @@
 import { getCurrentUserInfo } from "./../utils/auth-utils/getCurrentUserInfo";
 import { StatusCodes } from "http-status-codes";
-import { usersService } from "../domain/users-service";
+import { usersService } from "../service/users-service";
 import {
   LoginInputModel,
   MeViewModel,
@@ -11,7 +11,7 @@ import { RequestBodyModel } from "../dto/common/RequestModels";
 import { Request, Response } from "express";
 import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import { UserInputModel } from "../dto/usersDTO/usersDTO";
-import { authService } from "../domain/auth-service";
+import { authService } from "../service/auth-service";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
 import { UserAlreadyExistsError } from "../utils/errors-utils/registration-errors/UserAlreadyExistsError";
@@ -22,10 +22,10 @@ import { UserIsConfirmedError } from "../utils/errors-utils/registration-confirm
 import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration-confirmation-errors/ConfirmationCodeExpiredError";
 import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
-import { securityDevicesService } from "../domain/securityDevices-service";
+import { securityDevicesService } from "../service/securityDevices-service";
 import { getDeviceTitle } from "../utils/securityDevices-utils/getDeviceTitle";
 import { createAppError } from "../utils/appErrors";
-import { jwtService } from "../application/jwt-service";
+import { jwtService } from "../globals/jwt-service";
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,

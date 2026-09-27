@@ -1,8 +1,8 @@
-import { authCommandsRepository } from "./../repositories/commands-repository/authCommandsRepository";
-import { usersCommandsRepository } from "./../repositories/commands-repository/usersCommandsRepository";
+import { authCommandsRepository } from "../repositories/commands-repository/authCommandsRepository";
+import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import bcrypt from "bcryptjs";
 import { UserDBType, UserInputModel } from "../dto/usersDTO/usersDTO";
-import { emailManager } from "../managers/email-manager";
+import { emailManager } from "../globals/email/email-manager";
 import { usersService } from "./users-service";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { TFieldError } from "../dto/common/ErrorResponseModel";
@@ -25,7 +25,7 @@ import {
 } from "../dto/authDTO/authDTO";
 import { createAppError } from "../utils/appErrors";
 import { StatusCodes } from "http-status-codes";
-import { jwtService } from "../application/jwt-service";
+import { jwtService } from "../globals/jwt-service";
 import { securityDevicesService } from "./securityDevices-service";
 
 export const authService = {

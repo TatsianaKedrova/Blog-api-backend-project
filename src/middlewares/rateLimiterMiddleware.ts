@@ -1,0 +1,1 @@
+import rateLimit from 'express-rateLimit'

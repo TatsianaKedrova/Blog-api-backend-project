@@ -12,7 +12,7 @@ import {
 } from "../dto/usersDTO/usersDTO";
 import { Response } from "express";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
-import { usersService } from "../domain/users-service";
+import { usersService } from "../service/users-service";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
