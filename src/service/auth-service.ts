@@ -147,7 +147,7 @@ export const authService = {
       );
     }
     const { accessToken, refreshToken } =
-      await jwtService.create_access_refresh_tokens_response_model(
+      await jwtService.createAccessRefreshTokensResponse(
         userId,
         currentDeviceId,
       );

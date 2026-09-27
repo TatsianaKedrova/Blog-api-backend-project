@@ -24,7 +24,7 @@ export const jwtService = {
     });
     return token;
   },
-  async create_access_refresh_tokens_response_model(
+  async createAccessRefreshTokensResponse(
     userId: string,
     deviceId: string,
   ): Promise<TokenPairResponse> {

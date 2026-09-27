@@ -49,7 +49,7 @@ export const logIn = async (
     userId,
   );
   const { accessToken, refreshToken } =
-    await jwtService.create_access_refresh_tokens_response_model(
+    await jwtService.createAccessRefreshTokensResponse(
       user._id.toString(),
       deviceId,
     );
