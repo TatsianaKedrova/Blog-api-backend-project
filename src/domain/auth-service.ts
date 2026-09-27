@@ -18,6 +18,15 @@ import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
 import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
 import { ObjectId } from "mongodb";
+import {
+  AccessToken,
+  RefreshToken,
+  TokenPairResponse,
+} from "../dto/authDTO/authDTO";
+import { createAppError } from "../utils/appErrors";
+import { StatusCodes } from "http-status-codes";
+import { jwtService } from "../application/jwt-service";
+import { securityDevicesService } from "./securityDevices-service";
 
 export const authService = {
   async registerNewUser(
@@ -121,5 +130,44 @@ export const authService = {
         userId,
       );
     return refreshTokenToBlacklist;
+  },
+  async refreshSession(
+    refreshTokenToBeUpdated: string,
+    userId: string,
+    currentDeviceId: string,
+  ): Promise<TokenPairResponse> {
+    const isPlacedToBlacklist = await authService.placeRefreshTokenToBlacklist(
+      refreshTokenToBeUpdated,
+      userId,
+    );
+    if (!isPlacedToBlacklist) {
+      throw createAppError(
+        "Token was not blacklisted",
+        StatusCodes.UNAUTHORIZED,
+      );
+    }
+    const { accessToken, refreshToken } =
+      await jwtService.create_access_refresh_tokens_response_model(
+        userId,
+        currentDeviceId,
+      );
+    const newTokenCreationDate =
+      await jwtService.getTokenCreationDate(refreshToken);
+    const deviceLastActivityDateUpdated =
+      await securityDevicesService.updateLastActiveDate(
+        currentDeviceId,
+        newTokenCreationDate,
+        userId,
+      );
+    if (!deviceLastActivityDateUpdated) {
+      throw createAppError(
+        "Security Device last activity date was not updated",
+        StatusCodes.NOT_FOUND,
+      );
+    }
+    return {
+      accessToken: accessToken as AccessToken,
+      refreshToken: refreshToken as RefreshToken,
+    };
   },
 };

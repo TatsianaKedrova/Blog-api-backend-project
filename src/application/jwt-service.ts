@@ -6,8 +6,11 @@ import jwt, {
 } from "jsonwebtoken";
 import { JwtPayloadResult } from "../dto/common/jwt/JwtPayloadResult";
 import {
+  AccessToken,
   AccessTokenPayloadType,
+  RefreshToken,
   RefreshTokenPayloadType,
+  TokenPairResponse,
 } from "../dto/authDTO/authDTO";
 
 export const jwtService = {
@@ -20,6 +23,25 @@ export const jwtService = {
       expiresIn,
     });
     return token;
+  },
+  async create_access_refresh_tokens_response_model(
+    userId: string,
+    deviceId: string,
+  ): Promise<TokenPairResponse> {
+    const accessToken = await jwtService.createJWT(
+      { userId },
+      process.env.ACCESS_TOKEN_SECRET as string,
+      30,
+    );
+    const refreshToken = await jwtService.createJWT(
+      { userId, deviceId },
+      process.env.REFRESH_TOKEN_SECRET as string,
+      1800,
+    );
+    return {
+      accessToken: accessToken as AccessToken,
+      refreshToken: refreshToken as RefreshToken,
+    };
   },
   async getJwtPayloadResult(
     token: string,

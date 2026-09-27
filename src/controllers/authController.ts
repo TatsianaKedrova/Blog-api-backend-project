@@ -22,10 +22,10 @@ import { UserIsConfirmedError } from "../utils/errors-utils/registration-confirm
 import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration-confirmation-errors/ConfirmationCodeExpiredError";
 import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
-import { create_access_refresh_tokens } from "../utils/auth-utils/create_Access_Refresh_Tokens";
 import { securityDevicesService } from "../domain/securityDevices-service";
 import { getDeviceTitle } from "../utils/securityDevices-utils/getDeviceTitle";
 import { createAppError } from "../utils/appErrors";
+import { jwtService } from "../application/jwt-service";
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
@@ -48,10 +48,11 @@ export const logIn = async (
     deviceTitle,
     userId,
   );
-  const { accessToken, refreshToken } = await create_access_refresh_tokens(
-    user._id.toString(),
-    deviceId,
-  );
+  const { accessToken, refreshToken } =
+    await jwtService.create_access_refresh_tokens_response_model(
+      user._id.toString(),
+      deviceId,
+    );
   const isProduction = process.env.NODE_ENV === "production";
 
   res.cookie("refreshToken", refreshToken, {
@@ -151,12 +152,11 @@ export const refreshTokenFunction = async (
   const oldRefreshToken = req.cookies.refreshToken;
   const userId = req.userId;
   const deviceId = req.currentDeviceId;
-  const { accessToken, refreshToken } =
-    await securityDevicesService.refreshSession(
-      oldRefreshToken,
-      userId,
-      deviceId,
-    );
+  const { accessToken, refreshToken } = await authService.refreshSession(
+    oldRefreshToken,
+    userId,
+    deviceId,
+  );
   const isProduction = process.env.NODE_ENV == "production";
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
