@@ -15,7 +15,15 @@ export const getAllActiveSessions = async (
   res.status(StatusCodes.OK).send(allActiveSessions);
 };
 
-export const terminateAllOtherSessions = () => {};
+export const terminateAllOtherSessions = async (
+  req: Request,
+  res: Response,
+) => {
+  const userId = req.userId;
+  const currentDeviceId = req.currentDeviceId;
+  await securityDevicesService.deleteAllOtherSessions(userId, currentDeviceId);
+  res.sendStatus(StatusCodes.NO_CONTENT);
+};
 
 export const terminateSessionById = async (
   req: RequestWithURIParam<{ deviceId: string }>,

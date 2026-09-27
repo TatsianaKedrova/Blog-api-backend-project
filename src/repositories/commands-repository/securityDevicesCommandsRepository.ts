@@ -1,6 +1,8 @@
 import { ObjectId } from "mongodb";
 import { securityDevicesCollection } from "../../db";
 import { SessionDeviceDBType } from "../../dto/securityDevicesDTO/securityDevicesDTO";
+import { StatusCodes } from "http-status-codes";
+import { createAppError } from "../../utils/appErrors";
 
 export const securityDevicesCommandsRepository = {
   async createDeviceSession(
@@ -47,5 +49,21 @@ export const securityDevicesCommandsRepository = {
       console.error("Failed to delete device session:", error);
       throw error;
     }
+  },
+  async isAllOtherSessionsDeleted(
+    userId: string,
+    currentDeviceId: string,
+  ): Promise<boolean> {
+    const result = await securityDevicesCollection.deleteMany({
+      userId: new ObjectId(userId),
+      deviceId: { $ne: currentDeviceId },
+    });
+    if (!result.acknowledged) {
+      throw createAppError(
+        "Database write operation was not acknowledged",
+        StatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+    return result.deletedCount > 0;
   },
 };

@@ -30,6 +30,15 @@ export const securityDevicesService = {
       );
     return result;
   },
+  async deleteAllOtherSessions(
+    userId: string,
+    currentDeviceId: string,
+  ): Promise<void> {
+    await securityDevicesCommandsRepository.isAllOtherSessionsDeleted(
+      userId,
+      currentDeviceId,
+    );
+  },
   async updateLastActiveDate(
     deviceId: string,
     refreshTokenCreationDate: Date,
