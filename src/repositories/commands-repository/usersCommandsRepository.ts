@@ -1,9 +1,10 @@
-import { MongoServerError, ObjectId, WithId } from "mongodb";
+import { MongoServerError, ObjectId } from "mongodb";
 import { usersCollection } from "../../db";
 import { UserDBType, UserViewModel } from "../../dto/usersDTO/usersDTO";
 import { transformUsersResponse } from "../../utils/usersUtils/transformUsersResponse";
 import { defineFieldMongoError } from "../../utils/errors-utils/defineFieldMongoError";
 import { UserNotRegisteredField } from "../../dto/common/MongoErrorTypes";
+import { usersQueryRepository } from "../query-repository/usersQueryRepository";
 
 export const usersCommandsRepository = {
   async createNewUser(
@@ -20,12 +21,8 @@ export const usersCommandsRepository = {
       return defineFieldMongoError(error.message);
     }
   },
-  async findUserById(id: string): Promise<WithId<UserDBType> | null> {
-    const foundUser = await usersCollection.findOne({ _id: new ObjectId(id) });
-    return foundUser;
-  },
   async deleteUser(id: string): Promise<boolean> {
-    const user = await this.findUserById(id);
+    const user = await usersQueryRepository.findUserById(id);
     if (!user) return false;
 
     const deleteResult = await usersCollection.deleteOne({
@@ -51,7 +48,7 @@ export const usersCommandsRepository = {
     code: string,
     expirationDate: string,
   ): Promise<boolean> {
-    const findUser = usersCommandsRepository.findUserById(_id.toString());
+    const findUser = usersQueryRepository.findUserById(_id.toString());
     if (!findUser) return false;
     const updateIsUserConfirmed = await usersCollection.updateMany(
       { _id },
