@@ -15,12 +15,14 @@ import { accessTokenValidityMiddleware } from "../middlewares/accessTokenValidit
 import { createUserValidator } from "../utils/usersUtils/users-validator";
 import { confirmationCodeValidator } from "../utils/usersUtils/confirmationCodeValidator";
 import { emailValidator } from "../utils/usersUtils/emailValidator";
+import { rateLimiterMiddleware } from "../middlewares/rateLimiterMiddleware";
 export const authRouter = express.Router({});
 
 authRouter.post(
   "/login",
   authValidator,
   responseErrorValidationMiddleware,
+  rateLimiterMiddleware,
   logIn,
 );
 
@@ -30,18 +32,21 @@ authRouter.post(
   "/registration",
   createUserValidator,
   responseErrorValidationMiddleware,
+  rateLimiterMiddleware,
   registerUser,
 );
 authRouter.post(
   "/registration-confirmation",
   confirmationCodeValidator,
   responseErrorValidationMiddleware,
+  rateLimiterMiddleware,
   confirmRegistration,
 );
 authRouter.post(
   "/registration-email-resending",
   emailValidator,
   responseErrorValidationMiddleware,
+  rateLimiterMiddleware,
   resendRegistrationEmail,
 );
 
