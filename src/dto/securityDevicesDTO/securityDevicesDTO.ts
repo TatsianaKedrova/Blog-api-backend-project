@@ -16,7 +16,7 @@ export type SessionDeviceDBType = {
   title: string;
 };
 
-export type ClientCallingApi = {
+export type ApiCalls = {
   ip: string;
   url: string;
   date: Date;
