@@ -26,10 +26,10 @@ export const terminateAllOtherSessions = async (
 };
 
 export const terminateSessionById = async (
-  req: RequestWithURIParam<{ deviceId: string }>,
+  req: RequestWithURIParam<{ id: string }>,
   res: Response,
 ) => {
-  const deviceIdToDelete = req.params.deviceId;
+  const deviceIdToDelete = req.params.id;
   const userId = req.userId;
   const currentDeviceId = req.currentDeviceId;
   if (currentDeviceId === deviceIdToDelete) {

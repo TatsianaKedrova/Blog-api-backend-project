@@ -26,5 +26,6 @@ export const rateLimiterMiddleware = async (
       StatusCodes.TOO_MANY_REQUESTS,
     );
   }
+  console.log("Request allowed");
   next();
 };

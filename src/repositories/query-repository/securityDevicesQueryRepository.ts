@@ -7,23 +7,18 @@ import {
 
 export const securityDevicesQueryRepository = {
   async getActiveSessions(userId: string): Promise<DeviceViewModel[] | []> {
-    try {
-      const allActiveSessions = await securityDevicesCollection
-        .find({ userId: new ObjectId(userId) })
-        .toArray();
-      return allActiveSessions.map((session) => ({
-        ip: session.ip,
-        title: session.title,
-        lastActiveDate: session.lastActiveDate.toISOString(),
-        deviceId: session._id.toString(),
-      }));
-    } catch (error) {
-      console.error(
-        `Failed to fetch active sessions for user ${userId}:`,
-        error,
-      );
+    const allActiveSessions = await securityDevicesCollection
+      .find({ userId: new ObjectId(userId) })
+      .toArray();
+    if (allActiveSessions.length === 0) {
       return [];
     }
+    return allActiveSessions.map((session) => ({
+      ip: session.ip,
+      title: session.title,
+      lastActiveDate: session.lastActiveDate.toISOString(),
+      deviceId: session._id.toString(),
+    }));
   },
   async findSessionByDeviceId(
     deviceId: string,
