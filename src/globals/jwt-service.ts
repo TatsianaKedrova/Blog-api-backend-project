@@ -31,12 +31,12 @@ export const jwtService = {
     const accessToken = await jwtService.createJWT(
       { userId },
       process.env.ACCESS_TOKEN_SECRET as string,
-      30,
+      100,
     );
     const refreshToken = await jwtService.createJWT(
       { userId, deviceId },
       process.env.REFRESH_TOKEN_SECRET as string,
-      1800,
+      2000,
     );
     return {
       accessToken: accessToken as AccessToken,
