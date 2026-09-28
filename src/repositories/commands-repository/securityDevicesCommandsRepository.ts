@@ -3,13 +3,8 @@ import { securityDevicesCollection } from "../../db";
 import { SessionDeviceDBType } from "../../dto/securityDevicesDTO/securityDevicesDTO";
 
 export const securityDevicesCommandsRepository = {
-  async createDeviceSession(
-    sessionData: Omit<SessionDeviceDBType, "_id">,
-  ): Promise<string> {
-    const result = await securityDevicesCollection.insertOne({
-      _id: new ObjectId(),
-      ...sessionData,
-    });
+  async createDeviceSession(sessionData: SessionDeviceDBType): Promise<string> {
+    const result = await securityDevicesCollection.insertOne(sessionData);
     return result.insertedId.toString();
   },
   async updateLastActiveDate(
@@ -39,7 +34,7 @@ export const securityDevicesCommandsRepository = {
   ): Promise<boolean> {
     const result = await securityDevicesCollection.deleteMany({
       userId: new ObjectId(userId),
-      deviceId: { $ne: currentDeviceId },
+      _id: { $ne: new ObjectId(currentDeviceId) },
     });
     return result.deletedCount > 0;
   },

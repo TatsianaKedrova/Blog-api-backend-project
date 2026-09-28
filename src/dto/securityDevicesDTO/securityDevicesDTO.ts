@@ -7,8 +7,8 @@ export type DeviceViewModel = {
   deviceId: string; //Id of connected device session
 };
 
+//In DB the full type will be <WithId<SessionDeviceDBType>>
 export type SessionDeviceDBType = {
-  _id: ObjectId;
   userId: ObjectId;
   lastActiveDate: Date;
   refreshTokenExpirationDate: Date;
