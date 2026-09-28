@@ -1,6 +1,6 @@
 import { getCurrentUserInfo } from "./../utils/auth-utils/getCurrentUserInfo";
 import { StatusCodes } from "http-status-codes";
-import { usersService } from "../service/users-service";
+import { usersService } from "../service/usersService";
 import {
   LoginInputModel,
   MeViewModel,
@@ -10,7 +10,7 @@ import {
 import { RequestBodyModel } from "../dto/common/RequestModels";
 import { Request, Response } from "express";
 import { UserInputModel } from "../dto/usersDTO/usersDTO";
-import { authService } from "../service/auth-service";
+import { authService } from "../service/authService";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
 import { UserAlreadyExistsError } from "../utils/errors-utils/registration-errors/UserAlreadyExistsError";
@@ -21,11 +21,11 @@ import { UserIsConfirmedError } from "../utils/errors-utils/registration-confirm
 import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration-confirmation-errors/ConfirmationCodeExpiredError";
 import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
-import { securityDevicesService } from "../service/securityDevices-service";
+import { securityDevicesService } from "../service/securityDevicesService";
 import { getDeviceTitle } from "../utils/securityDevices-utils/getDeviceTitle";
 import { createAppError } from "../utils/appErrors";
-import { jwtService } from "../globals/jwt-service";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
+import { getCookieOptions } from "../utils/auth-utils/cookie";
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
@@ -38,29 +38,15 @@ export const logIn = async (
   if (!user) {
     throw createAppError("Invalid login credentials", StatusCodes.UNAUTHORIZED);
   }
-
-  //Getting IP and Device name during LOGIN
   const clientIP = req.ip || "127.0.0.1";
   const deviceTitle = getDeviceTitle(req.headers["user-agent"]);
   const userId = user._id.toString();
-  const deviceId = await securityDevicesService.createDeviceSession(
+  const { accessToken, refreshToken } = await authService.loginAndSessionCreate(
     clientIP,
     deviceTitle,
     userId,
   );
-  const { accessToken, refreshToken } =
-    await jwtService.createAccessRefreshTokensResponse(
-      user._id.toString(),
-      deviceId,
-    );
-  const isProduction = process.env.NODE_ENV === "production";
-
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: "lax",
-    maxAge: 30 * 60 * 1000,
-  });
+  res.cookie("refreshToken", refreshToken, getCookieOptions());
   return res.status(StatusCodes.OK).send({ accessToken });
 };
 
@@ -157,13 +143,7 @@ export const refreshTokenFunction = async (
     userId,
     deviceId,
   );
-  const isProduction = process.env.NODE_ENV == "production";
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: "lax",
-    maxAge: 30 * 60 * 1000,
-  });
+  res.cookie("refreshToken", refreshToken, getCookieOptions());
   return res.status(StatusCodes.OK).send({ accessToken });
 };
 

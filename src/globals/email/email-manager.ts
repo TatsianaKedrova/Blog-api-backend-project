@@ -1,9 +1,9 @@
 import { WithId } from "mongodb";
 import { UserDBType } from "../../dto/usersDTO/usersDTO";
 import { htmlEmailConfirmationCodeLetter } from "../../utils/html-utils/html-email-confirmation-code-letter";
-import { createConfirmationCode } from "../../utils/auth-utils/create-user-confirmation-code";
+import { createConfirmationCode } from "../../utils/auth-utils/createUserConfirmationCode";
 import { usersCommandsRepository } from "../../repositories/commands-repository/usersCommandsRepository";
-import { createCodeExpirationDate } from "../../utils/auth-utils/create-code-expiration-date";
+import { createCodeExpirationDate } from "../../utils/auth-utils/createCodeExpirationDate";
 import { usersQueryRepository } from "../../repositories/query-repository/usersQueryRepository";
 import { emailAdapter } from "./email-adapter";
 

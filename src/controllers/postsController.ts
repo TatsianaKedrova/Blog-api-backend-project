@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { PostInputModel, PostViewModel } from "../dto/postsDTO/PostModel";
-import { postsService } from "../service/posts-service";
+import { postsService } from "../service/postsService";
 import {
   RequestBodyModel,
   RequestQueryParamsModel,

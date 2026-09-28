@@ -6,7 +6,7 @@ import { usersQueryRepository } from "../repositories/query-repository/usersQuer
 import { ObjectId, WithId } from "mongodb";
 import { UserAlreadyExistsError } from "../utils/errors-utils/registration-errors/UserAlreadyExistsError";
 import { TFieldError } from "../dto/common/ErrorResponseModel";
-import { authService } from "./auth-service";
+import { authService } from "./authService";
 
 export const usersService = {
   async createUser(

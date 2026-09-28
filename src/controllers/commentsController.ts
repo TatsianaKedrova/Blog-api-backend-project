@@ -10,7 +10,7 @@ import {
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { commentsQueryRepository } from "../repositories/query-repository/commentsQueryRepository";
 import { StatusCodes } from "http-status-codes";
-import { commentsService } from "../service/comments-service";
+import { commentsService } from "../service/commentsService";
 
 export const getCommentById = async (
   req: RequestWithURIParam<URIParamsRequest>,

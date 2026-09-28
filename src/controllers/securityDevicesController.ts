@@ -3,7 +3,7 @@ import { DeviceViewModel } from "../dto/securityDevicesDTO/securityDevicesDTO";
 import { StatusCodes } from "http-status-codes";
 import { securityDevicesQueryRepository } from "../repositories/query-repository/securityDevicesQueryRepository";
 import { RequestWithURIParam } from "../dto/common/RequestModels";
-import { securityDevicesService } from "../service/securityDevices-service";
+import { securityDevicesService } from "../service/securityDevicesService";
 import { createAppError } from "../utils/appErrors";
 
 export const getAllActiveSessions = async (

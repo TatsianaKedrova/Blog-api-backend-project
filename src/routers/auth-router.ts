@@ -1,7 +1,7 @@
 import { refreshTokenValidityMiddleware } from "../middlewares/refreshTokenValidityMiddleware";
 import express from "express";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
-import { authValidator } from "../utils/auth-utils/auth-validator";
+import { authValidator } from "../utils/auth-utils/authValidator";
 import {
   confirmRegistration,
   getInfoAboutUser,

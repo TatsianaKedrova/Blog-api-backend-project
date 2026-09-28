@@ -3,12 +3,12 @@ import { usersCommandsRepository } from "../repositories/commands-repository/use
 import bcrypt from "bcryptjs";
 import { UserDBType, UserInputModel } from "../dto/usersDTO/usersDTO";
 import { emailManager } from "../globals/email/email-manager";
-import { usersService } from "./users-service";
+import { usersService } from "./usersService";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { TFieldError } from "../dto/common/ErrorResponseModel";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
-import { createConfirmationCode } from "../utils/auth-utils/create-user-confirmation-code";
-import { createCodeExpirationDate } from "../utils/auth-utils/create-code-expiration-date";
+import { createConfirmationCode } from "../utils/auth-utils/createUserConfirmationCode";
+import { createCodeExpirationDate } from "../utils/auth-utils/createCodeExpirationDate";
 import { UserAlreadyExistsError } from "../utils/errors-utils/registration-errors/UserAlreadyExistsError";
 import { RegistrationError } from "../utils/errors-utils/registration-errors/RegistrationError";
 import { IncorrectConfirmationCodeError } from "../utils/errors-utils/registration-confirmation-errors/IncorrectConfirmationCodeError";
@@ -26,7 +26,7 @@ import {
 import { createAppError } from "../utils/appErrors";
 import { StatusCodes } from "http-status-codes";
 import { jwtService } from "../globals/jwt-service";
-import { securityDevicesService } from "./securityDevices-service";
+import { securityDevicesService } from "./securityDevicesService";
 
 export const authService = {
   async registerNewUser(
@@ -112,6 +112,24 @@ export const authService = {
       return new UpdateUserError("registration-email-resending");
     }
     return user.accountData.email;
+  },
+  async loginAndSessionCreate(
+    clientIP: string,
+    deviceTitle: string,
+    userId: string,
+  ): Promise<TokenPairResponse> {
+    //Getting IP and Device name during LOGIN
+    const deviceId = await securityDevicesService.createDeviceSession(
+      clientIP,
+      deviceTitle,
+      userId,
+    );
+    const { accessToken, refreshToken } =
+      await jwtService.createAccessRefreshTokensResponse(userId, deviceId);
+    return {
+      accessToken: accessToken as AccessToken,
+      refreshToken: refreshToken as RefreshToken,
+    };
   },
   async createRefreshTokenBlacklistForUser(
     userId: ObjectId,
