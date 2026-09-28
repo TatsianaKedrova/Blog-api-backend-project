@@ -1,10 +1,11 @@
 import { WithId } from "mongodb";
-import { emailAdapter } from "../adapters/email-adapter";
 import { UserDBType } from "../../dto/usersDTO/usersDTO";
 import { htmlEmailConfirmationCodeLetter } from "../../utils/html-utils/html-email-confirmation-code-letter";
 import { createConfirmationCode } from "../../utils/auth-utils/create-user-confirmation-code";
 import { usersCommandsRepository } from "../../repositories/commands-repository/usersCommandsRepository";
 import { createCodeExpirationDate } from "../../utils/auth-utils/create-code-expiration-date";
+import { usersQueryRepository } from "../../repositories/query-repository/usersQueryRepository";
+import { emailAdapter } from "./email-adapter";
 
 export const emailManager = {
   async resendEmailWithCode(user: WithId<UserDBType>): Promise<boolean> {
@@ -20,7 +21,7 @@ export const emailManager = {
     if (!updatedUser) {
       return false;
     } else {
-      const foundUpdatedUser = await usersCommandsRepository.findUserById(
+      const foundUpdatedUser = await usersQueryRepository.findUserById(
         user._id.toString(),
       );
       if (!foundUpdatedUser) return false;

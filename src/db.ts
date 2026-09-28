@@ -31,14 +31,16 @@ export const runDB = async () => {
       { refreshTokenExpirationDate: 1 },
       { expireAfterSeconds: 0 },
     );
-    // --- Security Devices Indexes ---
     console.log("TTL Index for securityDevices collection established");
+
+    // --- Security Devices Indexes ---
     await securityDevicesCollection.createIndex({
       userId: 1,
       refreshTokenExpirationDate: -1,
     });
-    // --- Unique User Indexes ---
     console.log("Compound query index for user device lookup established");
+
+    // --- Unique User Indexes ---
     await usersCollection.createIndex(
       { "accountData.email": 1 },
       { name: "email", unique: true },

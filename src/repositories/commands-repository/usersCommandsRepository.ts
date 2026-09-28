@@ -13,8 +13,8 @@ export const usersCommandsRepository = {
     try {
       const createdUser = await usersCollection.insertOne(newUser);
       return transformUsersResponse({
-        _id: createdUser.insertedId,
         ...newUser,
+        _id: createdUser.insertedId,
       });
     } catch (err) {
       const error = err as MongoServerError;

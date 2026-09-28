@@ -9,7 +9,6 @@ import {
 } from "../dto/authDTO/authDTO";
 import { RequestBodyModel } from "../dto/common/RequestModels";
 import { Request, Response } from "express";
-import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import { UserInputModel } from "../dto/usersDTO/usersDTO";
 import { authService } from "../service/auth-service";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
@@ -26,6 +25,7 @@ import { securityDevicesService } from "../service/securityDevices-service";
 import { getDeviceTitle } from "../utils/securityDevices-utils/getDeviceTitle";
 import { createAppError } from "../utils/appErrors";
 import { jwtService } from "../globals/jwt-service";
+import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
@@ -68,7 +68,7 @@ export const getInfoAboutUser = async (
   req: Request,
   res: Response<MeViewModel>,
 ) => {
-  const foundUser = await usersCommandsRepository.findUserById(req.userId);
+  const foundUser = await usersQueryRepository.findUserById(req.userId);
   if (foundUser) {
     const currentUser = getCurrentUserInfo(foundUser);
     res.status(StatusCodes.OK).send(currentUser);
