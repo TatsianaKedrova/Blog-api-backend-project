@@ -58,5 +58,5 @@ export const terminateSessionById = async (
       StatusCodes.FORBIDDEN,
     );
   }
-  res.status(StatusCodes.NO_CONTENT);
+  res.sendStatus(StatusCodes.NO_CONTENT);
 };
