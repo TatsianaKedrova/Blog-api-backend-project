@@ -3,13 +3,13 @@
   "name": "backend-project",
   "functions": {
     "src/index.ts": {
-      "runtime": "@vercel/node"
+      "runtime": "nodejs"
     }
   },
   "routes": [
     {
-      "source": "/(.*)",
-      "destination": "src/index.ts"
+      "src": "/(.*)",
+      "dest": "src/index.ts"
     }
   ]
 }
