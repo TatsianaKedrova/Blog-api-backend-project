@@ -5,7 +5,14 @@ export const testingRouter = express.Router({});
 
 //TODO REMOVE ALL COURSES
 testingRouter.delete("/all-data", async (req: Request, res: Response) => {
-  const result = await mongoDB.collections();
-  result.map((collection) => collection.deleteMany({}));
-  res.sendStatus(StatusCodes.NO_CONTENT);
+  const collections = await mongoDB.collections();
+  
+  // 1. Gather all individual collection clearing tasks
+  const deletionPromises = collections.map((collection) => collection.deleteMany({}));
+  
+  // 2. Wait until MongoDB has finished purging every table
+  await Promise.all(deletionPromises);
+  
+  // 3. FIX: Use .status().send() to ensure an entirely empty, valid 204 response body
+  return res.status(StatusCodes.NO_CONTENT).send();
 });
