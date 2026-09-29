@@ -9,6 +9,7 @@ export const securityDevicesQueryRepository = {
   async getActiveSessions(userId: string): Promise<DeviceViewModel[] | []> {
     const allActiveSessions = await securityDevicesCollection
       .find({ userId: new ObjectId(userId) })
+      .sort({ _id: 1 })
       .toArray();
     if (allActiveSessions.length === 0) {
       return [];

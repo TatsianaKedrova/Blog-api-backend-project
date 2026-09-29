@@ -4,6 +4,8 @@ import { StatusCodes } from "http-status-codes";
 import { beforeAll, beforeEach, describe, expect, test } from "@jest/globals";
 import { usersQueryRepository } from "../src/repositories/query-repository/usersQueryRepository";
 import { UserInputModel } from "./dto/usersDTO/usersDTO";
+import { jwtService } from "../src/globals/jwt-service";
+import { securityDevicesCollection } from "../src/db";
 
 const userAgents = {
   chromeWindows:
@@ -17,12 +19,12 @@ const userAgents = {
 let user1Payload: UserInputModel;
 let user2Payload: UserInputModel;
 
+//delay timer
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 describe("Security Devices E2E tests", () => {
   beforeAll(async () => {
     await request(app).delete("/api/testing/all-data");
-  });
-
-  beforeEach(async () => {
     //Create User 1
     user1Payload = {
       login: "baletro",
@@ -63,6 +65,10 @@ describe("Security Devices E2E tests", () => {
       .send({ code: confirmationCode2 });
 
     expect(confirmationResponse2.status).toBe(204);
+  });
+
+  beforeEach(async () => {
+    await securityDevicesCollection.deleteMany({});
   });
   //Create common User-Agent for these 2 users
   const commonUserAgent =
@@ -113,6 +119,8 @@ describe("Security Devices E2E tests", () => {
       .expect(StatusCodes.BAD_REQUEST);
   });
   test(`GET -> "/security/devices": login user 4 times from different browsers. Then get the list of devices`, async () => {
+    //to not have 429 error
+    await delay(10000);
     //First device sessinon
     const loginUser1ChromeWindows = await request(app)
       .post("/api/auth/login")
@@ -123,6 +131,17 @@ describe("Security Devices E2E tests", () => {
       })
       .expect(StatusCodes.OK);
     const chromeWindowsCookie = loginUser1ChromeWindows.headers["set-cookie"];
+    const firstCookieString = chromeWindowsCookie ? chromeWindowsCookie[0] : "";
+    const refreshToken = firstCookieString.split(";")[0].split("=")[1];
+
+    // 2. Decode the token payload using your app secret
+    const payload = await jwtService.getJwtPayloadResult(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET as string,
+    );
+
+    // 3. Extract your generated deviceId
+    const chromeWindowsDeviceId = payload?.deviceId;
     expect(chromeWindowsCookie).toBeDefined();
     //Second device session
     const loginUser1ChromeMac = await request(app)
@@ -159,13 +178,28 @@ describe("Security Devices E2E tests", () => {
       .expect(StatusCodes.OK);
     const safariIphoneCookie = loginUser1SafariIphone.headers["set-cookie"];
     expect(safariIphoneCookie).toBeDefined();
+
+    const allUserSessions = await request(app)
+      .get("/api/security/devices")
+      .set("Cookie", safariIphoneCookie)
+      .expect(StatusCodes.OK)
+      .expect((res) => {
+        expect(Array.isArray(res.body)).toBe(true);
+        expect(res.body.length).toEqual(4);
+      });
+    console.log("all user sessions: ", allUserSessions);
+    expect(allUserSessions.body[0].deviceId).toEqual(chromeWindowsDeviceId);
+    await request(app)
+      .delete(`/api/security/devices/${allUserSessions.body[2].deviceId}`)
+      .set("Cookie", safariIphoneCookie)
+      .expect(StatusCodes.NO_CONTENT);
     await request(app)
       .get("/api/security/devices")
       .set("Cookie", safariIphoneCookie)
       .expect(StatusCodes.OK)
       .expect((res) => {
         expect(Array.isArray(res.body)).toBe(true);
-        expect(res.body.length).toBeGreaterThan(3);
+        expect(res.body.length).toEqual(3);
       });
   });
 });
