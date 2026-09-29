@@ -1,8 +1,9 @@
 import request from "supertest";
 import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
-import { beforeAll, describe, expect, test } from "@jest/globals";
+import { beforeAll, beforeEach, describe, expect, test } from "@jest/globals";
 import { usersQueryRepository } from "../src/repositories/query-repository/usersQueryRepository";
+import { UserInputModel } from "./dto/usersDTO/usersDTO";
 
 const userAgents = {
   chromeWindows:
@@ -13,32 +14,27 @@ const userAgents = {
   chromeMac:
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
 };
-const user1 = {
-  login: "Stay",
-  email: "nansy@mainModule.org",
-  password: "kedrova",
-};
-
-const user2 = {
-  login: "Rose",
-  email: "rose@mainModule.org",
-  password: "kedrova",
-};
+let user1Payload: UserInputModel;
+let user2Payload: UserInputModel;
 
 describe("Security Devices E2E tests", () => {
   beforeAll(async () => {
     await request(app).delete("/api/testing/all-data");
-    const userPayload = {
+  });
+
+  beforeEach(async () => {
+    //Create User 1
+    user1Payload = {
       login: "baletro",
       email: "baletro@example.com",
       password: "rtrttrtrtr",
     };
     const registrationResponse = await request(app)
       .post("/api/auth/registration")
-      .send(userPayload);
+      .send(user1Payload);
     expect(registrationResponse.status).toBe(204);
     const registeredUser = await usersQueryRepository.findUserByEmail(
-      userPayload.email,
+      user1Payload.email,
     );
     const confirmationCode = registeredUser?.emailConfirmation.confirmationCode;
     const confirmationResponse = await request(app)
@@ -46,7 +42,29 @@ describe("Security Devices E2E tests", () => {
       .send({ code: confirmationCode });
 
     expect(confirmationResponse.status).toBe(204);
+
+    //Create User 2
+    user2Payload = {
+      login: "userone",
+      email: "userone@example.com",
+      password: "password123!",
+    };
+    await request(app)
+      .post("/api/auth/registration")
+      .send(user2Payload)
+      .expect(StatusCodes.NO_CONTENT);
+    const registeredUser2 = await usersQueryRepository.findUserByEmail(
+      user2Payload.email,
+    );
+    const confirmationCode2 =
+      registeredUser2?.emailConfirmation.confirmationCode;
+    const confirmationResponse2 = await request(app)
+      .post("/api/auth/registration-confirmation")
+      .send({ code: confirmationCode2 });
+
+    expect(confirmationResponse2.status).toBe(204);
   });
+  //Create common User-Agent for these 2 users
   const commonUserAgent =
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
 
@@ -69,25 +87,6 @@ describe("Security Devices E2E tests", () => {
     expect(sessionsResponse.status).toBe(200);
   });
   test("DELETE -> /security/devices/:sessionId should return 400 Bad Request when User attempts to delete current active session", async () => {
-    //Create User 2
-    const user2Payload = {
-      login: "userone",
-      email: "userone@example.com",
-      password: "password123!",
-    };
-    await request(app)
-      .post("/api/auth/registration")
-      .send(user2Payload)
-      .expect(StatusCodes.NO_CONTENT);
-    const registeredUser = await usersQueryRepository.findUserByEmail(
-      user2Payload.email,
-    );
-    const confirmationCode = registeredUser?.emailConfirmation.confirmationCode;
-    const confirmationResponse = await request(app)
-      .post("/api/auth/registration-confirmation")
-      .send({ code: confirmationCode });
-
-    expect(confirmationResponse.status).toBe(204);
     // 2. Login User 2 to establish their device session
     const loginUser2 = await request(app)
       .post("/api/auth/login")
@@ -107,12 +106,13 @@ describe("Security Devices E2E tests", () => {
 
     // Grab the first active device session ID belonging to User 1
     expect(devicesUser2.body.length).toBeGreaterThan(0);
-    const currentDeviceSession = devicesUser2.body[0].deviceId
-    
+    const currentDeviceSession = devicesUser2.body[0].deviceId;
+
     await request(app)
       .delete(`/api/security/devices/${currentDeviceSession}`)
       .set("Cookie", user2Cookie)
       .expect(StatusCodes.BAD_REQUEST);
+    test("DELETE -> /security/devices/:sessionId should return 400 Bad Request when User attempts to delete current active session", async () => {});
 
     // // 4. Create User 2
     // const user2Input = {
