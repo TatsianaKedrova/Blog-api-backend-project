@@ -25,4 +25,4 @@ const startApp = async () => {
 };
 startApp();
 export default app;
-module.exports = app
+// module.exports = app
