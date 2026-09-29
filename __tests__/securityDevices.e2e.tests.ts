@@ -96,7 +96,6 @@ describe("Security Devices E2E tests", () => {
         password: user2Payload.password,
       })
       .expect(StatusCodes.OK);
-    console.log("login user 2: ", JSON.stringify(loginUser2.body, null, 2));
     const user2Cookie = loginUser2.headers["set-cookie"];
     expect(user2Cookie).toBeDefined();
     const devicesUser2 = await request(app)
@@ -112,65 +111,61 @@ describe("Security Devices E2E tests", () => {
       .delete(`/api/security/devices/${currentDeviceSession}`)
       .set("Cookie", user2Cookie)
       .expect(StatusCodes.BAD_REQUEST);
-    test("DELETE -> /security/devices/:sessionId should return 400 Bad Request when User attempts to delete current active session", async () => {});
-
-    // // 4. Create User 2
-    // const user2Input = {
-    //   login: "usertwo",
-    //   email: "usertwo@example.com",
-    //   password: "password456!",
-    // };
-    // await request(app)
-    //   .post("/users")
-    //   .send(user2Input)
-    //   .expect(StatusCodes.CREATED);
-
-    // // 5. Login User 2 with the EXACT SAME User-Agent header string as User 1
-    // const loginRes2 = await request(app)
-    //   .post("/auth/login")
-    //   .set("User-Agent", commonUserAgent)
-    //   .send({ loginOrEmail: user2Input.login, password: user2Input.password })
-    //   .expect(StatusCodes.OK);
-
-    // const user2Cookies = loginRes2.headers["set-cookie"];
-
-    // // 6. Action: Attempt to delete User 1's session ID while authenticated as User 2
-    // const deleteResponse = await request(app)
-    //   .delete(`/security/devices/${user1SessionId}`)
-    //   .set("Cookie", user2Cookies);
-
-    // // 7. Assertion: Ensure the server blocks the request with a 403 Forbidden status code
-    // expect(deleteResponse.status).toBe(StatusCodes.FORBIDDEN);
-
-    // // 8. Optional verification: Ensure User 1's session document was NOT actually removed from the database
-    // const sessionStillExists = await securityDevicesCollection.findOne({
-    //   deviceId: user1SessionId,
-    // });
-    // expect(sessionStillExists).not.toBeNull();
   });
-  // describe("Rate Limiting Integration Test", () => {
-  //   it("should allow up to 5 requests but return 429 Too Many Requests on the 6th attempt", async () => {
-  //     const endpoint = "/api/security/devices";
+  test(`GET -> "/security/devices": login user 4 times from different browsers. Then get the list of devices`, async () => {
+    //First device sessinon
+    const loginUser1ChromeWindows = await request(app)
+      .post("/api/auth/login")
+      .set("User-Agent", userAgents.chromeWindows)
+      .send({
+        loginOrEmail: user2Payload.login,
+        password: user2Payload.password,
+      })
+      .expect(StatusCodes.OK);
+    const chromeWindowsCookie = loginUser1ChromeWindows.headers["set-cookie"];
+    expect(chromeWindowsCookie).toBeDefined();
+    //Second device session
+    const loginUser1ChromeMac = await request(app)
+      .post("/api/auth/login")
+      .set("User-Agent", userAgents.chromeMac)
+      .send({
+        loginOrEmail: user2Payload.login,
+        password: user2Payload.password,
+      })
+      .expect(StatusCodes.OK);
+    const chromeMacCookie = loginUser1ChromeMac.headers["set-cookie"];
+    expect(chromeMacCookie).toBeDefined();
 
-  //     // Fire 5 rapid, concurrent or sequential requests (all should bypass the limit)
-  //     for (let i = 0; i < 5; i++) {
-  //       const res = await request(app)
-  //         .get(endpoint)
-  //         .set("Cookie", ["refreshToken=mock-token"]);
+    //Third device session
+    const loginUser1Googlebot = await request(app)
+      .post("/api/auth/login")
+      .set("User-Agent", userAgents.googlebot)
+      .send({
+        loginOrEmail: user2Payload.login,
+        password: user2Payload.password,
+      })
+      .expect(StatusCodes.OK);
+    const googlebotCookie = loginUser1Googlebot.headers["set-cookie"];
+    expect(googlebotCookie).toBeDefined();
 
-  //       // They can be 200 or 401 depending on auth status, but they should NOT be 429
-  //       expect(res.status).not.toBe(StatusCodes.TOO_MANY_REQUESTS);
-  //     }
-
-  //     // Fire the 6th immediate request to break the window constraint
-  //     const sixthResponse = await request(app)
-  //       .get(endpoint)
-  //       .set("Cookie", ["refreshToken=mock-token"]);
-
-  //     // Assert your custom rate limiter middleware blocks this interaction securely!
-  //     expect(sixthResponse.status).toBe(StatusCodes.TOO_MANY_REQUESTS);
-  //     expect(sixthResponse.body.message).toContain(
-  //       "Api calls exceeded the rate limit",
-  //     );
-  //   });
+    //Forth device session
+    const loginUser1SafariIphone = await request(app)
+      .post("/api/auth/login")
+      .set("User-Agent", userAgents.safariIphone)
+      .send({
+        loginOrEmail: user2Payload.login,
+        password: user2Payload.password,
+      })
+      .expect(StatusCodes.OK);
+    const safariIphoneCookie = loginUser1SafariIphone.headers["set-cookie"];
+    expect(safariIphoneCookie).toBeDefined();
+    await request(app)
+      .get("/api/security/devices")
+      .set("Cookie", safariIphoneCookie)
+      .expect(StatusCodes.OK)
+      .expect((res) => {
+        expect(Array.isArray(res.body)).toBe(true);
+        expect(res.body.length).toBeGreaterThan(3);
+      });
+  });
 });
