@@ -10,7 +10,7 @@ export const getCookieOptions = (
   maxAgeInMs: number = 30 * 60 * 1000,
 ): CookieOptions => ({
   httpOnly: true,
-  secure: isProduction,
+  secure: true,
   sameSite: "lax",
   maxAge: maxAgeInMs,
 });
