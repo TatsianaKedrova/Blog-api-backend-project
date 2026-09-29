@@ -1,11 +1,12 @@
 {
   "version": 2,
   "name": "backend-project",
-  "functions": {
-    "src/index.ts": {
-      "runtime": "nodejs"
+  "builds": [
+    {
+      "src": "src/index.ts",
+      "use": "@vercel/node"
     }
-  },
+  ],
   "routes": [
     {
       "src": "/(.*)",
