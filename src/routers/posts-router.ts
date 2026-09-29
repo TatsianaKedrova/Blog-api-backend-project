@@ -1,6 +1,5 @@
 import express from "express";
 import { basicAuthMiddleware } from "../middlewares/basicAuth";
-export const postsRouter = express.Router({});
 import { postsValidator } from "../utils/posts-utils/postsValidator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import {
@@ -15,6 +14,7 @@ import {
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
 import { accessTokenValidityMiddleware } from "../middlewares/accessTokenValidityMiddleware";
 import { commentValidator } from "../utils/comments-utils/commentValidator";
+export const postsRouter = express.Router({});
 
 //TODO: GET LIST OF POSTS
 postsRouter.get("/", getPosts);
@@ -28,7 +28,7 @@ postsRouter.post(
   basicAuthMiddleware,
   postsValidator,
   responseErrorValidationMiddleware,
-  createNewPost
+  createNewPost,
 );
 
 //TODO: UPDATE POST BY ID
@@ -38,7 +38,7 @@ postsRouter.put(
   validateObjectIdMiddleware,
   postsValidator,
   responseErrorValidationMiddleware,
-  updatePostById
+  updatePostById,
 );
 
 //TODO: DELETE POST BY ID
@@ -46,7 +46,7 @@ postsRouter.delete(
   "/:id",
   basicAuthMiddleware,
   validateObjectIdMiddleware,
-  deletePostById
+  deletePostById,
 );
 
 //TODO: CREATE COMMENT FOR SPECIFIC POST
@@ -56,12 +56,12 @@ postsRouter.post(
   validateObjectIdMiddleware,
   commentValidator,
   responseErrorValidationMiddleware,
-  createComment
+  createComment,
 );
 
 //TODO: RETURN COMMENTS FOR SPECIFIED POST
 postsRouter.get(
   "/:id/comments",
   validateObjectIdMiddleware,
-  findCommentsForSpecifiedPost
+  findCommentsForSpecifiedPost,
 );
