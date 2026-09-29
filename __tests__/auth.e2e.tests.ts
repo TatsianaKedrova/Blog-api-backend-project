@@ -10,7 +10,6 @@ let registeredUserID1: string;
 let registeredUserConfirmationCode1: string | null;
 let registeredUserAccessToken1: string;
 let registeredUserRefreshToken1: string;
-let refreshTokenBlacklisted: string;
 
 const userCredentials = {
   login: "Stay",
