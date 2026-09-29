@@ -1,12 +1,12 @@
 import { UserDBType, UserViewModel } from "../dto/usersDTO/usersDTO";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { ObjectId, WithId } from "mongodb";
 import { UserAlreadyExistsError } from "../utils/errors-utils/registration-errors/UserAlreadyExistsError";
 import { TFieldError } from "../dto/common/ErrorResponseModel";
-import { authService } from "./auth-service";
+import { authService } from "./authService";
 
 export const usersService = {
   async createUser(
@@ -15,7 +15,7 @@ export const usersService = {
     password: string,
     confirmationCode: string | null,
     isConfirmed: boolean,
-    expirationDate: string | null
+    expirationDate: string | null,
   ): Promise<UserViewModel | TFieldError> {
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await this._generateHash(password, passwordSalt);
@@ -33,22 +33,21 @@ export const usersService = {
         expirationDate,
       },
     };
-    const createUserResult = await usersCommandsRepository.createNewUser(
-      newUser
-    );
+    const createUserResult =
+      await usersCommandsRepository.createNewUser(newUser);
     if (createUserResult === "login") {
       return new UserAlreadyExistsError(
         createUserResult,
-        "User with the given login already exists"
+        "User with the given login already exists",
       );
     } else if (createUserResult === "email") {
       return new UserAlreadyExistsError(
         createUserResult,
-        "User with the given email already exists"
+        "User with the given email already exists",
       );
     } else {
       await authService.createRefreshTokenBlacklistForUser(
-        new ObjectId(createUserResult.id)
+        new ObjectId(createUserResult.id),
       );
       return createUserResult;
     }
@@ -61,7 +60,7 @@ export const usersService = {
   },
   async checkCredentials(
     loginOrEmail: string,
-    password: string
+    password: string,
   ): Promise<WithId<UserDBType> | null> {
     const user = await usersQueryRepository.findByLoginOrEmail(loginOrEmail);
     if (!user) return null;
@@ -69,11 +68,11 @@ export const usersService = {
     if (!user?.emailConfirmation.isConfirmed) {
       return null;
     }
-    const passwordHash = await this._generateHash(
+    const isPasswordMatch = await bcrypt.compare(
       password,
-      user.accountData.passwordSalt
+      user.accountData.passwordHash,
     );
-    if (user.accountData.passwordHash !== passwordHash) {
+    if (!isPasswordMatch) {
       return null;
     }
     return user;

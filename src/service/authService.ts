@@ -1,14 +1,14 @@
-import { authCommandsRepository } from "./../repositories/commands-repository/authCommandsRepository";
-import { usersCommandsRepository } from "./../repositories/commands-repository/usersCommandsRepository";
-import bcrypt from "bcrypt";
+import { authCommandsRepository } from "../repositories/commands-repository/authCommandsRepository";
+import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
+import bcrypt from "bcryptjs";
 import { UserDBType, UserInputModel } from "../dto/usersDTO/usersDTO";
-import { emailManager } from "../managers/email-manager";
-import { usersService } from "./users-service";
+import { emailManager } from "../globals/email/email-manager";
+import { usersService } from "./usersService";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { TFieldError } from "../dto/common/ErrorResponseModel";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
-import { createConfirmationCode } from "../utils/auth-utils/create-user-confirmation-code";
-import { createCodeExpirationDate } from "../utils/auth-utils/create-code-expiration-date";
+import { createConfirmationCode } from "../utils/auth-utils/createUserConfirmationCode";
+import { createCodeExpirationDate } from "../utils/auth-utils/createCodeExpirationDate";
 import { UserAlreadyExistsError } from "../utils/errors-utils/registration-errors/UserAlreadyExistsError";
 import { RegistrationError } from "../utils/errors-utils/registration-errors/RegistrationError";
 import { IncorrectConfirmationCodeError } from "../utils/errors-utils/registration-confirmation-errors/IncorrectConfirmationCodeError";
@@ -18,16 +18,25 @@ import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
 import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
 import { ObjectId } from "mongodb";
+import {
+  AccessToken,
+  RefreshToken,
+  TokenPairResponse,
+} from "../dto/authDTO/authDTO";
+import { createAppError } from "../utils/appErrors";
+import { StatusCodes } from "http-status-codes";
+import { jwtService } from "../globals/jwt-service";
+import { securityDevicesService } from "./securityDevicesService";
 
 export const authService = {
   async registerNewUser(
-    body: UserInputModel
+    body: UserInputModel,
   ): Promise<TFieldError | UserDBType> {
     const { login, email, password } = body;
     const passwordSalt = await bcrypt.genSalt(10);
     const passwordHash = await usersService._generateHash(
       password,
-      passwordSalt
+      passwordSalt,
     );
     const newUser: UserDBType = {
       accountData: {
@@ -47,18 +56,18 @@ export const authService = {
     if (createUser === "login") {
       return new UserAlreadyExistsError(
         createUser,
-        "User with the given login already exists"
+        "User with the given login already exists",
       );
     } else if (createUser === "email") {
       return new UserAlreadyExistsError(
         createUser,
-        "User with the given email already exists"
+        "User with the given email already exists",
       );
     } else {
       try {
         await emailManager.sendEmail(newUser);
         await this.createRefreshTokenBlacklistForUser(
-          new ObjectId(createUser.id)
+          new ObjectId(createUser.id),
         );
         return newUser;
       } catch (error) {
@@ -104,22 +113,79 @@ export const authService = {
     }
     return user.accountData.email;
   },
+  async loginAndSessionCreate(
+    clientIP: string,
+    deviceTitle: string,
+    userId: string,
+  ): Promise<TokenPairResponse> {
+    //Getting IP and Device name during LOGIN
+    const deviceId = await securityDevicesService.createDeviceSession(
+      clientIP,
+      deviceTitle,
+      userId,
+    );
+    const { accessToken, refreshToken } =
+      await jwtService.createAccessRefreshTokensResponse(userId, deviceId);
+    return {
+      accessToken: accessToken as AccessToken,
+      refreshToken: refreshToken as RefreshToken,
+    };
+  },
   async createRefreshTokenBlacklistForUser(
-    userId: ObjectId
+    userId: ObjectId,
   ): Promise<string | null> {
     return await authCommandsRepository.createUserRefreshTokensBlacklist(
-      userId
+      userId,
     );
   },
   async placeRefreshTokenToBlacklist(
     refreshToken: string,
-    userId: string
+    userId: string,
   ): Promise<boolean> {
     const refreshTokenToBlacklist =
       await authCommandsRepository.putRefreshTokenToBlacklist(
         refreshToken,
-        userId
+        userId,
       );
     return refreshTokenToBlacklist;
+  },
+  async refreshSession(
+    refreshTokenToBeUpdated: string,
+    userId: string,
+    currentDeviceId: string,
+  ): Promise<TokenPairResponse> {
+    const isPlacedToBlacklist = await authService.placeRefreshTokenToBlacklist(
+      refreshTokenToBeUpdated,
+      userId,
+    );
+    if (!isPlacedToBlacklist) {
+      throw createAppError(
+        "Token was not blacklisted",
+        StatusCodes.UNAUTHORIZED,
+      );
+    }
+    const { accessToken, refreshToken } =
+      await jwtService.createAccessRefreshTokensResponse(
+        userId,
+        currentDeviceId,
+      );
+    const newTokenCreationDate =
+      await jwtService.getTokenCreationDate(refreshToken);
+    const deviceLastActivityDateUpdated =
+      await securityDevicesService.updateLastActiveDate(
+        currentDeviceId,
+        newTokenCreationDate,
+        userId,
+      );
+    if (!deviceLastActivityDateUpdated) {
+      throw createAppError(
+        "Security Device last activity date was not updated",
+        StatusCodes.NOT_FOUND,
+      );
+    }
+    return {
+      accessToken: accessToken as AccessToken,
+      refreshToken: refreshToken as RefreshToken,
+    };
   },
 };

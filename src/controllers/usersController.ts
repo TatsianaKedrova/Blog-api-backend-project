@@ -12,7 +12,7 @@ import {
 } from "../dto/usersDTO/usersDTO";
 import { Response } from "express";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
-import { usersService } from "../domain/users-service";
+import { usersService } from "../service/usersService";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
@@ -20,7 +20,7 @@ import { UserAlreadyExistsError } from "../utils/errors-utils/registration-error
 
 export const getAllUsers = async (
   req: RequestQueryParamsModel<UsersQueryParams>,
-  res: Response<Paginator<UserViewModel>>
+  res: Response<Paginator<UserViewModel>>,
 ) => {
   const {
     pageNumber = 1,
@@ -36,14 +36,14 @@ export const getAllUsers = async (
     Number(pageSize),
     sortDirection,
     searchEmailTerm,
-    searchLoginTerm
+    searchLoginTerm,
   );
   res.status(StatusCodes.OK).send(allUsers);
 };
 
 export const addNewUserBySuperAdmin = async (
   req: RequestBodyModel<UserInputModel>,
-  res: Response<UserViewModel | TApiErrorResultObject>
+  res: Response<UserViewModel | TApiErrorResultObject>,
 ) => {
   const newUser = await usersService.createUser(
     req.body.email,
@@ -51,7 +51,7 @@ export const addNewUserBySuperAdmin = async (
     req.body.password,
     null,
     true,
-    null
+    null,
   );
   if (newUser instanceof UserAlreadyExistsError) {
     res.status(StatusCodes.BAD_REQUEST).send(responseErrorFunction([newUser]));
@@ -63,7 +63,7 @@ export const addNewUserBySuperAdmin = async (
 
 export const deleteUser = async (
   req: RequestWithURIParam<URIParamsRequest>,
-  res: Response
+  res: Response,
 ) => {
   const deletedUser = await usersService.deleteUser(req.params.id);
   if (!deletedUser) {

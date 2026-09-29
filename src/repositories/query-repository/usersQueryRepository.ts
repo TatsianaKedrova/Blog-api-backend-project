@@ -1,4 +1,4 @@
-import { Filter, SortDirection, WithId } from "mongodb";
+import { Filter, ObjectId, SortDirection, WithId } from "mongodb";
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { UserDBType, UserViewModel } from "../../dto/usersDTO/usersDTO";
 import { usersCollection } from "../../db";
@@ -13,7 +13,7 @@ export const usersQueryRepository = {
     pageSize: number,
     sortDirection: SortDirection,
     searchEmailTerm: string,
-    searchLoginTerm: string
+    searchLoginTerm: string,
   ): Promise<Paginator<UserViewModel>> {
     const skip = paginationHandler(pageNumber, pageSize);
     const filterTotal: Array<Filter<UserDBType>> = [];
@@ -44,11 +44,15 @@ export const usersQueryRepository = {
       transformUsersResponse,
       totalCount,
       pageSize,
-      pageNumber
+      pageNumber,
     );
   },
+  async findUserById(id: string): Promise<WithId<UserDBType> | null> {
+    const foundUser = await usersCollection.findOne({ _id: new ObjectId(id) });
+    return foundUser;
+  },
   async findByLoginOrEmail(
-    loginOrEmail: string
+    loginOrEmail: string,
   ): Promise<WithId<UserDBType> | null> {
     const isUserExist = await usersCollection.findOne({
       $or: [
@@ -59,7 +63,7 @@ export const usersQueryRepository = {
     return isUserExist;
   },
   async findUserByConfirmationCode(
-    code: string
+    code: string,
   ): Promise<WithId<UserDBType> | null> {
     const foundUser = await usersCollection.findOne({
       "emailConfirmation.confirmationCode": code,
@@ -72,7 +76,7 @@ export const usersQueryRepository = {
   },
   async findUserByEmailAndLogin(
     email: string,
-    login: string
+    login: string,
   ): Promise<WithId<UserDBType> | null> {
     const isUserExist = await usersCollection.findOne({
       $or: [{ "accountData.login": login }, { "accountData.email": email }],

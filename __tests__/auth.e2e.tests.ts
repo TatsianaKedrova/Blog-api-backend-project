@@ -1,7 +1,7 @@
 import request from "supertest";
 import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
-import { expect, test } from "@jest/globals";
+import { beforeAll, describe, expect, jest, test } from "@jest/globals";
 import { refreshTokensBlacklistedCollection, usersCollection } from "../src/db";
 import { ObjectId } from "mongodb";
 
@@ -10,7 +10,6 @@ let registeredUserID1: string;
 let registeredUserConfirmationCode1: string | null;
 let registeredUserAccessToken1: string;
 let registeredUserRefreshToken1: string;
-let refreshTokenBlacklisted: string;
 
 const userCredentials = {
   login: "Stay",
@@ -99,7 +98,7 @@ describe("API for auth", () => {
     await request(app).get("/api/auth/me").expect(StatusCodes.UNAUTHORIZED);
     expect(existingUsers.body.items.length).toEqual(1);
   });
-  test("user SHOULD BE REGISTERED", async () => {
+  test("user SHOULD BE REGISTERED if all the auth input fields exist and correct", async () => {
     const userCredentials = {
       login: "Nadeen",
       email: "nadeen17122017@gmail.com",

@@ -27,3 +27,17 @@ export type RefreshTokensBlacklistDB = {
   _id: ObjectId;
   refreshTokensArray: string[];
 };
+export type AccessToken = string & { readonly __brand: unique symbol };
+export type RefreshToken = string & { readonly __brand: unique symbol };
+export type TokenPairResponse = {
+  accessToken: AccessToken;
+  refreshToken: RefreshToken;
+}
+
+export type AccessTokenPayloadType = {
+  userId: string;
+};
+export type RefreshTokenPayloadType = AccessTokenPayloadType & {
+  deviceId: string;
+  iat?: number;
+};

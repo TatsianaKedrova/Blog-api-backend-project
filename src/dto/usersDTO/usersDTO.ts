@@ -15,7 +15,6 @@ export type UserViewModel = {
 };
 
 export type UserDBType = {
-  _id?: ObjectId;
   accountData: {
     login: string;
     email: string;

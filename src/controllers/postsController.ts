@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { PostInputModel, PostViewModel } from "../dto/postsDTO/PostModel";
-import { postsService } from "../domain/posts-service";
+import { postsService } from "../service/postsService";
 import {
   RequestBodyModel,
   RequestQueryParamsModel,
@@ -27,7 +27,7 @@ import {
 // @access Public
 export const getPosts = async (
   req: RequestQueryParamsModel<QueryParamsWithSearch>,
-  res: Response<Paginator<PostViewModel>>
+  res: Response<Paginator<PostViewModel>>,
 ) => {
   let {
     pageNumber = 1,
@@ -39,7 +39,7 @@ export const getPosts = async (
     Number(pageNumber),
     sortBy,
     Number(pageSize),
-    sortDirection
+    sortDirection,
   );
   res.status(StatusCodes.OK).send(posts);
 };
@@ -49,7 +49,7 @@ export const getPosts = async (
 // @access Public
 export const getPostsById = async (
   req: RequestWithURIParam<URIParamsRequest>,
-  res: Response<PostViewModel>
+  res: Response<PostViewModel>,
 ) => {
   const foundPost = await postsQueryRepository.findPostById(req.params.id);
   if (!foundPost) {
@@ -64,7 +64,7 @@ export const getPostsById = async (
 // @access Private
 export const createNewPost = async (
   req: RequestBodyModel<PostInputModel>,
-  res: Response<PostViewModel | TApiErrorResultObject>
+  res: Response<PostViewModel | TApiErrorResultObject>,
 ) => {
   const newPost = await postsService.createNewPost(req.body);
   if (!newPost) {
@@ -79,7 +79,7 @@ export const createNewPost = async (
 // @access Private
 export const updatePostById = async (
   req: RequestWithURIParamsAndBody<URIParamsRequest, PostInputModel>,
-  res: Response<TApiErrorResultObject>
+  res: Response<TApiErrorResultObject>,
 ) => {
   const isUpdated = await postsService.updatePostById(req.params.id, req.body);
   if (!isUpdated) {
@@ -94,7 +94,7 @@ export const updatePostById = async (
 // @access Private
 export const deletePostById = async (
   req: RequestWithURIParam<URIParamsRequest>,
-  res: Response
+  res: Response,
 ) => {
   const isDeleted = await postsService.deletePostById(req.params.id);
 
@@ -107,13 +107,13 @@ export const deletePostById = async (
 
 export const createComment = async (
   req: RequestWithURIParamsAndBody<URIParamsRequest, CommentInputModel>,
-  res: Response<CommentViewModel>
+  res: Response<CommentViewModel>,
 ) => {
   const { content } = req.body;
   const createdComment = await postsService.createNewComment(
     req.params.id,
     content,
-    req.userId!
+    req.userId,
   );
   if (!createdComment) {
     res.sendStatus(StatusCodes.NOT_FOUND);
@@ -127,7 +127,7 @@ export const findCommentsForSpecifiedPost = async (
     URIParamsRequest,
     PaginationSortingQueryParams
   >,
-  res: Response<Paginator<CommentViewModel>>
+  res: Response<Paginator<CommentViewModel>>,
 ) => {
   let {
     pageNumber = 1,
@@ -141,7 +141,7 @@ export const findCommentsForSpecifiedPost = async (
       Number(pageNumber),
       sortBy,
       Number(pageSize),
-      sortDirection
+      sortDirection,
     );
   if (!commentsForSpecifiedPost) {
     res.sendStatus(StatusCodes.NOT_FOUND);

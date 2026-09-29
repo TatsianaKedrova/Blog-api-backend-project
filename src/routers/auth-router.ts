@@ -1,13 +1,13 @@
 import { refreshTokenValidityMiddleware } from "../middlewares/refreshTokenValidityMiddleware";
 import express from "express";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
-import { authValidator } from "../utils/auth-utils/auth-validator";
+import { authValidator } from "../utils/auth-utils/authValidator";
 import {
   confirmRegistration,
   getInfoAboutUser,
   logIn,
   logout,
-  refreshToken,
+  refreshTokenFunction,
   registerUser,
   resendRegistrationEmail,
 } from "../controllers/authController";
@@ -15,40 +15,45 @@ import { accessTokenValidityMiddleware } from "../middlewares/accessTokenValidit
 import { createUserValidator } from "../utils/usersUtils/users-validator";
 import { confirmationCodeValidator } from "../utils/usersUtils/confirmationCodeValidator";
 import { emailValidator } from "../utils/usersUtils/emailValidator";
+import { rateLimiterMiddleware } from "../middlewares/rateLimiterMiddleware";
 export const authRouter = express.Router({});
 
 authRouter.post(
   "/login",
   authValidator,
   responseErrorValidationMiddleware,
-  logIn
+  rateLimiterMiddleware,
+  logIn,
 );
 
-authRouter.get(
-  "/me",
-  accessTokenValidityMiddleware,
-  getInfoAboutUser
-);
+authRouter.get("/me", accessTokenValidityMiddleware, getInfoAboutUser);
 
 authRouter.post(
   "/registration",
   createUserValidator,
   responseErrorValidationMiddleware,
-  registerUser
+  rateLimiterMiddleware,
+  registerUser,
 );
 authRouter.post(
   "/registration-confirmation",
   confirmationCodeValidator,
   responseErrorValidationMiddleware,
-  confirmRegistration
+  rateLimiterMiddleware,
+  confirmRegistration,
 );
 authRouter.post(
   "/registration-email-resending",
   emailValidator,
   responseErrorValidationMiddleware,
-  resendRegistrationEmail
+  rateLimiterMiddleware,
+  resendRegistrationEmail,
 );
 
-authRouter.post("/refresh-token", refreshTokenValidityMiddleware, refreshToken);
+authRouter.post(
+  "/refresh-token",
+  refreshTokenValidityMiddleware,
+  refreshTokenFunction,
+);
 
 authRouter.post("/logout", refreshTokenValidityMiddleware, logout);

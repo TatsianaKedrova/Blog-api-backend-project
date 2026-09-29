@@ -1,0 +1,5 @@
+name: Globals
+values:
+  - key: BASE_URL
+    value: ''
+    enabled: true

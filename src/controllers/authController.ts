@@ -1,6 +1,6 @@
 import { getCurrentUserInfo } from "./../utils/auth-utils/getCurrentUserInfo";
 import { StatusCodes } from "http-status-codes";
-import { usersService } from "../domain/users-service";
+import { usersService } from "../service/usersService";
 import {
   LoginInputModel,
   MeViewModel,
@@ -9,9 +9,8 @@ import {
 } from "../dto/authDTO/authDTO";
 import { RequestBodyModel } from "../dto/common/RequestModels";
 import { Request, Response } from "express";
-import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import { UserInputModel } from "../dto/usersDTO/usersDTO";
-import { authService } from "../domain/auth-service";
+import { authService } from "../service/authService";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
 import { UserAlreadyExistsError } from "../utils/errors-utils/registration-errors/UserAlreadyExistsError";
@@ -22,35 +21,40 @@ import { UserIsConfirmedError } from "../utils/errors-utils/registration-confirm
 import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration-confirmation-errors/ConfirmationCodeExpiredError";
 import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
-import { create_access_refresh_tokens } from "../utils/auth-utils/create_Access_Refresh_Tokens";
+import { securityDevicesService } from "../service/securityDevicesService";
+import { getDeviceTitle } from "../utils/securityDevices-utils/getDeviceTitle";
+import { createAppError } from "../utils/appErrors";
+import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
+import { getCookieOptions } from "../utils/auth-utils/cookie";
 
 export const logIn = async (
   req: RequestBodyModel<LoginInputModel>,
-  res: Response
+  res: Response,
 ) => {
   const user = await usersService.checkCredentials(
     req.body.loginOrEmail,
-    req.body.password
+    req.body.password,
   );
   if (!user) {
-    res.sendStatus(StatusCodes.UNAUTHORIZED);
-    return;
+    throw createAppError("Invalid login credentials", StatusCodes.UNAUTHORIZED);
   }
-  const { accessToken, refreshToken } = await create_access_refresh_tokens(
-    user._id.toString()
+  const clientIP = req.ip || "127.0.0.1";
+  const deviceTitle = getDeviceTitle(req.headers["user-agent"]);
+  const userId = user._id.toString();
+  const { accessToken, refreshToken } = await authService.loginAndSessionCreate(
+    clientIP,
+    deviceTitle,
+    userId,
   );
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: true,
-  });
+  res.cookie("refreshToken", refreshToken, getCookieOptions());
   return res.status(StatusCodes.OK).send({ accessToken });
 };
 
 export const getInfoAboutUser = async (
   req: Request,
-  res: Response<MeViewModel>
+  res: Response<MeViewModel>,
 ) => {
-  const foundUser = await usersCommandsRepository.findUserById(req.userId);
+  const foundUser = await usersQueryRepository.findUserById(req.userId);
   if (foundUser) {
     const currentUser = getCurrentUserInfo(foundUser);
     res.status(StatusCodes.OK).send(currentUser);
@@ -61,7 +65,7 @@ export const getInfoAboutUser = async (
 
 export const registerUser = async (
   req: RequestBodyModel<UserInputModel>,
-  res: Response<TApiErrorResultObject>
+  res: Response<TApiErrorResultObject>,
 ) => {
   const createUser = await authService.registerNewUser(req.body);
   if (createUser instanceof UserAlreadyExistsError) {
@@ -81,7 +85,7 @@ export const registerUser = async (
 
 export const confirmRegistration = async (
   req: RequestBodyModel<RegistrationConfirmationCodeModel>,
-  res: Response<TApiErrorResultObject>
+  res: Response<TApiErrorResultObject>,
 ) => {
   const confirmCodeResult = await authService.confirmCode(req.body.code);
   if (
@@ -105,7 +109,7 @@ export const confirmRegistration = async (
 
 export const resendRegistrationEmail = async (
   req: RequestBodyModel<RegistrationEmailResending>,
-  res: Response<TApiErrorResultObject>
+  res: Response<TApiErrorResultObject>,
 ) => {
   const resendEmailResult = await authService.resendEmail(req.body.email);
   if (
@@ -127,25 +131,38 @@ export const resendRegistrationEmail = async (
 };
 
 //@desc Generate new pair of access and refresh tokens (in cookie client must send correct refresh token that will be revoked after refreshing)
-export const refreshToken = async (req: Request, res: Response) => {
-  const refreshTokenFromClient = req.cookies.refreshToken;
-  await authService.placeRefreshTokenToBlacklist(
-    refreshTokenFromClient,
-    req.userId
+export const refreshTokenFunction = async (
+  req: Request,
+  res: Response<{ accessToken: string }>,
+) => {
+  const oldRefreshToken = req.cookies.refreshToken;
+  const userId = req.userId;
+  const deviceId = req.currentDeviceId;
+  const { accessToken, refreshToken } = await authService.refreshSession(
+    oldRefreshToken,
+    userId,
+    deviceId,
   );
-  const { accessToken, refreshToken } = await create_access_refresh_tokens(
-    req.userId
-  );
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: true,
-  });
-  res.status(StatusCodes.OK).send({ accessToken });
+  res.cookie("refreshToken", refreshToken, getCookieOptions());
+  return res.status(StatusCodes.OK).send({ accessToken });
 };
 
 export const logout = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
-  await authService.placeRefreshTokenToBlacklist(refreshToken, req.userId);
+  const userId = req.userId;
+  const currentDeviceId = req.currentDeviceId;
+  await authService.placeRefreshTokenToBlacklist(refreshToken, userId);
+  const isSessionDeleted = await securityDevicesService.deleteSessionById(
+    currentDeviceId,
+    userId,
+  );
   res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+
+  if (!isSessionDeleted) {
+    throw createAppError(
+      "Session was not deleted or not found",
+      StatusCodes.NOT_FOUND,
+    );
+  }
   res.sendStatus(StatusCodes.NO_CONTENT);
 };

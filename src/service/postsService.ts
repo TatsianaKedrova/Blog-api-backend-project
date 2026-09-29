@@ -13,7 +13,7 @@ import {
   CommentViewModel,
 } from "../dto/commentsDTO/commentsDTO";
 import { postsCollection } from "../db";
-import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
+import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 
 export const postsService = {
   async _findPostById(id: string): Promise<PostDBType | null> {
@@ -45,13 +45,14 @@ export const postsService = {
   async createNewComment(
     postId: string,
     content: string,
-    userId: string
+    userId: string,
   ): Promise<CommentViewModel | null> {
     const foundPost = await this._findPostById(postId);
     if (!foundPost) {
       return null;
     }
-    const foundUser = await usersCommandsRepository.findUserById(userId);
+    const foundUser = await usersQueryRepository.findUserById(userId);
+    if (!foundUser) return null;
     const newComment: CommentDBType = {
       postId,
       content,
