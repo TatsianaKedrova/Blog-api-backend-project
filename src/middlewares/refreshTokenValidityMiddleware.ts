@@ -39,7 +39,7 @@ export const refreshTokenValidityMiddleware = async (
     res.clearCookie("refreshToken");
     throw createAppError(
       "Access denied due to security validation failure",
-      StatusCodes.FORBIDDEN,
+      StatusCodes.UNAUTHORIZED,
     );
   }
   req.userId = refreshTokenJWTPayloadResult.userId;
