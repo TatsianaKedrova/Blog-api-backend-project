@@ -11,7 +11,7 @@ const startApp = async () => {
     console.log(`Example app listening on port ${port}`);
   });
   // 4. Fire up ngrok directly from your code!
-  try {
+  // try {
     const forwarder = await ngrok.forward({
       addr: `localhost:${port}`,
       authtoken: process.env.NGROK_AUTHTOKEN, // Read token securely from your .env file
@@ -19,10 +19,10 @@ const startApp = async () => {
     });
 
     console.log(`🌐 Outside public link active at: ${forwarder.url()}`);
-  } catch (err) {
-    console.log("ngrok failed to initialize");
-  }
+  // } catch (err) {
+  //   console.log("ngrok failed to initialize");
+  // }
 };
 startApp();
 export default app;
-module.exports = app
+// module.exports = app

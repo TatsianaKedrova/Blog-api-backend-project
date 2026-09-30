@@ -12,27 +12,18 @@ export const emailManager = {
     const newCode = createConfirmationCode();
     const newExpirationDate = createCodeExpirationDate();
 
-    const updatedUser =
-      await usersCommandsRepository.updateUserCodeAndExpirationDate(
-        user._id,
-        newCode,
-        newExpirationDate,
-      );
-    if (!updatedUser) {
-      return false;
-    } else {
-      const foundUpdatedUser = await usersQueryRepository.findUserById(
-        user._id.toString(),
-      );
-      if (!foundUpdatedUser) return false;
+    await usersCommandsRepository.updateUserCodeAndExpirationDate(
+      user._id,
+      newCode,
+      newExpirationDate,
+    );
+    const foundUpdatedUser = await usersQueryRepository.findUserById(
+      user._id.toString(),
+    );
+    if (!foundUpdatedUser) return false;
 
-      const html = htmlEmailConfirmationCodeLetter(
-        foundUpdatedUser.emailConfirmation.confirmationCode,
-      );
-
-      await emailAdapter.sendEmail(foundUpdatedUser?.accountData.email, html);
-      return true;
-    }
+    emailManager.sendEmail(foundUpdatedUser);
+    return true;
   },
   async sendEmail(user: UserDBType) {
     const code = user.emailConfirmation.confirmationCode;

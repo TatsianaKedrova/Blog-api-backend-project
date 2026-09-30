@@ -20,9 +20,9 @@ export const authRouter = express.Router({});
 
 authRouter.post(
   "/login",
+  rateLimiterMiddleware,
   authValidator,
   responseErrorValidationMiddleware,
-  rateLimiterMiddleware,
   logIn,
 );
 
@@ -30,23 +30,23 @@ authRouter.get("/me", accessTokenValidityMiddleware, getInfoAboutUser);
 
 authRouter.post(
   "/registration",
+  rateLimiterMiddleware,
   createUserValidator,
   responseErrorValidationMiddleware,
-  rateLimiterMiddleware,
   registerUser,
 );
 authRouter.post(
   "/registration-confirmation",
+  rateLimiterMiddleware,
   confirmationCodeValidator,
   responseErrorValidationMiddleware,
-  rateLimiterMiddleware,
   confirmRegistration,
 );
 authRouter.post(
   "/registration-email-resending",
+  rateLimiterMiddleware,
   emailValidator,
   responseErrorValidationMiddleware,
-  rateLimiterMiddleware,
   resendRegistrationEmail,
 );
 

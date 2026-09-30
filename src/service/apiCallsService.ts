@@ -6,18 +6,22 @@ export const apiCallsService = {
   async checkIpRequestCount(url: string, ip: string): Promise<boolean> {
     const now = new Date();
     const tenSecondsAgo = new Date(Date.now() - 10 * 1000);
+    const normalizedUrl = url.replace(/\/$/, "");
+    const existingApiCalls = await apiCallsQueryRepository.countApiCalls(
+      ip,
+      normalizedUrl,
+      tenSecondsAgo,
+    );
+
+    if (existingApiCalls >= 5) {
+      return false;
+    }
     const apiCallsObject: ApiCalls = {
       url,
       ip,
       date: now,
     };
     await apiCallsCommandsRepository.addApiCall(apiCallsObject);
-    const totalApiCalls = await apiCallsQueryRepository.countApiCalls(
-      ip,
-      url,
-      tenSecondsAgo,
-    );
-
-    return totalApiCalls <= 5;
+    return true;
   },
 };

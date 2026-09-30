@@ -6,7 +6,7 @@ import {
 } from "../controllers/securityDevicesController";
 import { refreshTokenValidityMiddleware } from "../middlewares/refreshTokenValidityMiddleware";
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
-export const securityDevicesRouter = express.Router();
+export const securityDevicesRouter = express.Router({});
 
 /**returns all devices with active sessions for current user*/
 securityDevicesRouter.get(
