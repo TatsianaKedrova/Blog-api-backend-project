@@ -6,9 +6,10 @@ export const apiCallsService = {
   async checkIpRequestCount(url: string, ip: string): Promise<boolean> {
     const now = new Date();
     const tenSecondsAgo = new Date(Date.now() - 10 * 1000);
+    const normalizedUrl = url.replace(/\/$/, "");
     const existingApiCalls = await apiCallsQueryRepository.countApiCalls(
       ip,
-      url,
+      normalizedUrl,
       tenSecondsAgo,
     );
 
