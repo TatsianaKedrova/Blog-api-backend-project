@@ -23,7 +23,6 @@ authRouter.post(
   rateLimiterMiddleware,
   authValidator,
   responseErrorValidationMiddleware,
-  rateLimiterMiddleware,
   logIn,
 );
 
