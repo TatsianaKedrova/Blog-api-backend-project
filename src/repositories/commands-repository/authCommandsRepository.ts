@@ -12,13 +12,11 @@ export const authCommandsRepository = {
   },
   async putRefreshTokenToBlacklist(
     refreshToken: string,
-    userId: string
-  ): Promise<boolean> {
-    const addRefreshTokenToBlacklist =
-      await refreshTokensBlacklistedCollection.updateOne(
-        { _id: new ObjectId(userId) },
-        { $push: { refreshTokensArray: refreshToken } }
-      );
-    return addRefreshTokenToBlacklist.modifiedCount === 1 ? true : false;
+    userId: string,
+  ): Promise<void> {
+    await refreshTokensBlacklistedCollection.updateOne(
+      { _id: new ObjectId(userId) },
+      { $push: { refreshTokensArray: refreshToken } },
+    );
   },
 };

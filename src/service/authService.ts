@@ -141,29 +141,18 @@ export const authService = {
   async placeRefreshTokenToBlacklist(
     refreshToken: string,
     userId: string,
-  ): Promise<boolean> {
-    const refreshTokenToBlacklist =
-      await authCommandsRepository.putRefreshTokenToBlacklist(
-        refreshToken,
-        userId,
-      );
-    return refreshTokenToBlacklist;
+  ): Promise<void> {
+    return await authCommandsRepository.putRefreshTokenToBlacklist(
+      refreshToken,
+      userId,
+    );
   },
   async refreshSession(
-    refreshTokenToBeUpdated: string,
+    oldRefreshToken: string,
     userId: string,
     currentDeviceId: string,
   ): Promise<TokenPairResponse> {
-    const isPlacedToBlacklist = await authService.placeRefreshTokenToBlacklist(
-      refreshTokenToBeUpdated,
-      userId,
-    );
-    if (!isPlacedToBlacklist) {
-      throw createAppError(
-        "Token was not blacklisted",
-        StatusCodes.UNAUTHORIZED,
-      );
-    }
+    await authService.placeRefreshTokenToBlacklist(oldRefreshToken, userId);
     const { accessToken, refreshToken } =
       await jwtService.createAccessRefreshTokensResponse(
         userId,
@@ -171,18 +160,11 @@ export const authService = {
       );
     const newTokenCreationDate =
       await jwtService.getTokenCreationDate(refreshToken);
-    const deviceLastActivityDateUpdated =
-      await securityDevicesService.updateLastActiveDate(
-        currentDeviceId,
-        newTokenCreationDate,
-        userId,
-      );
-    if (!deviceLastActivityDateUpdated) {
-      throw createAppError(
-        "Security Device last activity date was not updated",
-        StatusCodes.NOT_FOUND,
-      );
-    }
+    await securityDevicesService.updateLastActiveDate(
+      currentDeviceId,
+      newTokenCreationDate,
+      userId,
+    );
     return {
       accessToken: accessToken as AccessToken,
       refreshToken: refreshToken as RefreshToken,

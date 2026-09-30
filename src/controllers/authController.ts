@@ -160,8 +160,8 @@ export const logout = async (req: Request, res: Response) => {
 
   if (!isSessionDeleted) {
     throw createAppError(
-      "Session was not deleted or not found",
-      StatusCodes.NOT_FOUND,
+      "Session was deleted or not found",
+      StatusCodes.UNAUTHORIZED,
     );
   }
   res.sendStatus(StatusCodes.NO_CONTENT);
