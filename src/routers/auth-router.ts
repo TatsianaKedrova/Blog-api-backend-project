@@ -30,9 +30,9 @@ authRouter.get("/me", accessTokenValidityMiddleware, getInfoAboutUser);
 
 authRouter.post(
   "/registration",
+  rateLimiterMiddleware,
   createUserValidator,
   responseErrorValidationMiddleware,
-  rateLimiterMiddleware,
   registerUser,
 );
 authRouter.post(
@@ -44,9 +44,9 @@ authRouter.post(
 );
 authRouter.post(
   "/registration-email-resending",
+  rateLimiterMiddleware,
   emailValidator,
   responseErrorValidationMiddleware,
-  rateLimiterMiddleware,
   resendRegistrationEmail,
 );
 
