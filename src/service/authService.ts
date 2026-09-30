@@ -23,8 +23,6 @@ import {
   RefreshToken,
   TokenPairResponse,
 } from "../dto/authDTO/authDTO";
-import { createAppError } from "../utils/appErrors";
-import { StatusCodes } from "http-status-codes";
 import { jwtService } from "../globals/jwt-service";
 import { securityDevicesService } from "./securityDevicesService";
 
@@ -65,7 +63,7 @@ export const authService = {
       );
     } else {
       try {
-         emailManager.sendEmail(newUser);
+        emailManager.sendEmail(newUser);
         await this.createRefreshTokenBlacklistForUser(
           new ObjectId(createUser.id),
         );
@@ -107,7 +105,7 @@ export const authService = {
     if (user.emailConfirmation.isConfirmed) {
       return new EmailAlreadyConfirmedError();
     }
-    const resendEmailResult =  emailManager.resendEmailWithCode(user);
+    const resendEmailResult = await emailManager.resendEmailWithCode(user);
     if (!resendEmailResult) {
       return new UpdateUserError("registration-email-resending");
     }
