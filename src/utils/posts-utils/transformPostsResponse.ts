@@ -1,11 +1,8 @@
 import { PostDBType, PostViewModel } from "../../dto/postsDTO/PostModel";
 
-export const transformPostsResponse = (
-  post: PostDBType,
-  id?: string
-): PostViewModel => {
+export const transformPostsResponse = (post: PostDBType): PostViewModel => {
   return {
-    id: (id as string) ?? post._id?.toString(),
+    id: post._id!.toString(),
     title: post.title,
     shortDescription: post.shortDescription,
     content: post.content,

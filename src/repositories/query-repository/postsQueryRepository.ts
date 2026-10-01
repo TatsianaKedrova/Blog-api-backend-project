@@ -11,12 +11,12 @@ import {
 } from "../../dto/commentsDTO/commentsDTO";
 import { transformCommentsResponse } from "../../utils/comments-utils/transformCommentsResponse";
 
-export const postsQueryRepository = {
+class PostsQueryRepository {
   async findPosts(
     pageNumber: number,
     sortBy: string,
     pageSize: number,
-    sortDirection: SortDirection
+    sortDirection: SortDirection,
   ): Promise<Paginator<PostViewModel>> {
     const skip = paginationHandler(pageNumber, pageSize);
     const totalCount = await postsCollection.countDocuments();
@@ -32,25 +32,26 @@ export const postsQueryRepository = {
       transformPostsResponse,
       totalCount,
       pageSize,
-      pageNumber
+      pageNumber,
     );
     return posts;
-  },
-  async findPostById(id: string): Promise<PostViewModel | null> {
+  }
+  async findPostById(id: string): Promise<PostDBType | null> {
     const foundPost = await postsCollection.findOne<PostDBType>({
       _id: new ObjectId(id),
     });
-    if (foundPost) {
-      return transformPostsResponse(foundPost);
-    }
     return foundPost;
-  },
+  }
+  async _findPostById(id: string): Promise<PostDBType | null> {
+    const foundPost = await postsCollection.findOne({ _id: new ObjectId(id) });
+    return foundPost;
+  }
   async findCommentsForSpecifiedPost(
     postId: string,
     pageNumber: number,
     sortBy: string,
     pageSize: number,
-    sortDirection: SortDirection
+    sortDirection: SortDirection,
   ): Promise<Paginator<CommentViewModel> | null> {
     const foundPost = await this.findPostById(postId);
     if (!foundPost) return null;
@@ -73,8 +74,10 @@ export const postsQueryRepository = {
       transformCommentsResponse,
       totalCount,
       pageSize,
-      pageNumber
+      pageNumber,
     );
     return comments;
-  },
-};
+  }
+}
+
+export const postsQueryRepository = new PostsQueryRepository();

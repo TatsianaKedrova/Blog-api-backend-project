@@ -14,9 +14,20 @@ export type CommentatorInfo = {
   userLogin: string;
 };
 
-export type CommentDBType = {
-  content: string;
-  commentatorInfo: CommentatorInfo;
-  createdAt: string;
-  postId: string;
-};
+export class CommentDBType {
+  public content: string;
+  public commentatorInfo: CommentatorInfo;
+  public createdAt: string;
+  public postId: string;
+  constructor(data: {
+    content: string;
+    commentatorInfo: CommentatorInfo;
+    createdAt: string;
+    postId: string;
+  }) {
+    this.commentatorInfo = data.commentatorInfo;
+    this.content = data.content;
+    this.createdAt = data.createdAt;
+    this.postId = data.postId;
+  }
+}
