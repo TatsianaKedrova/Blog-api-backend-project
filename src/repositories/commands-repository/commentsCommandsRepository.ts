@@ -14,12 +14,6 @@ export const commentsCommandsRepository = {
 
     return transformCommentsResponse(findCreatedComment!);
   },
-  async findCommentById(id: string) {
-    const comment = await commentsCollection.findOne({
-      _id: new ObjectId(id),
-    });
-    return comment;
-  },
   async deleteComment(commentId: string): Promise<boolean> {
     const deletedComment = await commentsCollection.findOneAndDelete({
       _id: new ObjectId(commentId),

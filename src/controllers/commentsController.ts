@@ -11,16 +11,20 @@ import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { commentsQueryRepository } from "../repositories/query-repository/commentsQueryRepository";
 import { StatusCodes } from "http-status-codes";
 import { commentsService } from "../service/commentsService";
+import { transformCommentsResponse } from "../utils/comments-utils/transformCommentsResponse";
 
 export const getCommentById = async (
   req: RequestWithURIParam<URIParamsRequest>,
   res: Response<CommentViewModel>,
 ) => {
-  const foundComment = await commentsQueryRepository.findComment(req.params.id);
+  const foundComment = await commentsQueryRepository.findCommentById(
+    req.params.id,
+  );
   if (!foundComment) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   } else {
-    res.status(StatusCodes.OK).send(foundComment);
+    const transformedComment = transformCommentsResponse(foundComment);
+    res.status(StatusCodes.OK).send(transformedComment);
   }
 };
 
@@ -31,9 +35,8 @@ export const deleteComment = async (
   const deletedComment = commentsService.deleteCommentById(req.params.id);
   if (!deletedComment) {
     res.sendStatus(StatusCodes.NOT_FOUND);
-  } else {
-    res.sendStatus(StatusCodes.NO_CONTENT);
   }
+  res.sendStatus(StatusCodes.NO_CONTENT);
 };
 
 export const updateComment = async (
@@ -47,7 +50,6 @@ export const updateComment = async (
   );
   if (!updatedComment) {
     res.sendStatus(StatusCodes.NOT_FOUND);
-  } else {
-    res.sendStatus(StatusCodes.NO_CONTENT);
   }
+  res.sendStatus(StatusCodes.NO_CONTENT);
 };

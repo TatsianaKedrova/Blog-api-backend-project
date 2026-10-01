@@ -46,38 +46,7 @@ class PostsQueryRepository {
     const foundPost = await postsCollection.findOne({ _id: new ObjectId(id) });
     return foundPost;
   }
-  async findCommentsForSpecifiedPost(
-    postId: string,
-    pageNumber: number,
-    sortBy: string,
-    pageSize: number,
-    sortDirection: SortDirection,
-  ): Promise<Paginator<CommentViewModel> | null> {
-    const foundPost = await this.findPostById(postId);
-    if (!foundPost) return null;
-    const skip = paginationHandler(pageNumber, pageSize);
-    const totalCount = await commentsCollection.countDocuments({
-      postId,
-    });
 
-    const allCommentsForPost = await commentsCollection
-      .find({
-        postId,
-      })
-      .collation({ locale: "en" })
-      .sort(sortBy, sortDirection)
-      .skip(skip)
-      .limit(pageSize)
-      .toArray();
-    const comments = paginatorReturnObject<CommentDBType>(
-      allCommentsForPost,
-      transformCommentsResponse,
-      totalCount,
-      pageSize,
-      pageNumber,
-    );
-    return comments;
-  }
 }
 
 export const postsQueryRepository = new PostsQueryRepository();

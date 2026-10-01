@@ -5,10 +5,10 @@ import {
 } from "../../dto/commentsDTO/commentsDTO";
 
 export const transformCommentsResponse = (
-  newComment: WithId<CommentDBType>
+  newComment: CommentDBType
 ): CommentViewModel => {
   return {
-    id: newComment._id.toString(),
+    id: newComment._id!.toString(),
     content: newComment.content,
     createdAt: newComment.createdAt,
     commentatorInfo: newComment.commentatorInfo,
