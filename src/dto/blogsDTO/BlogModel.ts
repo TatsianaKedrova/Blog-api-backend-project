@@ -8,7 +8,7 @@ export class BlogDBType {
   public createdAt: string;
   public isMembership: boolean;
   constructor(data: {
-    _id: ObjectId;
+    _id?: ObjectId;
     name: string;
     description: string;
     websiteUrl: string;

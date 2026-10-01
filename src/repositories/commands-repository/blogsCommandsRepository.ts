@@ -1,17 +1,11 @@
 import { blogsCollection } from "../../db";
-import {
-  BlogDBType,
-  BlogInputModel,
-  BlogViewModel,
-} from "../../dto/blogsDTO/BlogModel";
-import { transformBlogsResponse } from "../../utils/blogs-utils/transformBlogsResponse";
+import { BlogDBType, BlogInputModel } from "../../dto/blogsDTO/BlogModel";
 import { ObjectId } from "mongodb";
 
 class BlogsCommandsRepository {
-  async createNewBlog(newBlog: BlogDBType): Promise<BlogViewModel> {
+  async createNewBlog(newBlog: BlogDBType): Promise<ObjectId> {
     const result = await blogsCollection.insertOne(newBlog);
-
-    return transformBlogsResponse(newBlog, result.insertedId.toString());
+    return result.insertedId;
   }
   async updateBlogById(id: string, body: BlogInputModel): Promise<boolean> {
     const { description, name, websiteUrl } = body;

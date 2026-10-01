@@ -5,8 +5,8 @@ import {
 } from "../dto/blogsDTO/BlogModel";
 
 import { blogsCommandsRepository } from "../repositories/commands-repository/blogsCommandsRepository";
+import { transformBlogsResponse } from "../utils/blogs-utils/transformBlogsResponse";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
-
 
 class BlogsService {
   async createNewBlog(body: BlogInputModel): Promise<BlogViewModel> {
@@ -18,8 +18,12 @@ class BlogsService {
       createdAt: creationDate(),
       isMembership: false,
     });
-    const result = await blogsCommandsRepository.createNewBlog(newBlog);
-    return result;
+    const createdBlogId = await blogsCommandsRepository.createNewBlog(newBlog);
+    const blogTransformedResponse = transformBlogsResponse({
+      ...newBlog,
+      _id: createdBlogId,
+    });
+    return blogTransformedResponse;
   }
   async updateBlogById(id: string, body: BlogInputModel): Promise<boolean> {
     return await blogsCommandsRepository.updateBlogById(id, body);
