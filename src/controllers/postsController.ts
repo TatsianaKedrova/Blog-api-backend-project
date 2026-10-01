@@ -21,6 +21,9 @@ import {
   CommentInputModel,
   CommentViewModel,
 } from "../dto/commentsDTO/commentsDTO";
+import { transformPostsResponse } from "../utils/posts-utils/transformPostsResponse";
+import { commentsService } from "../service/commentsService";
+import { commentsQueryRepository } from "../repositories/query-repository/commentsQueryRepository";
 
 // @desc Get all posts
 // @route GET /api/posts
@@ -55,7 +58,8 @@ export const getPostsById = async (
   if (!foundPost) {
     res.sendStatus(StatusCodes.NOT_FOUND);
   } else {
-    res.status(StatusCodes.OK).send(foundPost);
+    const transformedPost = transformPostsResponse(foundPost);
+    res.status(StatusCodes.OK).send(transformedPost);
   }
 };
 
@@ -110,7 +114,7 @@ export const createComment = async (
   res: Response<CommentViewModel>,
 ) => {
   const { content } = req.body;
-  const createdComment = await postsService.createNewComment(
+  const createdComment = await commentsService.createNewComment(
     req.params.id,
     content,
     req.userId,
@@ -136,7 +140,7 @@ export const findCommentsForSpecifiedPost = async (
     sortDirection = "desc",
   } = req.query;
   const commentsForSpecifiedPost =
-    await postsQueryRepository.findCommentsForSpecifiedPost(
+    await commentsQueryRepository.findCommentsForSpecifiedPost(
       req.params.id,
       Number(pageNumber),
       sortBy,

@@ -42,11 +42,6 @@ class PostsQueryRepository {
     });
     return foundPost;
   }
-  async _findPostById(id: string): Promise<PostDBType | null> {
-    const foundPost = await postsCollection.findOne({ _id: new ObjectId(id) });
-    return foundPost;
-  }
-
 }
 
 export const postsQueryRepository = new PostsQueryRepository();
