@@ -1,17 +1,12 @@
-import {
-  PostDBType,
-  PostInputModel,
-  PostViewModel,
-} from "../../dto/postsDTO/PostModel";
+import { PostDBType, PostInputModel } from "../../dto/postsDTO/PostModel";
 import { blogsCollection, postsCollection } from "../../db";
-import { transformPostsResponse } from "../../utils/posts-utils/transformPostsResponse";
 import { ObjectId } from "mongodb";
 
-export const postsCommandsRepository = {
-  async createNewPost(newPost: PostDBType): Promise<PostViewModel> {
+class PostsCommandsRepository {
+  async createNewPost(newPost: PostDBType): Promise<ObjectId> {
     const result = await postsCollection.insertOne(newPost);
-    return transformPostsResponse(newPost, result.insertedId.toString());
-  },
+    return result.insertedId;
+  }
   async updatePostById(id: string, body: PostInputModel): Promise<boolean> {
     const { blogId, content, shortDescription, title } = body;
     const foundPostById = await postsCollection.findOne({
@@ -31,15 +26,17 @@ export const postsCommandsRepository = {
             title,
             blogName: blog?.name,
           },
-        }
+        },
       );
       return updatedResult.matchedCount === 1;
     }
-  },
+  }
   async deletePostById(id: string): Promise<boolean> {
     const deleteResult = await postsCollection.deleteOne({
       _id: new ObjectId(id),
     });
     return deleteResult.deletedCount === 1;
-  },
-};
+  }
+}
+
+export const postsCommandsRepository = new PostsCommandsRepository();

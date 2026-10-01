@@ -1,30 +1,25 @@
 import { ObjectId } from "mongodb";
 import { commentsCollection } from "../../db";
-import {
-  CommentDBType,
-  CommentViewModel,
-} from "../../dto/commentsDTO/commentsDTO";
-import { transformCommentsResponse } from "../../utils/comments-utils/transformCommentsResponse";
-export const commentsCommandsRepository = {
-  async createComment(newComment: CommentDBType): Promise<CommentViewModel> {
-    const result = await commentsCollection.insertOne(newComment);
-    const findCreatedComment = await commentsCollection.findOne({
-      _id: result.insertedId,
-    });
+import { CommentDBType } from "../../dto/commentsDTO/commentsDTO";
 
-    return transformCommentsResponse(findCreatedComment!);
-  },
+class CommentsCommandsRepository {
+  async createComment(newComment: CommentDBType): Promise<ObjectId> {
+    const result = await commentsCollection.insertOne(newComment);
+    return result.insertedId;
+  }
   async deleteComment(commentId: string): Promise<boolean> {
     const deletedComment = await commentsCollection.findOneAndDelete({
       _id: new ObjectId(commentId),
     });
     return deletedComment !== null;
-  },
+  }
   async updateComment(commentId: string, content: string): Promise<boolean> {
     const newUpdatedComment = await commentsCollection.findOneAndUpdate(
       { _id: new ObjectId(commentId) },
       { $set: { content } },
     );
     return newUpdatedComment !== null;
-  },
-};
+  }
+}
+
+export const commentsCommandsRepository = new CommentsCommandsRepository();

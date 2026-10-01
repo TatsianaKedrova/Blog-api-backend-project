@@ -2,11 +2,13 @@ import { ObjectId } from "mongodb";
 import { securityDevicesCollection } from "../../db";
 import { SecurityDeviceDBType } from "../../dto/securityDevicesDTO/securityDevicesDTO";
 
-export const securityDevicesCommandsRepository = {
-  async createDeviceSession(sessionData: SecurityDeviceDBType): Promise<string> {
+class SecurityDevicesCommandsRepisitory {
+  async createDeviceSession(
+    sessionData: SecurityDeviceDBType,
+  ): Promise<string> {
     const result = await securityDevicesCollection.insertOne(sessionData);
     return result.insertedId.toString();
-  },
+  }
   async updateLastActiveDate(
     deviceId: string,
     refreshTokenCreationDate: Date,
@@ -17,7 +19,7 @@ export const securityDevicesCommandsRepository = {
       { $set: { lastActiveDate: refreshTokenCreationDate } },
     );
     return isLastActiveTimeUpdated.matchedCount > 0;
-  },
+  }
   async deleteSessionByDeviceAndUserId(
     deviceId: string,
     userId: string,
@@ -27,7 +29,7 @@ export const securityDevicesCommandsRepository = {
       _id: new ObjectId(deviceId),
     });
     return result.deletedCount > 0;
-  },
+  }
   async isAllOtherSessionsDeleted(
     userId: string,
     currentDeviceId: string,
@@ -37,5 +39,8 @@ export const securityDevicesCommandsRepository = {
       _id: { $ne: new ObjectId(currentDeviceId) },
     });
     return result.deletedCount > 0;
-  },
-};
+  }
+}
+
+export const securityDevicesCommandsRepository =
+  new SecurityDevicesCommandsRepisitory();

@@ -5,6 +5,7 @@ import {
 import { commentsCommandsRepository } from "../repositories/commands-repository/commentsCommandsRepository";
 import { postsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
+import { transformCommentsResponse } from "../utils/comments-utils/transformCommentsResponse";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 
 class CommentsService {
@@ -28,7 +29,13 @@ class CommentsService {
         userLogin: foundUser!.accountData.login,
       },
     };
-    return commentsCommandsRepository.createComment(newComment);
+    const createdComment =
+      await commentsCommandsRepository.createComment(newComment);
+    const transformedComment = transformCommentsResponse({
+      ...newComment,
+      _id: createdComment,
+    });
+    return transformedComment;
   }
   async deleteCommentById(commentId: string): Promise<boolean> {
     const deletedComment =

@@ -3,11 +3,11 @@ import { usersCollection } from "../../db";
 import { UserDBType } from "../../dto/usersDTO/usersDTO";
 import { usersQueryRepository } from "../query-repository/usersQueryRepository";
 
-export const usersCommandsRepository = {
+class UsersCommandsRepository {
   async createNewUser(newUser: UserDBType): Promise<ObjectId> {
     const createdUser = await usersCollection.insertOne(newUser);
     return createdUser.insertedId;
-  },
+  }
   async deleteUser(id: string): Promise<boolean> {
     const user = await usersQueryRepository.findUserById(id);
     if (!user) return false;
@@ -16,7 +16,7 @@ export const usersCommandsRepository = {
       _id: new ObjectId(id),
     });
     return deleteResult.deletedCount === 1;
-  },
+  }
   async updateUserIsConfirmed(_id: ObjectId): Promise<boolean> {
     const updateIsUserConfirmed = await usersCollection.updateOne(
       { _id },
@@ -29,7 +29,7 @@ export const usersCommandsRepository = {
       },
     );
     return updateIsUserConfirmed.modifiedCount === 1;
-  },
+  }
   async updateUserCodeAndExpirationDate(
     _id: ObjectId,
     code: string,
@@ -47,5 +47,7 @@ export const usersCommandsRepository = {
       },
     );
     return updateIsUserConfirmed.modifiedCount === 1;
-  },
-};
+  }
+}
+
+export const usersCommandsRepository = new UsersCommandsRepository();

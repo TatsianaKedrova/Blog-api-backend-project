@@ -7,12 +7,12 @@ import {
 import { transformBlogsResponse } from "../../utils/blogs-utils/transformBlogsResponse";
 import { ObjectId } from "mongodb";
 
-export const blogsCommandsRepository = {
+class BlogsCommandsRepository {
   async createNewBlog(newBlog: BlogDBType): Promise<BlogViewModel> {
     const result = await blogsCollection.insertOne(newBlog);
 
     return transformBlogsResponse(newBlog, result.insertedId.toString());
-  },
+  }
   async updateBlogById(id: string, body: BlogInputModel): Promise<boolean> {
     const { description, name, websiteUrl } = body;
     const foundBlog = await blogsCollection.findOne({
@@ -23,15 +23,17 @@ export const blogsCommandsRepository = {
     } else {
       const updatedResult = await blogsCollection.updateOne(
         { _id: foundBlog._id },
-        { $set: { name, description, websiteUrl } }
+        { $set: { name, description, websiteUrl } },
       );
       return updatedResult.matchedCount === 1;
     }
-  },
+  }
   async deleteBlogById(id: string): Promise<boolean> {
     const deleteResult = await blogsCollection.deleteOne({
       _id: new ObjectId(id),
     });
     return deleteResult.deletedCount === 1;
-  },
-};
+  }
+}
+
+export const blogsCommandsRepository = new BlogsCommandsRepository();
