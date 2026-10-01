@@ -1,6 +1,10 @@
 import { Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { PostInputModel, PostViewModel } from "../dto/postsDTO/PostModel";
+import {
+  CreatePostForSpecificBlogType,
+  PostInputModel,
+  PostViewModel,
+} from "../dto/postsDTO/PostModel";
 import { postsService } from "../service/postsService";
 import {
   RequestBodyModel,
@@ -70,12 +74,28 @@ export const createNewPost = async (
   req: RequestBodyModel<PostInputModel>,
   res: Response<PostViewModel | TApiErrorResultObject>,
 ) => {
-  const newPost = await postsService.createNewPost(req.body);
+  const newPost = await postsService.createNewPost(req.body.blogId, req.body);
   if (!newPost) {
     res.sendStatus(StatusCodes.CONFLICT);
   } else {
     res.status(StatusCodes.CREATED).send(newPost);
   }
+};
+
+// @desc Create new post for specified blog
+// @route GET /api/blogs/:blogId/posts
+// @access Private
+export const createPostForSpecificBlog = async (
+  req: RequestWithURIParamsAndBody<
+    URIParamsRequest,
+    CreatePostForSpecificBlogType
+  >,
+  res: Response<PostViewModel>,
+) => {
+  const createdPost = await postsService.createNewPost(req.params.id, req.body);
+  if (!createdPost) {
+    res.sendStatus(StatusCodes.NOT_FOUND);
+  } else res.status(StatusCodes.CREATED).send(createdPost);
 };
 
 // @desc Update a post

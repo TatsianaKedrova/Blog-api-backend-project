@@ -9,7 +9,7 @@ export class PostDBType {
   public blogName: string;
   public createdAt: string;
   constructor(data: {
-    _id: ObjectId;
+    _id?: ObjectId;
     title: string;
     shortDescription: string;
     content: string;

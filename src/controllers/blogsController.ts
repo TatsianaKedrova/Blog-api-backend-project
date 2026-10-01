@@ -14,7 +14,6 @@ import { blogsService } from "../service/blogsService";
 import { QueryParamsWithSearch } from "../dto/common/SortPaginatorQueryParamsType";
 import { Paginator } from "../dto/common/PaginatorModel";
 import {
-  CreatePostForSpecificBlogType,
   PostViewModel,
 } from "../dto/postsDTO/PostModel";
 import { blogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
@@ -75,25 +74,6 @@ export const getBlogPosts = async (
       );
     res.status(StatusCodes.OK).send(postsFromSpecificBlog);
   }
-};
-
-// @desc Create new post for specified blog
-// @route GET /api/blogs/:blogId/posts
-// @access Private
-export const createPostForSpecificBlog = async (
-  req: RequestWithURIParamsAndBody<
-    URIParamsRequest,
-    CreatePostForSpecificBlogType
-  >,
-  res: Response<PostViewModel>,
-) => {
-  const createdPost = await blogsService.createNewPostForSpecificBlog(
-    req.body,
-    req.params.id,
-  );
-  if (!createdPost) {
-    res.sendStatus(StatusCodes.NOT_FOUND);
-  } else res.status(StatusCodes.CREATED).send(createdPost);
 };
 
 // @desc Get blog by ID

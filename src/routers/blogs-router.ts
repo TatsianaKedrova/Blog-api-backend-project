@@ -5,7 +5,6 @@ import { blogsValidator } from "../utils/blogs-utils/blogsValidator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import {
   createNewBlog,
-  createPostForSpecificBlog,
   deleteBlogById,
   getBlogPosts,
   getBlogs,
@@ -14,6 +13,7 @@ import {
 } from "../controllers/blogsController";
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
 import { postsValidatorForSpecificBlog } from "../utils/posts-utils/postsValidator";
+import { createNewPost } from "../controllers/postsController";
 export const blogsRouter = express.Router({});
 
 //TODO: GET LIST OF BLOGS
@@ -30,7 +30,7 @@ blogsRouter.post(
   validateObjectIdMiddleware,
   postsValidatorForSpecificBlog,
   responseErrorValidationMiddleware,
-  createPostForSpecificBlog
+  createNewPost,
 );
 //TODO: CREATE A NEW BLOG
 blogsRouter.post(
@@ -38,7 +38,7 @@ blogsRouter.post(
   basicAuthMiddleware,
   blogsValidator,
   responseErrorValidationMiddleware,
-  createNewBlog
+  createNewBlog,
 );
 
 //TODO: UPDATE BLOG BY ID
@@ -48,7 +48,7 @@ blogsRouter.put(
   validateObjectIdMiddleware,
   blogsValidator,
   responseErrorValidationMiddleware,
-  updateBlogById
+  updateBlogById,
 );
 
 //TODO: DELETE BLOG BY ID
@@ -56,5 +56,5 @@ blogsRouter.delete(
   "/:id",
   basicAuthMiddleware,
   validateObjectIdMiddleware,
-  deleteBlogById
+  deleteBlogById,
 );

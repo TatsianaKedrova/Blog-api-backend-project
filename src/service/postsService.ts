@@ -8,40 +8,32 @@ import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { ObjectId } from "mongodb";
 import { postsCommandsRepository } from "../repositories/commands-repository/postsCommandsRepository";
 import { blogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
+import { transformPostsResponse } from "../utils/posts-utils/transformPostsResponse";
 
 class PostsService {
-  async createNewPost(body: PostInputModel): Promise<PostViewModel | null> {
-    const { title, shortDescription, content, blogId } = body;
+  async createNewPost(
+    blogId: string,
+    postData: Omit<PostInputModel, "blogId"> | PostInputModel,
+  ): Promise<PostViewModel | null> {
+    const { title, shortDescription, content } = postData;
     const blog = await blogsQueryRepository.findBlogById(blogId);
     if (!blog) {
       return null;
     }
-    const newPost: PostDBType = {
+    const newPost = new PostDBType({
       title,
       shortDescription,
       content,
       blogId: new ObjectId(blogId),
-      blogName: blog!.name,
-      createdAt: creationDate(),
-    };
-    return await postsCommandsRepository.createNewPost(newPost);
-  }
-  async createNewPostForSpecificBlog(
-    body: CreatePostForSpecificBlogType,
-    id: string,
-  ): Promise<PostViewModel | null> {
-    const { title, shortDescription, content } = body;
-    const blog = await blogsQueryRepository.findBlogById(id);
-    if (!blog) return null;
-    const newPost: PostDBType = {
-      title,
-      shortDescription,
-      content,
-      blogId: new ObjectId(id),
       blogName: blog.name,
       createdAt: creationDate(),
-    };
-    return await postsCommandsRepository.createNewPost(newPost);
+    });
+    const newPostId = await postsCommandsRepository.createNewPost(newPost);
+    const postTransformedResult = transformPostsResponse({
+      ...newPost,
+      _id: newPostId,
+    });
+    return postTransformedResult;
   }
   async updatePostById(id: string, body: PostInputModel): Promise<boolean> {
     return await postsCommandsRepository.updatePostById(id, body);
