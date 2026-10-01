@@ -1,25 +1,43 @@
-import { UserDBType, UserViewModel } from "../dto/usersDTO/usersDTO";
+import {
+  UserDBType,
+  UserInputModel,
+  UserViewModel,
+} from "../dto/usersDTO/usersDTO";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
-import bcrypt from "bcryptjs";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { ObjectId, WithId } from "mongodb";
-import { UserAlreadyExistsError } from "../utils/errors-utils/registration-errors/UserAlreadyExistsError";
 import { TFieldError } from "../dto/common/ErrorResponseModel";
 import { authService } from "./authService";
+import { bcryptService } from "../globals/bcrypt/bcryptService";
+import { createConfirmationCode } from "../utils/auth-utils/createUserConfirmationCode";
+import { createCodeExpirationDate } from "../utils/auth-utils/createCodeExpirationDate";
+import { emailManager } from "../globals/email/email-manager";
+import { createAppError } from "../utils/appErrors";
+import { StatusCodes } from "http-status-codes";
+import { transformUsersResponse } from "../utils/usersUtils/transformUsersResponse";
 
 export const usersService = {
   async createUser(
-    email: string,
-    login: string,
-    password: string,
-    confirmationCode: string | null,
-    isConfirmed: boolean,
-    expirationDate: string | null,
+    body: UserInputModel,
+    isAddedBySuperAdmin: boolean,
   ): Promise<UserViewModel | TFieldError> {
-    const passwordSalt = await bcrypt.genSalt(10);
-    const passwordHash = await this._generateHash(password, passwordSalt);
-    const newUser: UserDBType = {
+    const { login, email, password } = body;
+
+    const isUserNotExist = await usersQueryRepository.findUserByEmailAndLogin(
+      login,
+      email,
+    );
+    if (!isUserNotExist) {
+      throw createAppError(
+        "User with this Login or Email already exists",
+        StatusCodes.BAD_REQUEST,
+      );
+    }
+
+    const { passwordSalt, passwordHash } =
+      await bcryptService._generateHash(password);
+    const newUserData: UserDBType = {
       accountData: {
         passwordSalt,
         passwordHash,
@@ -28,35 +46,27 @@ export const usersService = {
         createdAt: creationDate(),
       },
       emailConfirmation: {
-        confirmationCode,
-        isConfirmed,
-        expirationDate,
+        confirmationCode: isAddedBySuperAdmin ? null : createConfirmationCode(),
+        isConfirmed: isAddedBySuperAdmin ? true : false,
+        expirationDate: isAddedBySuperAdmin ? null : createCodeExpirationDate(),
       },
+      isAddedBySuperAdmin: false,
     };
-    const createUserResult =
-      await usersCommandsRepository.createNewUser(newUser);
-    if (createUserResult === "login") {
-      return new UserAlreadyExistsError(
-        createUserResult,
-        "User with the given login already exists",
-      );
-    } else if (createUserResult === "email") {
-      return new UserAlreadyExistsError(
-        createUserResult,
-        "User with the given email already exists",
-      );
-    } else {
-      await authService.createRefreshTokenBlacklistForUser(
-        new ObjectId(createUserResult.id),
-      );
-      return createUserResult;
-    }
+
+    const createdUserId =
+      await usersCommandsRepository.createNewUser(newUserData);
+    const newUser = transformUsersResponse({
+      ...newUserData,
+      _id: createdUserId,
+    });
+    emailManager.sendEmail(newUserData);
+    await authService.createRefreshTokenBlacklistForUser(
+      new ObjectId(createdUserId),
+    );
+    return newUser;
   },
   async deleteUser(id: string) {
     return await usersCommandsRepository.deleteUser(id);
-  },
-  async _generateHash(password: string, salt: string) {
-    return await bcrypt.hash(password, salt);
   },
   async checkCredentials(
     loginOrEmail: string,
@@ -68,7 +78,7 @@ export const usersService = {
     if (!user?.emailConfirmation.isConfirmed) {
       return null;
     }
-    const isPasswordMatch = await bcrypt.compare(
+    const isPasswordMatch = await bcryptService._passwordComparison(
       password,
       user.accountData.passwordHash,
     );

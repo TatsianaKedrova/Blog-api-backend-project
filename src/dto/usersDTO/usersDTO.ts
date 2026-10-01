@@ -1,4 +1,3 @@
-import { ObjectId } from "mongodb";
 import { PaginationSortingQueryParams } from "../common/SortPaginatorQueryParamsType";
 
 export type UserInputModel = {
@@ -14,6 +13,26 @@ export type UserViewModel = {
   createdAt: string;
 };
 
+export type AccountDataType = {
+  login: string;
+  email: string;
+  createdAt: string;
+  passwordHash: string;
+  passwordSalt: string;
+};
+export type EmailConfirmationType = {
+  isConfirmed: boolean;
+  confirmationCode: string | null;
+  expirationDate: string | null;
+};
+
+export class UserDBTypeClass {
+  constructor(
+    public accountData: AccountDataType,
+    public emailConfirmation: EmailConfirmationType,
+  ) {}
+}
+
 export type UserDBType = {
   accountData: {
     login: string;
@@ -27,6 +46,7 @@ export type UserDBType = {
     confirmationCode: string | null;
     expirationDate: string | null;
   };
+  isAddedBySuperAdmin: boolean;
 };
 
 export type UsersQueryParams = PaginationSortingQueryParams & {

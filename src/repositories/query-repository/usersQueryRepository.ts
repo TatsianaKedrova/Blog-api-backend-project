@@ -54,13 +54,13 @@ export const usersQueryRepository = {
   async findByLoginOrEmail(
     loginOrEmail: string,
   ): Promise<WithId<UserDBType> | null> {
-    const isUserExist = await usersCollection.findOne({
+    const user = await usersCollection.findOne({
       $or: [
         { "accountData.login": loginOrEmail },
         { "accountData.email": loginOrEmail },
       ],
     });
-    return isUserExist;
+    return user;
   },
   async findUserByConfirmationCode(
     code: string,
@@ -75,12 +75,12 @@ export const usersQueryRepository = {
     return user;
   },
   async findUserByEmailAndLogin(
-    email: string,
     login: string,
-  ): Promise<WithId<UserDBType> | null> {
+    email: string,
+  ): Promise<boolean> {
     const isUserExist = await usersCollection.findOne({
       $or: [{ "accountData.login": login }, { "accountData.email": email }],
     });
-    return isUserExist;
+    return isUserExist ? false : true;
   },
 };

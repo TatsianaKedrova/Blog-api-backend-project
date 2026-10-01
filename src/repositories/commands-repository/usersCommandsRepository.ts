@@ -1,25 +1,12 @@
-import { MongoServerError, ObjectId } from "mongodb";
+import { ObjectId } from "mongodb";
 import { usersCollection } from "../../db";
-import { UserDBType, UserViewModel } from "../../dto/usersDTO/usersDTO";
-import { transformUsersResponse } from "../../utils/usersUtils/transformUsersResponse";
-import { defineFieldMongoError } from "../../utils/errors-utils/defineFieldMongoError";
-import { UserNotRegisteredField } from "../../dto/common/MongoErrorTypes";
+import { UserDBType } from "../../dto/usersDTO/usersDTO";
 import { usersQueryRepository } from "../query-repository/usersQueryRepository";
 
 export const usersCommandsRepository = {
-  async createNewUser(
-    newUser: UserDBType,
-  ): Promise<UserViewModel | UserNotRegisteredField> {
-    try {
-      const createdUser = await usersCollection.insertOne(newUser);
-      return transformUsersResponse({
-        ...newUser,
-        _id: createdUser.insertedId,
-      });
-    } catch (err) {
-      const error = err as MongoServerError;
-      return defineFieldMongoError(error.message);
-    }
+  async createNewUser(newUser: UserDBType): Promise<ObjectId> {
+    const createdUser = await usersCollection.insertOne(newUser);
+    return createdUser.insertedId;
   },
   async deleteUser(id: string): Promise<boolean> {
     const user = await usersQueryRepository.findUserById(id);
