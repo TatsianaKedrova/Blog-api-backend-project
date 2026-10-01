@@ -10,7 +10,7 @@ import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { blogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
 import { postsCommandsRepository } from "../repositories/commands-repository/postsCommandsRepository";
 
-export const blogsService = {
+class BlogsService {
   async createNewBlog(body: BlogInputModel): Promise<BlogViewModel> {
     const { name, description, websiteUrl } = body;
     const newBlog = {
@@ -22,10 +22,10 @@ export const blogsService = {
     };
     const result = await blogsCommandsRepository.createNewBlog(newBlog);
     return result;
-  },
+  }
   async createNewPostForSpecificBlog(
     body: CreatePostForSpecificBlogType,
-    id: string
+    id: string,
   ): Promise<PostViewModel | null> {
     const { title, shortDescription, content } = body;
     const blog = await blogsQueryRepository.findBlogById(id);
@@ -39,11 +39,13 @@ export const blogsService = {
       createdAt: creationDate(),
     };
     return await postsCommandsRepository.createNewPost(newPost);
-  },
+  }
   async updateBlogById(id: string, body: BlogInputModel): Promise<boolean> {
     return await blogsCommandsRepository.updateBlogById(id, body);
-  },
+  }
   async deleteBlogById(id: string): Promise<boolean> {
     return await blogsCommandsRepository.deleteBlogById(id);
-  },
-};
+  }
+}
+
+export const blogsService = new BlogsService();

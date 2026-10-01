@@ -41,7 +41,7 @@ export const getAllUsers = async (
 
 export const addNewUserBySuperAdmin = async (
   req: RequestBodyModel<UserInputModel>,
-  res: Response<UserViewModel | TApiErrorResultObject>,
+  res: Response<UserViewModel>,
 ) => {
   const newUser = await usersService.createUser(req.body, true);
 

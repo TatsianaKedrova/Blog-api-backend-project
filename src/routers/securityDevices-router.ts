@@ -1,7 +1,7 @@
 import express from "express";
 import {
   getAllActiveSessions,
-  terminateAllOtherSessions,
+  terminateAllSessionsExceptCurrent,
   terminateSessionById,
 } from "../controllers/securityDevicesController";
 import { refreshTokenValidityMiddleware } from "../middlewares/refreshTokenValidityMiddleware";
@@ -19,7 +19,7 @@ securityDevicesRouter.get(
 securityDevicesRouter.delete(
   "/",
   refreshTokenValidityMiddleware,
-  terminateAllOtherSessions,
+  terminateAllSessionsExceptCurrent,
 );
 
 /**terminate specified device session*/

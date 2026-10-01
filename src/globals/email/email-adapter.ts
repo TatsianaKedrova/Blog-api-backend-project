@@ -1,6 +1,5 @@
 import smtpTransport from "nodemailer-smtp-transport";
 import nodemailer from "nodemailer";
-import { UserDBType } from "../../dto/usersDTO/usersDTO";
 
 export const emailAdapter = {
   async sendEmail(email: string, html: string) {
@@ -35,5 +34,4 @@ export const emailAdapter = {
       console.error("❌ Nodemailer failed to dispatch email:", error);
     }
   },
-  async sendConfirmationEmail(user: UserDBType) {},
 };

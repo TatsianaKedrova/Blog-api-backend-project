@@ -7,7 +7,6 @@ import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { ObjectId, WithId } from "mongodb";
-import { TFieldError } from "../dto/common/ErrorResponseModel";
 import { authService } from "./authService";
 import { bcryptService } from "../globals/bcrypt/bcryptService";
 import { createConfirmationCode } from "../utils/auth-utils/createUserConfirmationCode";
@@ -17,11 +16,11 @@ import { createAppError } from "../utils/appErrors";
 import { StatusCodes } from "http-status-codes";
 import { transformUsersResponse } from "../utils/usersUtils/transformUsersResponse";
 
-export const usersService = {
+class UserService {
   async createUser(
     body: UserInputModel,
     isAddedBySuperAdmin: boolean,
-  ): Promise<UserViewModel | TFieldError> {
+  ): Promise<UserViewModel> {
     const { login, email, password } = body;
 
     const isUserNotExist = await usersQueryRepository.findUserByEmailAndLogin(
@@ -37,21 +36,21 @@ export const usersService = {
 
     const { passwordSalt, passwordHash } =
       await bcryptService._generateHash(password);
-    const newUserData: UserDBType = {
-      accountData: {
+    const newUserData = new UserDBType(
+      {
         passwordSalt,
         passwordHash,
         login,
         email,
         createdAt: creationDate(),
       },
-      emailConfirmation: {
+      {
         confirmationCode: isAddedBySuperAdmin ? null : createConfirmationCode(),
         isConfirmed: isAddedBySuperAdmin ? true : false,
         expirationDate: isAddedBySuperAdmin ? null : createCodeExpirationDate(),
       },
-      isAddedBySuperAdmin: false,
-    };
+      false,
+    );
 
     const createdUserId =
       await usersCommandsRepository.createNewUser(newUserData);
@@ -64,10 +63,10 @@ export const usersService = {
       new ObjectId(createdUserId),
     );
     return newUser;
-  },
+  }
   async deleteUser(id: string) {
     return await usersCommandsRepository.deleteUser(id);
-  },
+  }
   async checkCredentials(
     loginOrEmail: string,
     password: string,
@@ -86,5 +85,7 @@ export const usersService = {
       return null;
     }
     return user;
-  },
-};
+  }
+}
+
+export const usersService = new UserService();

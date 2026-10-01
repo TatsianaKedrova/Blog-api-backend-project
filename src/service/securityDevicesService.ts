@@ -1,7 +1,8 @@
 import { ObjectId } from "mongodb";
 import { securityDevicesCommandsRepository } from "../repositories/commands-repository/securityDevicesCommandsRepository";
+import { SecurityDeviceDBType } from "../dto/securityDevicesDTO/securityDevicesDTO";
 
-export const securityDevicesService = {
+class SecurityDevicesService {
   async createDeviceSession(
     clientIP: string,
     deviceTitle: string,
@@ -11,17 +12,17 @@ export const securityDevicesService = {
     const refreshTokenExpirationDate = new Date(
       tokenCreationDate.getTime() + 30 * 60 * 1000,
     );
-    const sessionData = {
+    const newSession = new SecurityDeviceDBType({
       ip: clientIP,
       title: deviceTitle,
       lastActiveDate: tokenCreationDate,
       refreshTokenExpirationDate: refreshTokenExpirationDate,
       userId: new ObjectId(userId),
-    };
+    });
     const deviceId =
-      await securityDevicesCommandsRepository.createDeviceSession(sessionData);
+      await securityDevicesCommandsRepository.createDeviceSession(newSession);
     return deviceId;
-  },
+  }
   async deleteSessionById(deviceId: string, userId: string): Promise<boolean> {
     const result =
       await securityDevicesCommandsRepository.deleteSessionByDeviceAndUserId(
@@ -29,8 +30,8 @@ export const securityDevicesService = {
         userId,
       );
     return result;
-  },
-  async deleteAllOtherSessions(
+  }
+  async deleteAllSessionsExceptCurrent(
     userId: string,
     currentDeviceId: string,
   ): Promise<void> {
@@ -38,7 +39,7 @@ export const securityDevicesService = {
       userId,
       currentDeviceId,
     );
-  },
+  }
   async updateLastActiveDate(
     deviceId: string,
     refreshTokenCreationDate: Date,
@@ -51,5 +52,7 @@ export const securityDevicesService = {
         userId,
       );
     return updateDeviceLastActiveDate;
-  },
-};
+  }
+}
+
+export const securityDevicesService = new SecurityDevicesService();

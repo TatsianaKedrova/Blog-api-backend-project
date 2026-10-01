@@ -1,8 +1,8 @@
 import { apiCallsCollection } from "../../db";
-import { ApiCalls } from "../../dto/securityDevicesDTO/securityDevicesDTO";
+import { ApiCallsDBType } from "../../dto/apiCallsDTO/apiCallsDTO";
 
 export const apiCallsCommandsRepository = {
-  async addApiCall(apiCall: ApiCalls): Promise<boolean> {
+  async addApiCall(apiCall: ApiCallsDBType): Promise<boolean> {
     const result = await apiCallsCollection.insertOne(apiCall);
     return result.acknowledged;
   },
