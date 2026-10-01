@@ -1,12 +1,23 @@
-import { ObjectId } from "mongodb";
 
-export interface BlogDBType {
-  _id?: ObjectId;
-  name: string;
-  description: string;
-  websiteUrl: string;
-  createdAt: string;
-  isMembership: boolean; //MUST be false. True if user has not expired membership subscription to blog
+export class BlogDBType {
+  public name: string;
+  public description: string;
+  public websiteUrl: string;
+  public createdAt: string;
+  public isMembership: boolean;
+  constructor(data: {
+    name: string;
+    description: string;
+    websiteUrl: string;
+    createdAt: string;
+    isMembership: boolean;
+  }) {
+    this.createdAt = data.createdAt;
+    this.description = data.description;
+    this.isMembership = data.isMembership;
+    this.websiteUrl = data.websiteUrl;
+    this.name = data.name;
+  }
 }
 
 export type BlogViewModel = {
