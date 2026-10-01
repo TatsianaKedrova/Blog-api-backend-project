@@ -1,9 +1,9 @@
 import { ObjectId } from "mongodb";
 import { securityDevicesCollection } from "../../db";
-import { SessionDeviceDBType } from "../../dto/securityDevicesDTO/securityDevicesDTO";
+import { SecurityDeviceDBType } from "../../dto/securityDevicesDTO/securityDevicesDTO";
 
 export const securityDevicesCommandsRepository = {
-  async createDeviceSession(sessionData: SessionDeviceDBType): Promise<string> {
+  async createDeviceSession(sessionData: SecurityDeviceDBType): Promise<string> {
     const result = await securityDevicesCollection.insertOne(sessionData);
     return result.insertedId.toString();
   },

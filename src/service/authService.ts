@@ -18,7 +18,7 @@ import {
 import { jwtService } from "../globals/jwt-service";
 import { securityDevicesService } from "./securityDevicesService";
 
-export const authService = {
+class AuthService {
   async confirmCode(code: string): Promise<TFieldError | string> {
     const user = await usersQueryRepository.findUserByConfirmationCode(code);
     if (!user || user?.emailConfirmation.confirmationCode !== code) {
@@ -40,7 +40,7 @@ export const authService = {
       }
       return user.accountData.login;
     }
-  },
+  }
   async resendEmail(email: string): Promise<TFieldError | string> {
     const user = await usersQueryRepository.findUserByEmail(email);
     if (!user) {
@@ -54,7 +54,7 @@ export const authService = {
       return new UpdateUserError("registration-email-resending");
     }
     return user.accountData.email;
-  },
+  }
   async loginAndSessionCreate(
     clientIP: string,
     deviceTitle: string,
@@ -72,14 +72,14 @@ export const authService = {
       accessToken: accessToken as AccessToken,
       refreshToken: refreshToken as RefreshToken,
     };
-  },
+  }
   async createRefreshTokenBlacklistForUser(
     userId: ObjectId,
   ): Promise<string | null> {
     return await authCommandsRepository.createUserRefreshTokensBlacklist(
       userId,
     );
-  },
+  }
   async placeRefreshTokenToBlacklist(
     refreshToken: string,
     userId: string,
@@ -88,7 +88,7 @@ export const authService = {
       refreshToken,
       userId,
     );
-  },
+  }
   async refreshSession(
     oldRefreshToken: string,
     userId: string,
@@ -111,5 +111,7 @@ export const authService = {
       accessToken: accessToken as AccessToken,
       refreshToken: refreshToken as RefreshToken,
     };
-  },
-};
+  }
+}
+
+export const authService = new AuthService();

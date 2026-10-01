@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { securityDevicesCollection } from "../../db";
 import {
   DeviceViewModel,
-  SessionDeviceDBType,
+  SecurityDeviceDBType,
 } from "../../dto/securityDevicesDTO/securityDevicesDTO";
 
 export const securityDevicesQueryRepository = {
@@ -23,7 +23,7 @@ export const securityDevicesQueryRepository = {
   },
   async findSessionByDeviceId(
     deviceId: string,
-  ): Promise<SessionDeviceDBType | null> {
+  ): Promise<SecurityDeviceDBType | null> {
     try {
       if (!ObjectId.isValid(deviceId)) {
         return null;

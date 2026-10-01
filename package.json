@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "tsx watch --env-file=.env src/index.ts",
     "build": "tsc",
+    "watch": "tsc --watch",
     "start": "node --env-file .env dist/index.js",
     "test": "jest --detectOpenHandles --watch --runTestsByPath"
   },
