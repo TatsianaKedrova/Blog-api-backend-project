@@ -1,5 +1,4 @@
 import {
-  CreatePostForSpecificBlogType,
   PostDBType,
   PostInputModel,
   PostViewModel,

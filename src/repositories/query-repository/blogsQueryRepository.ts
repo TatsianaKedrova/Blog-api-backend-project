@@ -8,13 +8,13 @@ import { transformPostsResponse } from "../../utils/posts-utils/transformPostsRe
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 
-export const blogsQueryRepository = {
+class BlogsQueryRepository {
   async findBlogs(
     searchNameTerm: string,
     pageNumber: number,
     sortBy: string,
     pageSize: number,
-    sortDirection: SortDirection
+    sortDirection: SortDirection,
   ): Promise<Paginator<BlogViewModel>> {
     let filter: Filter<BlogDBType> = {};
     const skip = paginationHandler(pageNumber, pageSize);
@@ -33,15 +33,15 @@ export const blogsQueryRepository = {
       transformBlogsResponse,
       totalCount,
       pageSize,
-      pageNumber
+      pageNumber,
     );
-  },
+  }
   async findPostsForSpecificBlog(
     id: string,
     pageNumber: number,
     sortBy: string,
     pageSize: number,
-    sortDirection: SortDirection
+    sortDirection: SortDirection,
   ): Promise<Paginator<PostViewModel>> {
     const skip = paginationHandler(pageNumber, pageSize);
 
@@ -59,16 +59,15 @@ export const blogsQueryRepository = {
       transformPostsResponse,
       totalCount,
       pageSize,
-      pageNumber
+      pageNumber,
     );
-  },
-  async findBlogById(id: string): Promise<BlogViewModel | null> {
+  }
+  async findBlogById(id: string): Promise<BlogDBType | null> {
     const foundBlog = await blogsCollection.findOne<BlogDBType>({
       _id: new ObjectId(id),
     });
-    if (foundBlog) {
-      return transformBlogsResponse(foundBlog);
-    }
     return foundBlog;
-  },
-};
+  }
+}
+
+export const blogsQueryRepository = new BlogsQueryRepository();

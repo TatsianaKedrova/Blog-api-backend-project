@@ -5,7 +5,7 @@ import {
   SecurityDeviceDBType,
 } from "../../dto/securityDevicesDTO/securityDevicesDTO";
 
-export const securityDevicesQueryRepository = {
+class SecurityDevicesQueryRepository {
   async getActiveSessions(userId: string): Promise<DeviceViewModel[] | []> {
     const allActiveSessions = await securityDevicesCollection
       .find({ userId: new ObjectId(userId) })
@@ -20,7 +20,7 @@ export const securityDevicesQueryRepository = {
       lastActiveDate: session.lastActiveDate.toISOString(),
       deviceId: session._id.toString(),
     }));
-  },
+  }
   async findSessionByDeviceId(
     deviceId: string,
   ): Promise<SecurityDeviceDBType | null> {
@@ -36,5 +36,8 @@ export const securityDevicesQueryRepository = {
       console.error("Database error in findSessionByDeviceId:", error);
       throw error;
     }
-  },
-};
+  }
+}
+
+export const securityDevicesQueryRepository =
+  new SecurityDevicesQueryRepository();

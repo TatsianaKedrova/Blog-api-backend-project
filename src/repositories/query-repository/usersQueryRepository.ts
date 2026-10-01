@@ -6,7 +6,7 @@ import { Paginator } from "../../dto/common/PaginatorModel";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { transformUsersResponse } from "../../utils/usersUtils/transformUsersResponse";
 
-export const usersQueryRepository = {
+class UsersQueryRepository {
   async getUsers(
     pageNumber: number,
     sortBy: string,
@@ -46,11 +46,11 @@ export const usersQueryRepository = {
       pageSize,
       pageNumber,
     );
-  },
+  }
   async findUserById(id: string): Promise<WithId<UserDBType> | null> {
     const foundUser = await usersCollection.findOne({ _id: new ObjectId(id) });
     return foundUser;
-  },
+  }
   async findByLoginOrEmail(
     loginOrEmail: string,
   ): Promise<WithId<UserDBType> | null> {
@@ -61,7 +61,7 @@ export const usersQueryRepository = {
       ],
     });
     return user;
-  },
+  }
   async findUserByConfirmationCode(
     code: string,
   ): Promise<WithId<UserDBType> | null> {
@@ -69,11 +69,11 @@ export const usersQueryRepository = {
       "emailConfirmation.confirmationCode": code,
     });
     return foundUser;
-  },
+  }
   async findUserByEmail(email: string): Promise<WithId<UserDBType> | null> {
     const user = await usersCollection.findOne({ "accountData.email": email });
     return user;
-  },
+  }
   async findUserByEmailAndLogin(
     login: string,
     email: string,
@@ -82,5 +82,7 @@ export const usersQueryRepository = {
       $or: [{ "accountData.login": login }, { "accountData.email": email }],
     });
     return isUserExist ? false : true;
-  },
-};
+  }
+}
+
+export const usersQueryRepository = new UsersQueryRepository();

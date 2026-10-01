@@ -13,9 +13,7 @@ import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { blogsService } from "../service/blogsService";
 import { QueryParamsWithSearch } from "../dto/common/SortPaginatorQueryParamsType";
 import { Paginator } from "../dto/common/PaginatorModel";
-import {
-  PostViewModel,
-} from "../dto/postsDTO/PostModel";
+import { PostViewModel } from "../dto/postsDTO/PostModel";
 import { blogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
 
 // @desc Get all blogs

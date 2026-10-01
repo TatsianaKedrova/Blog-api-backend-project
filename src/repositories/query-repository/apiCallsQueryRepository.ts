@@ -1,6 +1,6 @@
 import { apiCallsCollection } from "../../db";
 
-export const apiCallsQueryRepository = {
+class ApiQueryRepository {
   async countApiCalls(
     ip: string,
     url: string,
@@ -14,5 +14,7 @@ export const apiCallsQueryRepository = {
       })
       .toArray();
     return result.length;
-  },
-};
+  }
+}
+
+export const apiCallsQueryRepository = new ApiQueryRepository();
