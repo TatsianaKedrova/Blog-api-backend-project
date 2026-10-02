@@ -3,25 +3,27 @@ import express from "express";
 import { basicAuthMiddleware } from "../middlewares/basicAuth";
 import { blogsValidator } from "../utils/blogs-utils/blogsValidator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
-import {
-  createNewBlog,
-  deleteBlogById,
-  getBlogPosts,
-  getBlogs,
-  getBlogsById,
-  updateBlogById,
-} from "../controllers/blogsController";
+
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
 import { postsValidatorForSpecificBlog } from "../utils/posts-utils/postsValidator";
-import { createNewPost } from "../controllers/postsController";
+import { postsController } from "../controllers/postsController";
+import { blogsController } from "../controllers/blogsController";
 export const blogsRouter = express.Router({});
 
 //TODO: GET LIST OF BLOGS
-blogsRouter.get("/", getBlogs);
+blogsRouter.get("/", blogsController.getBlogs);
 //TODO: GET BLOG BY ID
-blogsRouter.get("/:id", validateObjectIdMiddleware, getBlogsById);
+blogsRouter.get(
+  "/:id",
+  validateObjectIdMiddleware,
+  blogsController.getBlogsById,
+);
 //TODO: GET ALL POSTS FOR SPECIFIC BLOG
-blogsRouter.get("/:id/posts", validateObjectIdMiddleware, getBlogPosts);
+blogsRouter.get(
+  "/:id/posts",
+  validateObjectIdMiddleware,
+  blogsController.getBlogPosts,
+);
 
 //TODO: CREATE POST FOR SPECIFIC BLOG
 blogsRouter.post(
@@ -30,7 +32,7 @@ blogsRouter.post(
   validateObjectIdMiddleware,
   postsValidatorForSpecificBlog,
   responseErrorValidationMiddleware,
-  createNewPost,
+  postsController.createNewPost,
 );
 //TODO: CREATE A NEW BLOG
 blogsRouter.post(
@@ -38,7 +40,7 @@ blogsRouter.post(
   basicAuthMiddleware,
   blogsValidator,
   responseErrorValidationMiddleware,
-  createNewBlog,
+  blogsController.createNewBlog,
 );
 
 //TODO: UPDATE BLOG BY ID
@@ -48,7 +50,7 @@ blogsRouter.put(
   validateObjectIdMiddleware,
   blogsValidator,
   responseErrorValidationMiddleware,
-  updateBlogById,
+  blogsController.updateBlogById,
 );
 
 //TODO: DELETE BLOG BY ID
@@ -56,5 +58,5 @@ blogsRouter.delete(
   "/:id",
   basicAuthMiddleware,
   validateObjectIdMiddleware,
-  deleteBlogById,
+  blogsController.deleteBlogById,
 );

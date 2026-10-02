@@ -25,130 +25,121 @@ import { createAppError } from "../utils/appErrors";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { getCookieOptions } from "../utils/auth-utils/cookie";
 
-export const logIn = async (
-  req: RequestBodyModel<LoginInputModel>,
-  res: Response,
-) => {
-  const user = await usersService.checkCredentials(
-    req.body.loginOrEmail,
-    req.body.password,
-  );
-  if (!user) {
-    throw createAppError("Invalid login credentials", StatusCodes.UNAUTHORIZED);
-  }
-  const clientIP = req.ip || "127.0.0.1";
-  const deviceTitle = getDeviceTitle(req.headers["user-agent"]);
-  const userId = user._id.toString();
-  const { accessToken, refreshToken } = await authService.loginAndSessionCreate(
-    clientIP,
-    deviceTitle,
-    userId,
-  );
-  res.cookie("refreshToken", refreshToken, getCookieOptions());
-  return res.status(StatusCodes.OK).send({ accessToken });
-};
-
-export const getInfoAboutUser = async (
-  req: Request,
-  res: Response<MeViewModel>,
-) => {
-  const foundUser = await usersQueryRepository.findUserById(req.userId);
-  if (foundUser) {
-    const currentUser = getCurrentUserInfo(foundUser);
-    res.status(StatusCodes.OK).send(currentUser);
-  } else {
-    res.sendStatus(StatusCodes.UNAUTHORIZED);
-  }
-};
-
-export const registerUser = async (
-  req: RequestBodyModel<UserInputModel>,
-  res: Response<TApiErrorResultObject>,
-) => {
-  await usersService.createUser(req.body, false);
-  res.sendStatus(StatusCodes.NO_CONTENT);
-};
-
-export const confirmRegistration = async (
-  req: RequestBodyModel<RegistrationConfirmationCodeModel>,
-  res: Response<TApiErrorResultObject>,
-) => {
-  const confirmCodeResult = await authService.confirmCode(req.body.code);
-  if (
-    confirmCodeResult instanceof IncorrectConfirmationCodeError ||
-    confirmCodeResult instanceof UserIsConfirmedError ||
-    confirmCodeResult instanceof ConfirmationCodeExpiredError
-  ) {
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .send(responseErrorFunction([confirmCodeResult]));
-    return;
-  }
-  if (confirmCodeResult instanceof UpdateUserError) {
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send(responseErrorFunction([confirmCodeResult]));
-    return;
-  }
-  res.sendStatus(StatusCodes.NO_CONTENT);
-};
-
-export const resendRegistrationEmail = async (
-  req: RequestBodyModel<RegistrationEmailResending>,
-  res: Response<TApiErrorResultObject>,
-) => {
-  const resendEmailResult = await authService.resendEmail(req.body.email);
-  if (
-    resendEmailResult instanceof WrongEmailError ||
-    resendEmailResult instanceof EmailAlreadyConfirmedError
-  ) {
-    res
-      .status(StatusCodes.BAD_REQUEST)
-      .send(responseErrorFunction([resendEmailResult]));
-    return;
-  }
-  if (resendEmailResult instanceof UpdateUserError) {
-    res
-      .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send(responseErrorFunction([resendEmailResult]));
-    return;
-  }
-  res.sendStatus(StatusCodes.NO_CONTENT);
-};
-
-//@desc Generate new pair of access and refresh tokens (in cookie client must send correct refresh token that will be revoked after refreshing)
-export const refreshTokenFunction = async (
-  req: Request,
-  res: Response<{ accessToken: string }>,
-) => {
-  const oldRefreshToken = req.cookies.refreshToken;
-  const userId = req.userId;
-  const deviceId = req.currentDeviceId;
-  const { accessToken, refreshToken } = await authService.refreshSession(
-    oldRefreshToken,
-    userId,
-    deviceId,
-  );
-  res.cookie("refreshToken", refreshToken, getCookieOptions());
-  return res.status(StatusCodes.OK).send({ accessToken });
-};
-
-export const logout = async (req: Request, res: Response) => {
-  const refreshToken = req.cookies.refreshToken;
-  const userId = req.userId;
-  const currentDeviceId = req.currentDeviceId;
-  await authService.placeRefreshTokenToBlacklist(refreshToken, userId);
-  const isSessionDeleted = await securityDevicesService.deleteSessionById(
-    currentDeviceId,
-    userId,
-  );
-  res.clearCookie("refreshToken", { httpOnly: true, secure: true });
-
-  if (!isSessionDeleted) {
-    throw createAppError(
-      "Session was deleted or not found",
-      StatusCodes.UNAUTHORIZED,
+class AuthController {
+  async logIn(req: RequestBodyModel<LoginInputModel>, res: Response) {
+    const user = await usersService.checkCredentials(
+      req.body.loginOrEmail,
+      req.body.password,
     );
+    if (!user) {
+      throw createAppError(
+        "Invalid login credentials",
+        StatusCodes.UNAUTHORIZED,
+      );
+    }
+    const clientIP = req.ip || "127.0.0.1";
+    const deviceTitle = getDeviceTitle(req.headers["user-agent"]);
+    const userId = user._id.toString();
+    const { accessToken, refreshToken } =
+      await authService.loginAndSessionCreate(clientIP, deviceTitle, userId);
+    res.cookie("refreshToken", refreshToken, getCookieOptions());
+    return res.status(StatusCodes.OK).send({ accessToken });
   }
-  res.sendStatus(StatusCodes.NO_CONTENT);
-};
+  async getInfoAboutUser(req: Request, res: Response<MeViewModel>) {
+    const foundUser = await usersQueryRepository.findUserById(req.userId);
+    if (foundUser) {
+      const currentUser = getCurrentUserInfo(foundUser);
+      res.status(StatusCodes.OK).send(currentUser);
+    } else {
+      res.sendStatus(StatusCodes.UNAUTHORIZED);
+    }
+  }
+  async registerUser(
+    req: RequestBodyModel<UserInputModel>,
+    res: Response<TApiErrorResultObject>,
+  ) {
+    await usersService.createUser(req.body, false);
+    res.sendStatus(StatusCodes.NO_CONTENT);
+  }
+  async confirmRegistration(
+    req: RequestBodyModel<RegistrationConfirmationCodeModel>,
+    res: Response<TApiErrorResultObject>,
+  ) {
+    const confirmCodeResult = await authService.confirmCode(req.body.code);
+    if (
+      confirmCodeResult instanceof IncorrectConfirmationCodeError ||
+      confirmCodeResult instanceof UserIsConfirmedError ||
+      confirmCodeResult instanceof ConfirmationCodeExpiredError
+    ) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .send(responseErrorFunction([confirmCodeResult]));
+      return;
+    }
+    if (confirmCodeResult instanceof UpdateUserError) {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send(responseErrorFunction([confirmCodeResult]));
+      return;
+    }
+    res.sendStatus(StatusCodes.NO_CONTENT);
+  }
+  async resendRegistrationEmail(
+    req: RequestBodyModel<RegistrationEmailResending>,
+    res: Response<TApiErrorResultObject>,
+  ) {
+    const resendEmailResult = await authService.resendEmail(req.body.email);
+    if (
+      resendEmailResult instanceof WrongEmailError ||
+      resendEmailResult instanceof EmailAlreadyConfirmedError
+    ) {
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .send(responseErrorFunction([resendEmailResult]));
+      return;
+    }
+    if (resendEmailResult instanceof UpdateUserError) {
+      res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send(responseErrorFunction([resendEmailResult]));
+      return;
+    }
+    res.sendStatus(StatusCodes.NO_CONTENT);
+  }
+  async refreshTokenFunction(
+    req: Request,
+    res: Response<{ accessToken: string }>,
+  ) {
+    const oldRefreshToken = req.cookies.refreshToken;
+    const userId = req.userId;
+    const deviceId = req.currentDeviceId;
+    const { accessToken, refreshToken } = await authService.refreshSession(
+      oldRefreshToken,
+      userId,
+      deviceId,
+    );
+    res.cookie("refreshToken", refreshToken, getCookieOptions());
+    return res.status(StatusCodes.OK).send({ accessToken });
+  }
+  async logout(req: Request, res: Response) {
+    const refreshToken = req.cookies.refreshToken;
+    const userId = req.userId;
+    const currentDeviceId = req.currentDeviceId;
+    await authService.placeRefreshTokenToBlacklist(refreshToken, userId);
+    const isSessionDeleted = await securityDevicesService.deleteSessionById(
+      currentDeviceId,
+      userId,
+    );
+    res.clearCookie("refreshToken", { httpOnly: true, secure: true });
+
+    if (!isSessionDeleted) {
+      throw createAppError(
+        "Session was deleted or not found",
+        StatusCodes.UNAUTHORIZED,
+      );
+    }
+    res.sendStatus(StatusCodes.NO_CONTENT);
+  }
+}
+
+export const authController = new AuthController();

@@ -1,25 +1,21 @@
 import express from "express";
-import {
-  getAllActiveSessions,
-  terminateAllSessionsExceptCurrent,
-  terminateSessionById,
-} from "../controllers/securityDevicesController";
 import { refreshTokenValidityMiddleware } from "../middlewares/refreshTokenValidityMiddleware";
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
+import { securityDevicesController } from "../controllers/securityDevicesController";
 export const securityDevicesRouter = express.Router({});
 
 /**returns all devices with active sessions for current user*/
 securityDevicesRouter.get(
   "/",
   refreshTokenValidityMiddleware,
-  getAllActiveSessions,
+  securityDevicesController.getAllActiveSessions,
 );
 
 /**terminate all other (excluding current) device sessions*/
 securityDevicesRouter.delete(
   "/",
   refreshTokenValidityMiddleware,
-  terminateAllSessionsExceptCurrent,
+  securityDevicesController.terminateAllSessionsExceptCurrent,
 );
 
 /**terminate specified device session*/
@@ -27,5 +23,5 @@ securityDevicesRouter.delete(
   "/:id",
   validateObjectIdMiddleware,
   refreshTokenValidityMiddleware,
-  terminateSessionById,
+  securityDevicesController.terminateSessionById,
 );

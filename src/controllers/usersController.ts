@@ -14,48 +14,46 @@ import { Response } from "express";
 import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { usersService } from "../service/usersService";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
-import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 
-export const getAllUsers = async (
-  req: RequestQueryParamsModel<UsersQueryParams>,
-  res: Response<Paginator<UserViewModel>>,
-) => {
-  const {
-    pageNumber = 1,
-    pageSize = 10,
-    searchEmailTerm = "",
-    searchLoginTerm = "",
-    sortBy = "createdAt",
-    sortDirection = "desc",
-  } = req.query;
-  const allUsers = await usersQueryRepository.getUsers(
-    Number(pageNumber),
-    sortBy,
-    Number(pageSize),
-    sortDirection,
-    searchEmailTerm,
-    searchLoginTerm,
-  );
-  res.status(StatusCodes.OK).send(allUsers);
-};
-
-export const addNewUserBySuperAdmin = async (
-  req: RequestBodyModel<UserInputModel>,
-  res: Response<UserViewModel>,
-) => {
-  const newUser = await usersService.createUser(req.body, true);
-
-  res.status(StatusCodes.CREATED).send(newUser as UserViewModel);
-};
-
-export const deleteUser = async (
-  req: RequestWithURIParam<URIParamsRequest>,
-  res: Response,
-) => {
-  const deletedUser = await usersService.deleteUser(req.params.id);
-  if (!deletedUser) {
-    res.sendStatus(StatusCodes.NOT_FOUND);
-  } else {
-    res.sendStatus(StatusCodes.NO_CONTENT);
+class UsersController {
+  async getAllUsers(
+    req: RequestQueryParamsModel<UsersQueryParams>,
+    res: Response<Paginator<UserViewModel>>,
+  ) {
+    const {
+      pageNumber = 1,
+      pageSize = 10,
+      searchEmailTerm = "",
+      searchLoginTerm = "",
+      sortBy = "createdAt",
+      sortDirection = "desc",
+    } = req.query;
+    const allUsers = await usersQueryRepository.getUsers(
+      Number(pageNumber),
+      sortBy,
+      Number(pageSize),
+      sortDirection,
+      searchEmailTerm,
+      searchLoginTerm,
+    );
+    res.status(StatusCodes.OK).send(allUsers);
   }
-};
+  async addNewUserBySuperAdmin(
+    req: RequestBodyModel<UserInputModel>,
+    res: Response<UserViewModel>,
+  ) {
+    const newUser = await usersService.createUser(req.body, true);
+
+    res.status(StatusCodes.CREATED).send(newUser as UserViewModel);
+  }
+  async deleteUser(req: RequestWithURIParam<URIParamsRequest>, res: Response) {
+    const deletedUser = await usersService.deleteUser(req.params.id);
+    if (!deletedUser) {
+      res.sendStatus(StatusCodes.NOT_FOUND);
+    } else {
+      res.sendStatus(StatusCodes.NO_CONTENT);
+    }
+  }
+}
+
+export const usersController = new UsersController();

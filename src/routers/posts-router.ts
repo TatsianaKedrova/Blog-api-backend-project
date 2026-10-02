@@ -2,25 +2,23 @@ import express from "express";
 import { basicAuthMiddleware } from "../middlewares/basicAuth";
 import { postsValidator } from "../utils/posts-utils/postsValidator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
-import {
-  createComment,
-  createNewPost,
-  deletePostById,
-  findCommentsForSpecifiedPost,
-  getPosts,
-  getPostsById,
-  updatePostById,
-} from "../controllers/postsController";
+
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
 import { accessTokenValidityMiddleware } from "../middlewares/accessTokenValidityMiddleware";
 import { commentValidator } from "../utils/comments-utils/commentValidator";
+import { postsController } from "../controllers/postsController";
+import { commentsController } from "../controllers/commentsController";
 export const postsRouter = express.Router({});
 
 //TODO: GET LIST OF POSTS
-postsRouter.get("/", getPosts);
+postsRouter.get("/", postsController.getPosts);
 
 //TODO: GET POST BY ID
-postsRouter.get("/:id", validateObjectIdMiddleware, getPostsById);
+postsRouter.get(
+  "/:id",
+  validateObjectIdMiddleware,
+  postsController.getPostsById,
+);
 
 //TODO: CREATE A NEW POST
 postsRouter.post(
@@ -28,7 +26,7 @@ postsRouter.post(
   basicAuthMiddleware,
   postsValidator,
   responseErrorValidationMiddleware,
-  createNewPost,
+  postsController.createNewPost,
 );
 
 //TODO: UPDATE POST BY ID
@@ -38,7 +36,7 @@ postsRouter.put(
   validateObjectIdMiddleware,
   postsValidator,
   responseErrorValidationMiddleware,
-  updatePostById,
+  postsController.updatePostById,
 );
 
 //TODO: DELETE POST BY ID
@@ -46,7 +44,7 @@ postsRouter.delete(
   "/:id",
   basicAuthMiddleware,
   validateObjectIdMiddleware,
-  deletePostById,
+  postsController.deletePostById,
 );
 
 //TODO: CREATE COMMENT FOR SPECIFIC POST
@@ -56,12 +54,12 @@ postsRouter.post(
   validateObjectIdMiddleware,
   commentValidator,
   responseErrorValidationMiddleware,
-  createComment,
+  commentsController.createComment,
 );
 
 //TODO: RETURN COMMENTS FOR SPECIFIED POST
 postsRouter.get(
   "/:id/comments",
   validateObjectIdMiddleware,
-  findCommentsForSpecifiedPost,
+  commentsController.findCommentsForSpecifiedPost,
 );
