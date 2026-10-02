@@ -6,7 +6,7 @@ import { Paginator } from "../../dto/common/PaginatorModel";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { transformUsersResponse } from "../../utils/usersUtils/transformUsersResponse";
 
-class UsersQueryRepository {
+export class UsersQueryRepository {
   async getUsers(
     pageNumber: number,
     sortBy: string,
@@ -81,8 +81,6 @@ class UsersQueryRepository {
     const isUserExist = await usersCollection.findOne({
       $or: [{ "accountData.login": login }, { "accountData.email": email }],
     });
-    return isUserExist ? false : true;
+    return isUserExist ? true : false;
   }
 }
-
-export const usersQueryRepository = new UsersQueryRepository();

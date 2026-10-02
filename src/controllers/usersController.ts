@@ -11,11 +11,18 @@ import {
   UsersQueryParams,
 } from "../dto/usersDTO/usersDTO";
 import { Response } from "express";
-import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
-import { usersService } from "../service/usersService";
+import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
+import { UsersService } from "../service/usersService";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 
 class UsersController {
+  usersService: UsersService;
+  usersQueryRepository: UsersQueryRepository;
+
+  constructor() {
+    this.usersService = new UsersService();
+    this.usersQueryRepository = new UsersQueryRepository();
+  }
   async getAllUsers(
     req: RequestQueryParamsModel<UsersQueryParams>,
     res: Response<Paginator<UserViewModel>>,
@@ -28,7 +35,7 @@ class UsersController {
       sortBy = "createdAt",
       sortDirection = "desc",
     } = req.query;
-    const allUsers = await usersQueryRepository.getUsers(
+    const allUsers = await this.usersQueryRepository.getUsers(
       Number(pageNumber),
       sortBy,
       Number(pageSize),
@@ -42,12 +49,12 @@ class UsersController {
     req: RequestBodyModel<UserInputModel>,
     res: Response<UserViewModel>,
   ) {
-    const newUser = await usersService.createUser(req.body, true);
+    const newUser = await this.usersService.createUser(req.body, true);
 
     res.status(StatusCodes.CREATED).send(newUser as UserViewModel);
   }
   async deleteUser(req: RequestWithURIParam<URIParamsRequest>, res: Response) {
-    const deletedUser = await usersService.deleteUser(req.params.id);
+    const deletedUser = await this.usersService.deleteUser(req.params.id);
     if (!deletedUser) {
       res.sendStatus(StatusCodes.NOT_FOUND);
     } else {

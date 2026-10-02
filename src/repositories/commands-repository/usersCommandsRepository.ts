@@ -1,15 +1,20 @@
 import { ObjectId } from "mongodb";
 import { usersCollection } from "../../db";
 import { UserDBType } from "../../dto/usersDTO/usersDTO";
-import { usersQueryRepository } from "../query-repository/usersQueryRepository";
+import { UsersQueryRepository } from "../query-repository/usersQueryRepository";
 
-class UsersCommandsRepository {
+export class UsersCommandsRepository {
+  usersQueryRepository: UsersQueryRepository;
+  constructor() {
+    this.usersQueryRepository = new UsersQueryRepository();
+  }
+
   async createNewUser(newUser: UserDBType): Promise<ObjectId> {
     const createdUser = await usersCollection.insertOne(newUser);
     return createdUser.insertedId;
   }
   async deleteUser(id: string): Promise<boolean> {
-    const user = await usersQueryRepository.findUserById(id);
+    const user = await this.usersQueryRepository.findUserById(id);
     if (!user) return false;
 
     const deleteResult = await usersCollection.deleteOne({
@@ -35,7 +40,7 @@ class UsersCommandsRepository {
     code: string,
     expirationDate: string,
   ): Promise<boolean> {
-    const findUser = usersQueryRepository.findUserById(_id.toString());
+    const findUser = this.usersQueryRepository.findUserById(_id.toString());
     if (!findUser) return false;
     const updateIsUserConfirmed = await usersCollection.updateMany(
       { _id },
@@ -49,5 +54,3 @@ class UsersCommandsRepository {
     return updateIsUserConfirmed.modifiedCount === 1;
   }
 }
-
-export const usersCommandsRepository = new UsersCommandsRepository();
