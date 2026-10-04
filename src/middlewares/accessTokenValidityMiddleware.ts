@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { jwtService } from "../globals/jwt-service";
+import { getJwtPayloadResult } from "../globals/jwt-service";
 
 export const accessTokenValidityMiddleware = async (
   req: Request,
@@ -17,7 +17,7 @@ export const accessTokenValidityMiddleware = async (
   }
 
   const token = accessTokenValue.split(" ")[1];
-  const accessTokenJWTPayloadResult = await jwtService.getJwtPayloadResult(
+  const accessTokenJWTPayloadResult = getJwtPayloadResult(
     token,
     process.env.ACCESS_TOKEN_SECRET as string,
   );

@@ -4,11 +4,16 @@ import {
 } from "../dto/commentsDTO/commentsDTO";
 import { commentsCommandsRepository } from "../repositories/commands-repository/commentsCommandsRepository";
 import { postsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
-import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
+import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { transformCommentsResponse } from "../utils/comments-utils/transformCommentsResponse";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 
 class CommentsService {
+  usersQueryRepository: UsersQueryRepository;
+  constructor() {
+    this.usersQueryRepository = new UsersQueryRepository();
+  }
+
   async createNewComment(
     postId: string,
     content: string,
@@ -18,7 +23,7 @@ class CommentsService {
     if (!foundPost) {
       return null;
     }
-    const foundUser = await usersQueryRepository.findUserById(userId);
+    const foundUser = await this.usersQueryRepository.findUserById(userId);
     if (!foundUser) return null;
     const newComment: CommentDBType = {
       postId,

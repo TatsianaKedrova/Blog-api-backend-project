@@ -2,11 +2,11 @@ import request from "supertest";
 import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
 import { beforeAll, beforeEach, describe, expect, test } from "@jest/globals";
-import { usersQueryRepository } from "../src/repositories/query-repository/usersQueryRepository";
 import { UserInputModel } from "./dto/usersDTO/usersDTO";
-import { jwtService } from "../src/globals/jwt-service";
 import { securityDevicesCollection } from "../src/db";
-
+import { getJwtPayloadResult } from "./globals/jwt-service";
+import { UsersQueryRepository } from "./repositories/query-repository/usersQueryRepository";
+const usersQueryRepository = new UsersQueryRepository();
 const userAgents = {
   chromeWindows:
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
@@ -135,7 +135,7 @@ describe("Security Devices E2E tests", () => {
     const refreshToken = firstCookieString.split(";")[0].split("=")[1];
 
     // 2. Decode the token payload using your app secret
-    const payload = await jwtService.getJwtPayloadResult(
+    const payload = getJwtPayloadResult(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET as string,
     );

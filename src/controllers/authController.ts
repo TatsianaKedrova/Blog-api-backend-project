@@ -1,6 +1,5 @@
 import { getCurrentUserInfo } from "./../utils/auth-utils/getCurrentUserInfo";
 import { StatusCodes } from "http-status-codes";
-import { usersService } from "../service/usersService";
 import {
   LoginInputModel,
   MeViewModel,
@@ -22,12 +21,20 @@ import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-e
 import { securityDevicesService } from "../service/securityDevicesService";
 import { getDeviceTitle } from "../utils/securityDevices-utils/getDeviceTitle";
 import { createAppError } from "../utils/appErrors";
-import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { getCookieOptions } from "../utils/auth-utils/cookie";
+import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
+import { UsersService } from "../service/usersService";
 
 class AuthController {
+  usersQueryRepository: UsersQueryRepository;
+  usersService: UsersService;
+
+  constructor() {
+    this.usersQueryRepository = new UsersQueryRepository();
+    this.usersService = new UsersService();
+  }
   async logIn(req: RequestBodyModel<LoginInputModel>, res: Response) {
-    const user = await usersService.checkCredentials(
+    const user = await this.usersService.checkCredentials(
       req.body.loginOrEmail,
       req.body.password,
     );
@@ -46,7 +53,7 @@ class AuthController {
     return res.status(StatusCodes.OK).send({ accessToken });
   }
   async getInfoAboutUser(req: Request, res: Response<MeViewModel>) {
-    const foundUser = await usersQueryRepository.findUserById(req.userId);
+    const foundUser = await this.usersQueryRepository.findUserById(req.userId);
     if (foundUser) {
       const currentUser = getCurrentUserInfo(foundUser);
       res.status(StatusCodes.OK).send(currentUser);
@@ -58,7 +65,7 @@ class AuthController {
     req: RequestBodyModel<UserInputModel>,
     res: Response<TApiErrorResultObject>,
   ) {
-    await usersService.createUser(req.body, false);
+    await this.usersService.createUser(req.body, false);
     res.sendStatus(StatusCodes.NO_CONTENT);
   }
   async confirmRegistration(

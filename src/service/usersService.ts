@@ -69,7 +69,7 @@ export class UsersService {
         ...newUserData,
         _id: createdUserId,
       });
-      emailManager.sendEmail(newUserData);
+      await emailManager.sendEmail(newUserData);
       await authService.createRefreshTokenBlacklistForUser(
         new ObjectId(createdUserId),
       );

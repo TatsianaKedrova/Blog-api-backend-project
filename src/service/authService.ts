@@ -1,8 +1,7 @@
 import { authCommandsRepository } from "../repositories/commands-repository/authCommandsRepository";
-import { usersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import { emailManager } from "../globals/email/email-manager";
 import { TFieldError } from "../dto/common/ErrorResponseModel";
-import { usersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
+import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { IncorrectConfirmationCodeError } from "../utils/errors-utils/registration-confirmation-errors/IncorrectConfirmationCodeError";
 import { UpdateUserError } from "../utils/errors-utils/registration-confirmation-errors/UpdateUserError";
 import { UserIsConfirmedError } from "../utils/errors-utils/registration-confirmation-errors/UserIsConfirmedError";
@@ -15,12 +14,24 @@ import {
   RefreshToken,
   TokenPairResponse,
 } from "../dto/authDTO/authDTO";
-import { jwtService } from "../globals/jwt-service";
 import { securityDevicesService } from "./securityDevicesService";
+import { UsersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
+import {
+  createAccessRefreshTokensResponse,
+  getTokenCreationDate,
+} from "../globals/jwt-service";
 
 class AuthService {
+  usersCommandsRepository: UsersCommandsRepository;
+  usersQueryRepository: UsersQueryRepository;
+
+  constructor() {
+    this.usersCommandsRepository = new UsersCommandsRepository();
+    this.usersQueryRepository = new UsersQueryRepository();
+  }
   async confirmCode(code: string): Promise<TFieldError | string> {
-    const user = await usersQueryRepository.findUserByConfirmationCode(code);
+    const user =
+      await this.usersQueryRepository.findUserByConfirmationCode(code);
     if (!user || user?.emailConfirmation.confirmationCode !== code) {
       return new IncorrectConfirmationCodeError();
     }
@@ -34,7 +45,7 @@ class AuthService {
       return new ConfirmationCodeExpiredError();
     } else {
       const updateIsConfirmedUser =
-        await usersCommandsRepository.updateUserIsConfirmed(user._id);
+        await this.usersCommandsRepository.updateUserIsConfirmed(user._id);
       if (!updateIsConfirmedUser) {
         return new UpdateUserError("registration-confirmation");
       }
@@ -42,7 +53,7 @@ class AuthService {
     }
   }
   async resendEmail(email: string): Promise<TFieldError | string> {
-    const user = await usersQueryRepository.findUserByEmail(email);
+    const user = await this.usersQueryRepository.findUserByEmail(email);
     if (!user) {
       return new WrongEmailError();
     }
@@ -66,8 +77,10 @@ class AuthService {
       deviceTitle,
       userId,
     );
-    const { accessToken, refreshToken } =
-      await jwtService.createAccessRefreshTokensResponse(userId, deviceId);
+    const { accessToken, refreshToken } = createAccessRefreshTokensResponse(
+      userId,
+      deviceId,
+    );
     return {
       accessToken: accessToken as AccessToken,
       refreshToken: refreshToken as RefreshToken,
@@ -95,13 +108,11 @@ class AuthService {
     currentDeviceId: string,
   ): Promise<TokenPairResponse> {
     await authService.placeRefreshTokenToBlacklist(oldRefreshToken, userId);
-    const { accessToken, refreshToken } =
-      await jwtService.createAccessRefreshTokensResponse(
-        userId,
-        currentDeviceId,
-      );
-    const newTokenCreationDate =
-      await jwtService.getTokenCreationDate(refreshToken);
+    const { accessToken, refreshToken } = createAccessRefreshTokensResponse(
+      userId,
+      currentDeviceId,
+    );
+    const newTokenCreationDate = getTokenCreationDate(refreshToken);
     await securityDevicesService.updateLastActiveDate(
       currentDeviceId,
       newTokenCreationDate,

@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { jwtService } from "../globals/jwt-service";
 import { ObjectId } from "mongodb";
 import { authQueryRepository } from "../repositories/query-repository/authQueryRepository";
 import { createAppError } from "../utils/appErrors";
 import { securityDevicesQueryRepository } from "../repositories/query-repository/securityDevicesQueryRepository";
+import { getJwtPayloadResult } from "../globals/jwt-service";
 
 export const refreshTokenValidityMiddleware = async (
   req: Request,
@@ -18,7 +18,7 @@ export const refreshTokenValidityMiddleware = async (
       StatusCodes.UNAUTHORIZED,
     );
   }
-  const refreshTokenJWTPayloadResult = await jwtService.getJwtPayloadResult(
+  const refreshTokenJWTPayloadResult = getJwtPayloadResult(
     refreshTokenFromClient,
     process.env.REFRESH_TOKEN_SECRET as string,
   );
