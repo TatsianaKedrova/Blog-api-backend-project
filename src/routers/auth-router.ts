@@ -1,4 +1,3 @@
-import { refreshTokenValidityMiddleware } from "../middlewares/refreshTokenValidityMiddleware";
 import express from "express";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import { authValidator } from "../utils/auth-utils/authValidator";
@@ -7,7 +6,10 @@ import { createUserValidator } from "../utils/usersUtils/users-validator";
 import { confirmationCodeValidator } from "../utils/usersUtils/confirmationCodeValidator";
 import { emailValidator } from "../utils/usersUtils/emailValidator";
 import { rateLimiterMiddleware } from "../middlewares/rateLimiterMiddleware";
-import { authController } from "../composition-route";
+import {
+  authController,
+  refreshTokenValidityMiddleware,
+} from "../composition-route";
 export const authRouter = express.Router({});
 
 authRouter.post(

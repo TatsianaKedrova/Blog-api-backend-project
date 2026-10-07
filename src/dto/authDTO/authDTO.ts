@@ -1,4 +1,6 @@
 import { ObjectId } from "mongodb";
+import { SecurityDevicesQueryRepository } from "../../repositories/query-repository/securityDevicesQueryRepository";
+import { AuthQueryRepository } from "../../repositories/query-repository/authQueryRepository";
 
 export type LoginInputModel = {
   loginOrEmail: string;
@@ -41,3 +43,8 @@ export type RefreshTokenPayloadType = AccessTokenPayloadType & {
   deviceId: string;
   iat?: number;
 };
+
+export interface RefreshTokenMiddlewareDeps {
+  securityDevicesQueryRepository: SecurityDevicesQueryRepository;
+  authQueryRepository: AuthQueryRepository;
+}

@@ -1,7 +1,9 @@
 import express from "express";
-import { refreshTokenValidityMiddleware } from "../middlewares/refreshTokenValidityMiddleware";
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
-import { securityDevicesController } from "../composition-route";
+import {
+  refreshTokenValidityMiddleware,
+  securityDevicesController,
+} from "../composition-route";
 export const securityDevicesRouter = express.Router({});
 
 /**returns all devices with active sessions for current user*/

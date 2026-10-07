@@ -12,6 +12,7 @@ import { StatusCodes } from "http-status-codes";
 import { securityDevicesRouter } from "./routers/securityDevices-router";
 import { createAppError } from "./utils/appErrors";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
+import "./composition-route";
 
 export const app = express();
 app.use(morgan("dev"));
