@@ -12,7 +12,10 @@
     "skipLibCheck": true,
     "ignoreDeprecations": "6.0",
     "sourceMap": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "types": ["reflect-metadata"]
   },
   "include": ["src/**/*", "__tests__/**/*", "index.d.ts"],
   "exclude": ["node_modules", "dist"]
