@@ -4,9 +4,7 @@ import { UserDBType } from "../../dto/usersDTO/usersDTO";
 import { UsersQueryRepository } from "../query-repository/usersQueryRepository";
 
 export class UsersCommandsRepository {
-  constructor(
-    private readonly usersQueryRepository = new UsersQueryRepository(),
-  ) {}
+  constructor(private readonly usersQueryRepository: UsersQueryRepository) {}
 
   async createNewUser(newUser: UserDBType): Promise<ObjectId> {
     const createdUser = await usersCollection.insertOne(newUser);

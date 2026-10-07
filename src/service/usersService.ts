@@ -21,9 +21,9 @@ import { AuthService } from "./authService";
 
 export class UsersService {
   constructor(
-    private readonly usersCommandsRepository = new UsersCommandsRepository(),
-    private readonly usersQueryRepository = new UsersQueryRepository(),
-    private readonly authService = new AuthService(),
+    protected readonly usersQueryRepository: UsersQueryRepository,
+    protected readonly usersCommandsRepository: UsersCommandsRepository,
+    protected readonly authService: AuthService,
   ) {}
 
   async createUser(

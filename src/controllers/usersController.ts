@@ -15,10 +15,10 @@ import { UsersQueryRepository } from "../repositories/query-repository/usersQuer
 import { UsersService } from "../service/usersService";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 
-class UsersController {
+export class UsersController {
   constructor(
-    private readonly usersService = new UsersService(),
-    private readonly usersQueryRepository = new UsersQueryRepository(),
+    protected readonly usersService: UsersService,
+    protected readonly usersQueryRepository: UsersQueryRepository,
   ) {}
   async getAllUsers(
     req: RequestQueryParamsModel<UsersQueryParams>,
@@ -59,5 +59,3 @@ class UsersController {
     }
   }
 }
-
-export const usersController = new UsersController();
