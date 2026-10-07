@@ -16,7 +16,7 @@ import { UsersService } from "../service/usersService";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 
 class UsersController {
-  usersService: UsersService;
+  private usersService: UsersService;
   usersQueryRepository: UsersQueryRepository;
 
   constructor() {
@@ -58,7 +58,7 @@ class UsersController {
     if (!deletedUser) {
       res.sendStatus(StatusCodes.NOT_FOUND);
     } else {
-      res.sendStatus(StatusCodes.NO_CONTENT);
+      res.status(StatusCodes.NO_CONTENT).send();
     }
   }
 }
