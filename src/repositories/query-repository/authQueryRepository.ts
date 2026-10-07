@@ -2,7 +2,7 @@ import { ObjectId, WithId } from "mongodb";
 import { refreshTokensBlacklistedCollection } from "../../db";
 import { RefreshTokensBlacklistDB } from "../../dto/authDTO/authDTO";
 
-class AuthQueryRepository {
+export class AuthQueryRepository {
   async findBlacklistedUserRefreshTokenById(
     userId: ObjectId,
     refreshToken: string,
@@ -14,5 +14,3 @@ class AuthQueryRepository {
     return foundRefreshToken;
   }
 }
-
-export const authQueryRepository = new AuthQueryRepository();

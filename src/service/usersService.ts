@@ -9,7 +9,6 @@ import { UsersQueryRepository } from "../repositories/query-repository/usersQuer
 import { ObjectId, WithId } from "mongodb";
 import { createConfirmationCode } from "../utils/auth-utils/createUserConfirmationCode";
 import { createCodeExpirationDate } from "../utils/auth-utils/createCodeExpirationDate";
-import { emailManager } from "../globals/email/email-manager";
 import { createAppError } from "../utils/appErrors";
 import { StatusCodes } from "http-status-codes";
 import { transformUsersResponse } from "../utils/usersUtils/transformUsersResponse";
@@ -18,6 +17,7 @@ import {
   generateHash,
 } from "../globals/bcrypt/bcryptService";
 import { AuthService } from "./authService";
+import { emailManager } from "../composition-route";
 
 export class UsersService {
   constructor(

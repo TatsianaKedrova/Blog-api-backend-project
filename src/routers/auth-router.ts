@@ -7,7 +7,7 @@ import { createUserValidator } from "../utils/usersUtils/users-validator";
 import { confirmationCodeValidator } from "../utils/usersUtils/confirmationCodeValidator";
 import { emailValidator } from "../utils/usersUtils/emailValidator";
 import { rateLimiterMiddleware } from "../middlewares/rateLimiterMiddleware";
-import { authController } from "../controllers/authController";
+import { authController } from "../composition-route";
 export const authRouter = express.Router({});
 
 authRouter.post(

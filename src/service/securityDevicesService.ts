@@ -1,8 +1,11 @@
 import { ObjectId } from "mongodb";
-import { securityDevicesCommandsRepository } from "../repositories/commands-repository/securityDevicesCommandsRepository";
+import { SecurityDevicesCommandsRepository } from "../repositories/commands-repository/securityDevicesCommandsRepository";
 import { SecurityDeviceDBType } from "../dto/securityDevicesDTO/securityDevicesDTO";
 
 export class SecurityDevicesService {
+  constructor(
+    protected readonly securityDevicesCommandsRepository: SecurityDevicesCommandsRepository,
+  ) {}
   async createDeviceSession(
     clientIP: string,
     deviceTitle: string,
@@ -20,12 +23,14 @@ export class SecurityDevicesService {
       userId: new ObjectId(userId),
     });
     const deviceId =
-      await securityDevicesCommandsRepository.createDeviceSession(newSession);
+      await this.securityDevicesCommandsRepository.createDeviceSession(
+        newSession,
+      );
     return deviceId;
   }
   async deleteSessionById(deviceId: string, userId: string): Promise<boolean> {
     const result =
-      await securityDevicesCommandsRepository.deleteSessionByDeviceAndUserId(
+      await this.securityDevicesCommandsRepository.deleteSessionByDeviceAndUserId(
         deviceId,
         userId,
       );
@@ -35,7 +40,7 @@ export class SecurityDevicesService {
     userId: string,
     currentDeviceId: string,
   ): Promise<void> {
-    await securityDevicesCommandsRepository.isAllOtherSessionsDeleted(
+    await this.securityDevicesCommandsRepository.isAllOtherSessionsDeleted(
       userId,
       currentDeviceId,
     );
@@ -46,7 +51,7 @@ export class SecurityDevicesService {
     userId: string,
   ): Promise<boolean> {
     const updateDeviceLastActiveDate =
-      await securityDevicesCommandsRepository.updateLastActiveDate(
+      await this.securityDevicesCommandsRepository.updateLastActiveDate(
         deviceId,
         refreshTokenCreationDate,
         userId,
@@ -54,4 +59,3 @@ export class SecurityDevicesService {
     return updateDeviceLastActiveDate;
   }
 }
-

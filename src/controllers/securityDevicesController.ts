@@ -1,18 +1,19 @@
 import { Request, Response } from "express";
 import { DeviceViewModel } from "../dto/securityDevicesDTO/securityDevicesDTO";
 import { StatusCodes } from "http-status-codes";
-import { securityDevicesQueryRepository } from "../repositories/query-repository/securityDevicesQueryRepository";
 import { RequestWithURIParam } from "../dto/common/RequestModels";
 import { createAppError } from "../utils/appErrors";
 import { SecurityDevicesService } from "../service/securityDevicesService";
+import { SecurityDevicesQueryRepository } from "../repositories/query-repository/securityDevicesQueryRepository";
 
-class SecurityDevicesController {
+export class SecurityDevicesController {
   constructor(
-    private readonly securityDevicesService = new SecurityDevicesService(),
+    private readonly securityDevicesService: SecurityDevicesService,
+    private readonly securityDevicesQueryRepository: SecurityDevicesQueryRepository,
   ) {}
   async getAllActiveSessions(req: Request, res: Response<DeviceViewModel[]>) {
     const allActiveSessions: DeviceViewModel[] =
-      await securityDevicesQueryRepository.getActiveSessions(req.userId);
+      await this.securityDevicesQueryRepository.getActiveSessions(req.userId);
     res.status(StatusCodes.OK).send(allActiveSessions);
   }
   async terminateAllSessionsExceptCurrent(req: Request, res: Response) {
@@ -43,7 +44,7 @@ class SecurityDevicesController {
     );
     if (!result) {
       const sessionExistsAnywhere =
-        await securityDevicesQueryRepository.findSessionByDeviceId(
+        await this.securityDevicesQueryRepository.findSessionByDeviceId(
           deviceIdToDelete,
         );
 
@@ -60,5 +61,3 @@ class SecurityDevicesController {
     res.sendStatus(StatusCodes.NO_CONTENT);
   }
 }
-
-export const securityDevicesController = new SecurityDevicesController();

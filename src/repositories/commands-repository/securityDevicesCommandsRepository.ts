@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { securityDevicesCollection } from "../../db";
 import { SecurityDeviceDBType } from "../../dto/securityDevicesDTO/securityDevicesDTO";
 
-class SecurityDevicesCommandsRepisitory {
+export class SecurityDevicesCommandsRepository {
   async createDeviceSession(
     sessionData: SecurityDeviceDBType,
   ): Promise<string> {
@@ -41,6 +41,3 @@ class SecurityDevicesCommandsRepisitory {
     return result.deletedCount > 0;
   }
 }
-
-export const securityDevicesCommandsRepository =
-  new SecurityDevicesCommandsRepisitory();

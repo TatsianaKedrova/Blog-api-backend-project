@@ -5,8 +5,8 @@ import {
   SecurityDeviceDBType,
 } from "../../dto/securityDevicesDTO/securityDevicesDTO";
 
-class SecurityDevicesQueryRepository {
-  async getActiveSessions(userId: string): Promise<DeviceViewModel[] | []> {
+export class SecurityDevicesQueryRepository {
+  async getActiveSessions(userId: string): Promise<DeviceViewModel[]> {
     const allActiveSessions = await securityDevicesCollection
       .find({ userId: new ObjectId(userId) })
       .sort({ _id: 1 })
@@ -38,6 +38,3 @@ class SecurityDevicesQueryRepository {
     }
   }
 }
-
-export const securityDevicesQueryRepository =
-  new SecurityDevicesQueryRepository();

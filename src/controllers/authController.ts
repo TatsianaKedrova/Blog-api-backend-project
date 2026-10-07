@@ -17,19 +17,20 @@ import { UserIsConfirmedError } from "../utils/errors-utils/registration-confirm
 import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration-confirmation-errors/ConfirmationCodeExpiredError";
 import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
-import { securityDevicesService } from "../service/securityDevicesService";
 import { getDeviceTitle } from "../utils/securityDevices-utils/getDeviceTitle";
 import { createAppError } from "../utils/appErrors";
 import { getCookieOptions } from "../utils/auth-utils/cookie";
 import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { UsersService } from "../service/usersService";
 import { AuthService } from "../service/authService";
+import { SecurityDevicesService } from "../service/securityDevicesService";
 
-class AuthController {
+export class AuthController {
   constructor(
-    private readonly usersQueryRepository = new UsersQueryRepository(),
-    private readonly usersService = new UsersService(),
-    private readonly authService = new AuthService(),
+    private readonly usersQueryRepository: UsersQueryRepository,
+    protected readonly usersService: UsersService,
+    protected readonly authService: AuthService,
+    protected readonly securityDevicesService: SecurityDevicesService,
   ) {}
   async logIn(req: RequestBodyModel<LoginInputModel>, res: Response) {
     const user = await this.usersService.checkCredentials(
@@ -137,10 +138,11 @@ class AuthController {
     const userId = req.userId;
     const currentDeviceId = req.currentDeviceId;
     await this.authService.placeRefreshTokenToBlacklist(refreshToken, userId);
-    const isSessionDeleted = await securityDevicesService.deleteSessionById(
-      currentDeviceId,
-      userId,
-    );
+    const isSessionDeleted =
+      await this.securityDevicesService.deleteSessionById(
+        currentDeviceId,
+        userId,
+      );
     res.clearCookie("refreshToken", { httpOnly: true, secure: true });
 
     if (!isSessionDeleted) {
@@ -152,5 +154,3 @@ class AuthController {
     res.status(StatusCodes.NO_CONTENT).send();
   }
 }
-
-export const authController = new AuthController();

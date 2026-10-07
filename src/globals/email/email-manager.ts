@@ -5,14 +5,9 @@ import { createConfirmationCode } from "../../utils/auth-utils/createUserConfirm
 import { createCodeExpirationDate } from "../../utils/auth-utils/createCodeExpirationDate";
 import { emailAdapter } from "./email-adapter";
 import { EmailManagerDeps } from "../../dto/common/EmailDTO";
-import { UsersCommandsRepository } from "../../repositories/commands-repository/usersCommandsRepository";
-import { UsersQueryRepository } from "../../repositories/query-repository/usersQueryRepository";
-
-const usersCommandsRepository = new UsersCommandsRepository();
-const usersQueryRepository = new UsersQueryRepository();
 
 //Factory Function
-const createEmailManager = ({
+export const createEmailManager = ({
   usersCommandsRepository,
   usersQueryRepository,
 }: EmailManagerDeps) => {
@@ -43,8 +38,3 @@ const createEmailManager = ({
     sendEmail,
   };
 };
-
-export const emailManager = createEmailManager({
-  usersCommandsRepository,
-  usersQueryRepository,
-});
