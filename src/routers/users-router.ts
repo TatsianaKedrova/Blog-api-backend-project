@@ -6,17 +6,17 @@ import { createUserValidator } from "../utils/usersUtils/users-validator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 export const usersRouter = express.Router({});
 
-usersRouter.get("/", basicAuthMiddleware, usersController.getAllUsers);
+usersRouter.get("/", basicAuthMiddleware, usersController.getAllUsers.bind(usersController));
 usersRouter.post(
   "/",
   basicAuthMiddleware,
   createUserValidator,
   responseErrorValidationMiddleware,
-  usersController.addNewUserBySuperAdmin,
+  usersController.addNewUserBySuperAdmin.bind(usersController),
 );
 usersRouter.delete(
   "/:id",
   basicAuthMiddleware,
   validateObjectIdMiddleware,
-  usersController.deleteUser,
+  usersController.deleteUser.bind(usersController),
 );
