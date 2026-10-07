@@ -1,4 +1,3 @@
-import { emailManager } from "../globals/email/email-manager";
 import { TFieldError } from "../dto/common/ErrorResponseModel";
 import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { IncorrectConfirmationCodeError } from "../utils/errors-utils/registration-confirmation-errors/IncorrectConfirmationCodeError";
@@ -13,19 +12,21 @@ import {
   RefreshToken,
   TokenPairResponse,
 } from "../dto/authDTO/authDTO";
-import { securityDevicesService } from "./securityDevicesService";
 import { UsersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import {
   createAccessRefreshTokensResponse,
   getTokenCreationDate,
 } from "../globals/jwt-service";
 import { AuthCommandsRepository } from "../repositories/commands-repository/authCommandsRepository";
+import { SecurityDevicesService } from "./securityDevicesService";
+import { emailManager } from "../composition-route";
 
 export class AuthService {
   constructor(
-    private readonly authCommandsRepository = new AuthCommandsRepository(),
-    private readonly usersCommandsRepository = new UsersCommandsRepository(),
-    private readonly usersQueryRepository = new UsersQueryRepository(),
+    private readonly authCommandsRepository: AuthCommandsRepository,
+    private readonly usersCommandsRepository: UsersCommandsRepository,
+    private readonly usersQueryRepository: UsersQueryRepository,
+    protected readonly securityDevicesService: SecurityDevicesService,
   ) {}
   async confirmCode(code: string): Promise<TFieldError | string> {
     const user =
@@ -70,7 +71,7 @@ export class AuthService {
     userId: string,
   ): Promise<TokenPairResponse> {
     //Getting IP and Device name during LOGIN
-    const deviceId = await securityDevicesService.createDeviceSession(
+    const deviceId = await this.securityDevicesService.createDeviceSession(
       clientIP,
       deviceTitle,
       userId,
@@ -111,7 +112,7 @@ export class AuthService {
       currentDeviceId,
     );
     const newTokenCreationDate = getTokenCreationDate(refreshToken);
-    await securityDevicesService.updateLastActiveDate(
+    await this.securityDevicesService.updateLastActiveDate(
       currentDeviceId,
       newTokenCreationDate,
       userId,
