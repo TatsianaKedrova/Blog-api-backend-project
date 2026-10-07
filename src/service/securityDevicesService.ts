@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { securityDevicesCommandsRepository } from "../repositories/commands-repository/securityDevicesCommandsRepository";
 import { SecurityDeviceDBType } from "../dto/securityDevicesDTO/securityDevicesDTO";
 
-class SecurityDevicesService {
+export class SecurityDevicesService {
   async createDeviceSession(
     clientIP: string,
     deviceTitle: string,
@@ -55,4 +55,3 @@ class SecurityDevicesService {
   }
 }
 
-export const securityDevicesService = new SecurityDevicesService();

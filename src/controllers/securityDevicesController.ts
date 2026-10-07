@@ -3,10 +3,13 @@ import { DeviceViewModel } from "../dto/securityDevicesDTO/securityDevicesDTO";
 import { StatusCodes } from "http-status-codes";
 import { securityDevicesQueryRepository } from "../repositories/query-repository/securityDevicesQueryRepository";
 import { RequestWithURIParam } from "../dto/common/RequestModels";
-import { securityDevicesService } from "../service/securityDevicesService";
 import { createAppError } from "../utils/appErrors";
+import { SecurityDevicesService } from "../service/securityDevicesService";
 
 class SecurityDevicesController {
+  constructor(
+    private readonly securityDevicesService = new SecurityDevicesService(),
+  ) {}
   async getAllActiveSessions(req: Request, res: Response<DeviceViewModel[]>) {
     const allActiveSessions: DeviceViewModel[] =
       await securityDevicesQueryRepository.getActiveSessions(req.userId);
@@ -15,7 +18,7 @@ class SecurityDevicesController {
   async terminateAllSessionsExceptCurrent(req: Request, res: Response) {
     const userId = req.userId;
     const currentDeviceId = req.currentDeviceId;
-    await securityDevicesService.deleteAllSessionsExceptCurrent(
+    await this.securityDevicesService.deleteAllSessionsExceptCurrent(
       userId,
       currentDeviceId,
     );
@@ -34,7 +37,7 @@ class SecurityDevicesController {
         StatusCodes.BAD_REQUEST,
       );
     }
-    const result = await securityDevicesService.deleteSessionById(
+    const result = await this.securityDevicesService.deleteSessionById(
       deviceIdToDelete,
       userId,
     );

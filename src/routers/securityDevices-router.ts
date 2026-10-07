@@ -8,14 +8,18 @@ export const securityDevicesRouter = express.Router({});
 securityDevicesRouter.get(
   "/",
   refreshTokenValidityMiddleware,
-  securityDevicesController.getAllActiveSessions,
+  securityDevicesController.getAllActiveSessions.bind(
+    securityDevicesController,
+  ),
 );
 
 /**terminate all other (excluding current) device sessions*/
 securityDevicesRouter.delete(
   "/",
   refreshTokenValidityMiddleware,
-  securityDevicesController.terminateAllSessionsExceptCurrent,
+  securityDevicesController.terminateAllSessionsExceptCurrent.bind(
+    securityDevicesController,
+  ),
 );
 
 /**terminate specified device session*/
@@ -23,5 +27,7 @@ securityDevicesRouter.delete(
   "/:id",
   validateObjectIdMiddleware,
   refreshTokenValidityMiddleware,
-  securityDevicesController.terminateSessionById,
+  securityDevicesController.terminateSessionById.bind(
+    securityDevicesController,
+  ),
 );
