@@ -20,13 +20,10 @@ import {
 } from "../globals/bcrypt/bcryptService";
 
 export class UsersService {
-  usersCommandsRepository: UsersCommandsRepository;
-  usersQueryRepository: UsersQueryRepository;
-
-  constructor() {
-    this.usersCommandsRepository = new UsersCommandsRepository();
-    this.usersQueryRepository = new UsersQueryRepository();
-  }
+  constructor(
+    private readonly usersCommandsRepository = new UsersCommandsRepository(),
+    private readonly usersQueryRepository = new UsersQueryRepository(),
+  ) {}
 
   async createUser(
     body: UserInputModel,

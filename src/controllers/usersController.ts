@@ -16,13 +16,10 @@ import { UsersService } from "../service/usersService";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 
 class UsersController {
-  private usersService: UsersService;
-  usersQueryRepository: UsersQueryRepository;
-
-  constructor() {
-    this.usersService = new UsersService();
-    this.usersQueryRepository = new UsersQueryRepository();
-  }
+  constructor(
+    private readonly usersService = new UsersService(),
+    private readonly usersQueryRepository = new UsersQueryRepository(),
+  ) {}
   async getAllUsers(
     req: RequestQueryParamsModel<UsersQueryParams>,
     res: Response<Paginator<UserViewModel>>,
