@@ -81,6 +81,6 @@ export class UsersQueryRepository {
     const isUserExist = await usersCollection.findOne({
       $or: [{ "accountData.login": login }, { "accountData.email": email }],
     });
-    return isUserExist ? true : false;
+    return !!isUserExist;
   }
 }

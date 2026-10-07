@@ -5,9 +5,9 @@ import { accessTokenValidityMiddleware } from "../middlewares/accessTokenValidit
 import { createUserValidator } from "../utils/usersUtils/users-validator";
 import { confirmationCodeValidator } from "../utils/usersUtils/confirmationCodeValidator";
 import { emailValidator } from "../utils/usersUtils/emailValidator";
-import { rateLimiterMiddleware } from "../middlewares/rateLimiterMiddleware";
 import {
   authController,
+  rateLimiterMiddleware,
   refreshTokenValidityMiddleware,
 } from "../composition-route";
 export const authRouter = express.Router({});

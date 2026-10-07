@@ -1,13 +1,17 @@
 import { ApiCallsDBType } from "../dto/apiCallsDTO/apiCallsDTO";
-import { apiCallsCommandsRepository } from "../repositories/commands-repository/apiCallsCommandsRepository";
-import { apiCallsQueryRepository } from "../repositories/query-repository/apiCallsQueryRepository";
+import { ApiCallsCommandsRepository } from "../repositories/commands-repository/apiCallsCommandsRepository";
+import { ApiCallsQueryRepository } from "../repositories/query-repository/apiCallsQueryRepository";
 
-class ApiCallsService {
+export class ApiCallsService {
+  constructor(
+    protected readonly apiCallsQueryRepository: ApiCallsQueryRepository,
+    protected readonly apiCallsCommandsRepository: ApiCallsCommandsRepository,
+  ) {}
   async checkIpRequestCount(url: string, ip: string): Promise<boolean> {
     const now = new Date();
     const tenSecondsAgo = new Date(Date.now() - 10 * 1000);
     const normalizedUrl = url.replace(/\/$/, "");
-    const existingApiCalls = await apiCallsQueryRepository.countApiCalls(
+    const existingApiCalls = await this.apiCallsQueryRepository.countApiCalls(
       ip,
       normalizedUrl,
       tenSecondsAgo,
@@ -17,9 +21,7 @@ class ApiCallsService {
       return false;
     }
     const apiCallsObject = new ApiCallsDBType(ip, url, now);
-    await apiCallsCommandsRepository.addApiCall(apiCallsObject);
+    await this.apiCallsCommandsRepository.addApiCall(apiCallsObject);
     return true;
   }
 }
-
-export const apiCallsService = new ApiCallsService();

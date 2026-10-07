@@ -2,13 +2,17 @@ import { AuthController } from "./controllers/authController";
 import { SecurityDevicesController } from "./controllers/securityDevicesController";
 import { UsersController } from "./controllers/usersController";
 import { createEmailManager } from "./globals/email/email-manager";
+import { createRateLimiterMiddleware } from "./middlewares/rateLimiterMiddleware";
 import { createRefreshTokenValidityMiddleware } from "./middlewares/refreshTokenValidityMiddleware";
+import { ApiCallsCommandsRepository } from "./repositories/commands-repository/apiCallsCommandsRepository";
 import { AuthCommandsRepository } from "./repositories/commands-repository/authCommandsRepository";
 import { SecurityDevicesCommandsRepository } from "./repositories/commands-repository/securityDevicesCommandsRepository";
 import { UsersCommandsRepository } from "./repositories/commands-repository/usersCommandsRepository";
+import { ApiCallsQueryRepository } from "./repositories/query-repository/apiCallsQueryRepository";
 import { AuthQueryRepository } from "./repositories/query-repository/authQueryRepository";
 import { SecurityDevicesQueryRepository } from "./repositories/query-repository/securityDevicesQueryRepository";
 import { UsersQueryRepository } from "./repositories/query-repository/usersQueryRepository";
+import { ApiCallsService } from "./service/apiCallsService";
 import { AuthService } from "./service/authService";
 import { SecurityDevicesService } from "./service/securityDevicesService";
 import { UsersService } from "./service/usersService";
@@ -16,16 +20,14 @@ import { UsersService } from "./service/usersService";
 // ==========================================
 // 1. Repositories
 // ==========================================
-//auth
+const apiCallsQueryRepository = new ApiCallsQueryRepository();
+const apiCallsCommandsRepository = new ApiCallsCommandsRepository();
 const authCommandsRepository = new AuthCommandsRepository();
 const authQueryRepository = new AuthQueryRepository();
-
-//users
 const usersQueryRepository = new UsersQueryRepository();
 const usersCommandsRepository = new UsersCommandsRepository(
   usersQueryRepository,
 );
-//securityDevices
 const securityDevicesQueryRepository = new SecurityDevicesQueryRepository();
 const securityDevicesCommandsRepository =
   new SecurityDevicesCommandsRepository();
@@ -33,6 +35,10 @@ const securityDevicesCommandsRepository =
 // ==========================================
 // 2. Services
 // ==========================================
+const apiCallsService = new ApiCallsService(
+  apiCallsQueryRepository,
+  apiCallsCommandsRepository,
+);
 const securityDevicesService = new SecurityDevicesService(
   securityDevicesCommandsRepository,
 );
@@ -62,6 +68,8 @@ export const refreshTokenValidityMiddleware =
     authQueryRepository,
   });
 
+export const rateLimiterMiddleware =
+  createRateLimiterMiddleware(apiCallsService);
 
 // ==========================================
 // 4. Controllers
