@@ -9,7 +9,6 @@ import {
 import { RequestBodyModel } from "../dto/common/RequestModels";
 import { Request, Response } from "express";
 import { UserInputModel } from "../dto/usersDTO/usersDTO";
-import { authService } from "../service/authService";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { responseErrorFunction } from "../utils/common-utils/responseErrorFunction";
 import { IncorrectConfirmationCodeError } from "../utils/errors-utils/registration-confirmation-errors/IncorrectConfirmationCodeError";
@@ -24,15 +23,14 @@ import { createAppError } from "../utils/appErrors";
 import { getCookieOptions } from "../utils/auth-utils/cookie";
 import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { UsersService } from "../service/usersService";
+import { AuthService } from "../service/authService";
 
 class AuthController {
-  usersQueryRepository: UsersQueryRepository;
-  usersService: UsersService;
-
-  constructor() {
-    this.usersQueryRepository = new UsersQueryRepository();
-    this.usersService = new UsersService();
-  }
+  constructor(
+    private readonly usersQueryRepository = new UsersQueryRepository(),
+    private readonly usersService = new UsersService(),
+    private readonly authService = new AuthService(),
+  ) {}
   async logIn(req: RequestBodyModel<LoginInputModel>, res: Response) {
     const user = await this.usersService.checkCredentials(
       req.body.loginOrEmail,
@@ -48,7 +46,11 @@ class AuthController {
     const deviceTitle = getDeviceTitle(req.headers["user-agent"]);
     const userId = user._id.toString();
     const { accessToken, refreshToken } =
-      await authService.loginAndSessionCreate(clientIP, deviceTitle, userId);
+      await this.authService.loginAndSessionCreate(
+        clientIP,
+        deviceTitle,
+        userId,
+      );
     res.cookie("refreshToken", refreshToken, getCookieOptions());
     return res.status(StatusCodes.OK).send({ accessToken });
   }
@@ -72,7 +74,7 @@ class AuthController {
     req: RequestBodyModel<RegistrationConfirmationCodeModel>,
     res: Response<TApiErrorResultObject>,
   ) {
-    const confirmCodeResult = await authService.confirmCode(req.body.code);
+    const confirmCodeResult = await this.authService.confirmCode(req.body.code);
     if (
       confirmCodeResult instanceof IncorrectConfirmationCodeError ||
       confirmCodeResult instanceof UserIsConfirmedError ||
@@ -95,7 +97,9 @@ class AuthController {
     req: RequestBodyModel<RegistrationEmailResending>,
     res: Response<TApiErrorResultObject>,
   ) {
-    const resendEmailResult = await authService.resendEmail(req.body.email);
+    const resendEmailResult = await this.authService.resendEmail(
+      req.body.email,
+    );
     if (
       resendEmailResult instanceof WrongEmailError ||
       resendEmailResult instanceof EmailAlreadyConfirmedError
@@ -111,7 +115,7 @@ class AuthController {
         .send(responseErrorFunction([resendEmailResult]));
       return;
     }
-    res.sendStatus(StatusCodes.NO_CONTENT);
+    res.status(StatusCodes.NO_CONTENT).send();
   }
   async refreshTokenFunction(
     req: Request,
@@ -120,7 +124,7 @@ class AuthController {
     const oldRefreshToken = req.cookies.refreshToken;
     const userId = req.userId;
     const deviceId = req.currentDeviceId;
-    const { accessToken, refreshToken } = await authService.refreshSession(
+    const { accessToken, refreshToken } = await this.authService.refreshSession(
       oldRefreshToken,
       userId,
       deviceId,
@@ -132,7 +136,7 @@ class AuthController {
     const refreshToken = req.cookies.refreshToken;
     const userId = req.userId;
     const currentDeviceId = req.currentDeviceId;
-    await authService.placeRefreshTokenToBlacklist(refreshToken, userId);
+    await this.authService.placeRefreshTokenToBlacklist(refreshToken, userId);
     const isSessionDeleted = await securityDevicesService.deleteSessionById(
       currentDeviceId,
       userId,
@@ -145,7 +149,7 @@ class AuthController {
         StatusCodes.UNAUTHORIZED,
       );
     }
-    res.sendStatus(StatusCodes.NO_CONTENT);
+    res.status(StatusCodes.NO_CONTENT).send();
   }
 }
 

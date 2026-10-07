@@ -7,7 +7,6 @@ import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { UsersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { ObjectId, WithId } from "mongodb";
-import { authService } from "./authService";
 import { createConfirmationCode } from "../utils/auth-utils/createUserConfirmationCode";
 import { createCodeExpirationDate } from "../utils/auth-utils/createCodeExpirationDate";
 import { emailManager } from "../globals/email/email-manager";
@@ -18,11 +17,13 @@ import {
   comparePasswords,
   generateHash,
 } from "../globals/bcrypt/bcryptService";
+import { AuthService } from "./authService";
 
 export class UsersService {
   constructor(
     private readonly usersCommandsRepository = new UsersCommandsRepository(),
     private readonly usersQueryRepository = new UsersQueryRepository(),
+    private readonly authService = new AuthService(),
   ) {}
 
   async createUser(
@@ -67,7 +68,7 @@ export class UsersService {
         _id: createdUserId,
       });
       await emailManager.sendEmail(newUserData);
-      await authService.createRefreshTokenBlacklistForUser(
+      await this.authService.createRefreshTokenBlacklistForUser(
         new ObjectId(createdUserId),
       );
       return newUser;

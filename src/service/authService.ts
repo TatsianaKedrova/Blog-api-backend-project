@@ -1,4 +1,3 @@
-import { authCommandsRepository } from "../repositories/commands-repository/authCommandsRepository";
 import { emailManager } from "../globals/email/email-manager";
 import { TFieldError } from "../dto/common/ErrorResponseModel";
 import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
@@ -20,15 +19,14 @@ import {
   createAccessRefreshTokensResponse,
   getTokenCreationDate,
 } from "../globals/jwt-service";
+import { AuthCommandsRepository } from "../repositories/commands-repository/authCommandsRepository";
 
-class AuthService {
-  usersCommandsRepository: UsersCommandsRepository;
-  usersQueryRepository: UsersQueryRepository;
-
-  constructor() {
-    this.usersCommandsRepository = new UsersCommandsRepository();
-    this.usersQueryRepository = new UsersQueryRepository();
-  }
+export class AuthService {
+  constructor(
+    private readonly authCommandsRepository = new AuthCommandsRepository(),
+    private readonly usersCommandsRepository = new UsersCommandsRepository(),
+    private readonly usersQueryRepository = new UsersQueryRepository(),
+  ) {}
   async confirmCode(code: string): Promise<TFieldError | string> {
     const user =
       await this.usersQueryRepository.findUserByConfirmationCode(code);
@@ -89,7 +87,7 @@ class AuthService {
   async createRefreshTokenBlacklistForUser(
     userId: ObjectId,
   ): Promise<string | null> {
-    return await authCommandsRepository.createUserRefreshTokensBlacklist(
+    return await this.authCommandsRepository.createUserRefreshTokensBlacklist(
       userId,
     );
   }
@@ -97,7 +95,7 @@ class AuthService {
     refreshToken: string,
     userId: string,
   ): Promise<void> {
-    return await authCommandsRepository.putRefreshTokenToBlacklist(
+    return await this.authCommandsRepository.putRefreshTokenToBlacklist(
       refreshToken,
       userId,
     );
@@ -107,7 +105,7 @@ class AuthService {
     userId: string,
     currentDeviceId: string,
   ): Promise<TokenPairResponse> {
-    await authService.placeRefreshTokenToBlacklist(oldRefreshToken, userId);
+    await this.placeRefreshTokenToBlacklist(oldRefreshToken, userId);
     const { accessToken, refreshToken } = createAccessRefreshTokensResponse(
       userId,
       currentDeviceId,
@@ -124,5 +122,3 @@ class AuthService {
     };
   }
 }
-
-export const authService = new AuthService();

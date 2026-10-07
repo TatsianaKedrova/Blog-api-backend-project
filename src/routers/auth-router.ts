@@ -15,13 +15,13 @@ authRouter.post(
   rateLimiterMiddleware,
   authValidator,
   responseErrorValidationMiddleware,
-  authController.logIn,
+  authController.logIn.bind(authController),
 );
 
 authRouter.get(
   "/me",
   accessTokenValidityMiddleware,
-  authController.getInfoAboutUser,
+  authController.getInfoAboutUser.bind(authController),
 );
 
 authRouter.post(
@@ -29,31 +29,31 @@ authRouter.post(
   rateLimiterMiddleware,
   createUserValidator,
   responseErrorValidationMiddleware,
-  authController.registerUser,
+  authController.registerUser.bind(authController),
 );
 authRouter.post(
   "/registration-confirmation",
   rateLimiterMiddleware,
   confirmationCodeValidator,
   responseErrorValidationMiddleware,
-  authController.confirmRegistration,
+  authController.confirmRegistration.bind(authController),
 );
 authRouter.post(
   "/registration-email-resending",
   rateLimiterMiddleware,
   emailValidator,
   responseErrorValidationMiddleware,
-  authController.resendRegistrationEmail,
+  authController.resendRegistrationEmail.bind(authController),
 );
 
 authRouter.post(
   "/refresh-token",
   refreshTokenValidityMiddleware,
-  authController.refreshTokenFunction,
+  authController.refreshTokenFunction.bind(authController),
 );
 
 authRouter.post(
   "/logout",
   refreshTokenValidityMiddleware,
-  authController.logout,
+  authController.logout.bind(authController),
 );

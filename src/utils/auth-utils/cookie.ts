@@ -8,6 +8,12 @@ export const getCookieOptions = (
 ): CookieOptions => ({
   httpOnly: true,
   secure: true,
-  sameSite: "lax",
+  sameSite: "lax" as const,
   maxAge: maxAgeInMs,
+});
+
+export const getClearCookieOptions = (): CookieOptions => ({
+  httpOnly: true,
+  secure: true,
+  sameSite: "lax" as const,
 });

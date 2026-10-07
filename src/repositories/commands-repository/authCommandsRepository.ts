@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import { refreshTokensBlacklistedCollection } from "../../db";
 
-class AuthCommandsRepository {
+export class AuthCommandsRepository {
   async createUserRefreshTokensBlacklist(userId: ObjectId): Promise<string> {
     const createRefreshTokensBlacklistForUser =
       await refreshTokensBlacklistedCollection.insertOne({
@@ -20,5 +20,3 @@ class AuthCommandsRepository {
     );
   }
 }
-
-export const authCommandsRepository = new AuthCommandsRepository();

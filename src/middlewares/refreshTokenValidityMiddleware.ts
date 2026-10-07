@@ -1,17 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { ObjectId } from "mongodb";
-import { authQueryRepository } from "../repositories/query-repository/authQueryRepository";
 import { createAppError } from "../utils/appErrors";
 import { securityDevicesQueryRepository } from "../repositories/query-repository/securityDevicesQueryRepository";
 import { getJwtPayloadResult } from "../globals/jwt-service";
+import { getClearCookieOptions } from "../utils/auth-utils/cookie";
+import { authQueryRepository } from "../repositories/query-repository/authQueryRepository";
 
 export const refreshTokenValidityMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
-  const refreshTokenFromClient: string = req.cookies.refreshToken;
+  const refreshTokenFromClient: string | undefined = req.cookies?.refreshToken;
   if (!refreshTokenFromClient || !refreshTokenFromClient.trim()) {
     throw createAppError(
       "Refresh token is missing from requests cookies",
@@ -46,7 +47,7 @@ export const refreshTokenValidityMiddleware = async (
     );
 
   if (checkRefreshTokenIsBlacklisted) {
-    res.clearCookie("refreshToken");
+    res.clearCookie("refreshToken", getClearCookieOptions());
     throw createAppError(
       "Access denied due to security validation failure",
       StatusCodes.UNAUTHORIZED,
