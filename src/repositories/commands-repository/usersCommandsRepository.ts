@@ -2,9 +2,15 @@ import { ObjectId } from "mongodb";
 import { usersCollection } from "../../db";
 import { UserDBType } from "../../dto/usersDTO/usersDTO";
 import { UsersQueryRepository } from "../query-repository/usersQueryRepository";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../dto/common/inversifyDTO/InversifyDTO";
 
+@injectable()
 export class UsersCommandsRepository {
-  constructor(private readonly usersQueryRepository: UsersQueryRepository) {}
+  constructor(
+    @inject(TYPES.UsersQueryRepository)
+    private readonly usersQueryRepository: UsersQueryRepository,
+  ) {}
 
   async createNewUser(newUser: UserDBType): Promise<ObjectId> {
     const createdUser = await usersCollection.insertOne(newUser);
