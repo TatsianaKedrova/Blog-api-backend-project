@@ -6,7 +6,7 @@ import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { Paginator } from "../../dto/common/PaginatorModel";
 
-class PostsQueryRepository {
+export class PostsQueryRepository {
   async findPosts(
     pageNumber: number,
     sortBy: string,
@@ -38,5 +38,3 @@ class PostsQueryRepository {
     return foundPost;
   }
 }
-
-export const postsQueryRepository = new PostsQueryRepository();

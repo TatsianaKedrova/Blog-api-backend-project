@@ -5,7 +5,7 @@ import {
   PostInputModel,
   PostViewModel,
 } from "../dto/postsDTO/PostModel";
-import { postsService } from "../service/postsService";
+import { PostsService } from "../service/postsService";
 import {
   RequestBodyModel,
   RequestQueryParamsModel,
@@ -14,12 +14,16 @@ import {
 } from "../dto/common/RequestModels";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
-import { postsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
 import { Paginator } from "../dto/common/PaginatorModel";
 import { QueryParamsWithSearch } from "../dto/common/SortPaginatorQueryParamsType";
 import { transformPostsResponse } from "../utils/posts-utils/transformPostsResponse";
+import { PostsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
 
-class PostsController {
+export class PostsController {
+  constructor(
+    protected readonly postsService: PostsService,
+    private readonly postsQueryRepository: PostsQueryRepository,
+  ) {}
   async getPosts(
     req: RequestQueryParamsModel<QueryParamsWithSearch>,
     res: Response<Paginator<PostViewModel>>,
@@ -31,7 +35,7 @@ class PostsController {
       sortDirection = "desc",
     } = req.query;
     const posts: Paginator<PostViewModel> =
-      await postsQueryRepository.findPosts(
+      await this.postsQueryRepository.findPosts(
         Number(pageNumber),
         sortBy,
         Number(pageSize),
@@ -43,7 +47,9 @@ class PostsController {
     req: RequestWithURIParam<URIParamsRequest>,
     res: Response<PostViewModel>,
   ) {
-    const foundPost = await postsQueryRepository.findPostById(req.params.id);
+    const foundPost = await this.postsQueryRepository.findPostById(
+      req.params.id,
+    );
     if (!foundPost) {
       res.sendStatus(StatusCodes.NOT_FOUND);
     } else {
@@ -55,7 +61,10 @@ class PostsController {
     req: RequestBodyModel<PostInputModel>,
     res: Response<PostViewModel | TApiErrorResultObject>,
   ) {
-    const newPost = await postsService.createNewPost(req.body.blogId, req.body);
+    const newPost = await this.postsService.createNewPost(
+      req.body.blogId,
+      req.body,
+    );
     if (!newPost) {
       res.sendStatus(StatusCodes.CONFLICT);
     } else {
@@ -69,7 +78,7 @@ class PostsController {
     >,
     res: Response<PostViewModel>,
   ) {
-    const createdPost = await postsService.createNewPost(
+    const createdPost = await this.postsService.createNewPost(
       req.params.id,
       req.body,
     );
@@ -81,7 +90,7 @@ class PostsController {
     req: RequestWithURIParamsAndBody<URIParamsRequest, PostInputModel>,
     res: Response<TApiErrorResultObject>,
   ) {
-    const isUpdated = await postsService.updatePostById(
+    const isUpdated = await this.postsService.updatePostById(
       req.params.id,
       req.body,
     );
@@ -95,7 +104,7 @@ class PostsController {
     req: RequestWithURIParam<URIParamsRequest>,
     res: Response,
   ) {
-    const isDeleted = await postsService.deletePostById(req.params.id);
+    const isDeleted = await this.postsService.deletePostById(req.params.id);
 
     if (!isDeleted) {
       res.sendStatus(StatusCodes.NOT_FOUND);
@@ -104,5 +113,3 @@ class PostsController {
     }
   }
 }
-
-export const postsController = new PostsController();

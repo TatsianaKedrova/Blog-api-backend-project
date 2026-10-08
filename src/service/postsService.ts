@@ -5,17 +5,21 @@ import {
 } from "../dto/postsDTO/PostModel";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { ObjectId } from "mongodb";
-import { postsCommandsRepository } from "../repositories/commands-repository/postsCommandsRepository";
-import { blogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
 import { transformPostsResponse } from "../utils/posts-utils/transformPostsResponse";
+import { BlogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
+import { PostsCommandsRepository } from "../repositories/commands-repository/postsCommandsRepository";
 
-class PostsService {
+export class PostsService {
+  constructor(
+    private readonly blogsQueryRepository: BlogsQueryRepository,
+    private readonly postsCommandsRepository: PostsCommandsRepository,
+  ) {}
   async createNewPost(
     blogId: string,
     postData: Omit<PostInputModel, "blogId"> | PostInputModel,
   ): Promise<PostViewModel | null> {
     const { title, shortDescription, content } = postData;
-    const blog = await blogsQueryRepository.findBlogById(blogId);
+    const blog = await this.blogsQueryRepository.findBlogById(blogId);
     if (!blog) {
       return null;
     }
@@ -27,7 +31,7 @@ class PostsService {
       blogName: blog.name,
       createdAt: creationDate(),
     });
-    const newPostId = await postsCommandsRepository.createNewPost(newPost);
+    const newPostId = await this.postsCommandsRepository.createNewPost(newPost);
     const postTransformedResult = transformPostsResponse({
       ...newPost,
       _id: newPostId,
@@ -35,11 +39,9 @@ class PostsService {
     return postTransformedResult;
   }
   async updatePostById(id: string, body: PostInputModel): Promise<boolean> {
-    return await postsCommandsRepository.updatePostById(id, body);
+    return await this.postsCommandsRepository.updatePostById(id, body);
   }
   async deletePostById(id: string): Promise<boolean> {
-    return await postsCommandsRepository.deletePostById(id);
+    return await this.postsCommandsRepository.deletePostById(id);
   }
 }
-
-export const postsService = new PostsService();

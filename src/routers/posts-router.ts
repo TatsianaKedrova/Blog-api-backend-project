@@ -6,18 +6,17 @@ import { responseErrorValidationMiddleware } from "../middlewares/responseErrorV
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
 import { accessTokenValidityMiddleware } from "../middlewares/accessTokenValidityMiddleware";
 import { commentValidator } from "../utils/comments-utils/commentValidator";
-import { postsController } from "../controllers/postsController";
-import { commentsController } from "../controllers/commentsController";
+import { commentsController, postsController } from "../composition-route";
 export const postsRouter = express.Router({});
 
 //TODO: GET LIST OF POSTS
-postsRouter.get("/", postsController.getPosts);
+postsRouter.get("/", postsController.getPosts.bind(postsController));
 
 //TODO: GET POST BY ID
 postsRouter.get(
   "/:id",
   validateObjectIdMiddleware,
-  postsController.getPostsById,
+  postsController.getPostsById.bind(postsController),
 );
 
 //TODO: CREATE A NEW POST
@@ -26,7 +25,7 @@ postsRouter.post(
   basicAuthMiddleware,
   postsValidator,
   responseErrorValidationMiddleware,
-  postsController.createNewPost,
+  postsController.createNewPost.bind(postsController),
 );
 
 //TODO: UPDATE POST BY ID
@@ -36,7 +35,7 @@ postsRouter.put(
   validateObjectIdMiddleware,
   postsValidator,
   responseErrorValidationMiddleware,
-  postsController.updatePostById,
+  postsController.updatePostById.bind(postsController),
 );
 
 //TODO: DELETE POST BY ID
@@ -44,7 +43,7 @@ postsRouter.delete(
   "/:id",
   basicAuthMiddleware,
   validateObjectIdMiddleware,
-  postsController.deletePostById,
+  postsController.deletePostById.bind(postsController),
 );
 
 //TODO: CREATE COMMENT FOR SPECIFIC POST
@@ -54,12 +53,12 @@ postsRouter.post(
   validateObjectIdMiddleware,
   commentValidator,
   responseErrorValidationMiddleware,
-  commentsController.createComment,
+  commentsController.createComment.bind(commentsController),
 );
 
 //TODO: RETURN COMMENTS FOR SPECIFIED POST
 postsRouter.get(
   "/:id/comments",
   validateObjectIdMiddleware,
-  commentsController.findCommentsForSpecifiedPost,
+  commentsController.findCommentsForSpecifiedPost.bind(commentsController),
 );

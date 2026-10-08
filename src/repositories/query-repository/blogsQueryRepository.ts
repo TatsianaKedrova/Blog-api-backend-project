@@ -8,7 +8,7 @@ import { transformPostsResponse } from "../../utils/posts-utils/transformPostsRe
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 
-class BlogsQueryRepository {
+export class BlogsQueryRepository {
   async findBlogs(
     searchNameTerm: string,
     pageNumber: number,
@@ -69,5 +69,3 @@ class BlogsQueryRepository {
     return foundBlog;
   }
 }
-
-export const blogsQueryRepository = new BlogsQueryRepository();

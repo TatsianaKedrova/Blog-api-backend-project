@@ -10,13 +10,17 @@ import {
 } from "../dto/common/RequestModels";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
 import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
-import { blogsService } from "../service/blogsService";
+import { BlogsService } from "../service/blogsService";
 import { QueryParamsWithSearch } from "../dto/common/SortPaginatorQueryParamsType";
 import { Paginator } from "../dto/common/PaginatorModel";
 import { PostViewModel } from "../dto/postsDTO/PostModel";
-import { blogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
+import { BlogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
 
-class BlogsController {
+export class BlogsController {
+  constructor(
+    protected readonly blogsService: BlogsService,
+    private readonly blogsQueryRepository: BlogsQueryRepository,
+  ) {}
   async getBlogs(
     req: RequestQueryParamsModel<QueryParamsWithSearch>,
     res: Response<Paginator<BlogViewModel>>,
@@ -30,7 +34,7 @@ class BlogsController {
     } = req.query;
 
     const blogs: Paginator<BlogViewModel> =
-      await blogsQueryRepository.findBlogs(
+      await this.blogsQueryRepository.findBlogs(
         searchNameTerm,
         Number(pageNumber),
         sortBy,
@@ -53,12 +57,14 @@ class BlogsController {
       sortDirection = "desc",
     } = req.query;
 
-    const foundBlog = await blogsQueryRepository.findBlogById(req.params.id);
+    const foundBlog = await this.blogsQueryRepository.findBlogById(
+      req.params.id,
+    );
     if (!foundBlog) {
       res.sendStatus(StatusCodes.NOT_FOUND);
     } else {
       const postsFromSpecificBlog =
-        await blogsQueryRepository.findPostsForSpecificBlog(
+        await this.blogsQueryRepository.findPostsForSpecificBlog(
           req.params.id,
           Number(pageNumber),
           sortBy,
@@ -72,7 +78,9 @@ class BlogsController {
     req: RequestWithURIParam<URIParamsRequest>,
     res: Response<BlogViewModel>,
   ) {
-    const foundBlog = await blogsQueryRepository.findBlogById(req.params.id);
+    const foundBlog = await this.blogsQueryRepository.findBlogById(
+      req.params.id,
+    );
     if (!foundBlog) {
       res.sendStatus(StatusCodes.NOT_FOUND);
     } else {
@@ -83,14 +91,14 @@ class BlogsController {
     req: RequestBodyModel<BlogInputModel>,
     res: Response<BlogViewModel | TApiErrorResultObject>,
   ) {
-    const newBlog = await blogsService.createNewBlog(req.body);
+    const newBlog = await this.blogsService.createNewBlog(req.body);
     res.status(StatusCodes.CREATED).send(newBlog);
   }
   async updateBlogById(
     req: RequestWithURIParamsAndBody<URIParamsRequest, BlogInputModel>,
     res: Response<TApiErrorResultObject>,
   ) {
-    const updatedBlog = await blogsService.updateBlogById(
+    const updatedBlog = await this.blogsService.updateBlogById(
       req.params.id,
       req.body,
     );
@@ -104,11 +112,9 @@ class BlogsController {
     req: RequestWithURIParam<URIParamsRequest>,
     res: Response,
   ) {
-    const foundBlog = await blogsService.deleteBlogById(req.params.id);
+    const foundBlog = await this.blogsService.deleteBlogById(req.params.id);
     if (!foundBlog) {
       res.sendStatus(StatusCodes.NOT_FOUND);
     } else res.sendStatus(StatusCodes.NO_CONTENT);
   }
 }
-
-export const blogsController = new BlogsController();

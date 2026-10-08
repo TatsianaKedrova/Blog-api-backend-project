@@ -2,24 +2,25 @@ import {
   CommentDBType,
   CommentViewModel,
 } from "../dto/commentsDTO/commentsDTO";
-import { commentsCommandsRepository } from "../repositories/commands-repository/commentsCommandsRepository";
-import { postsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
+import { CommentsCommandsRepository } from "../repositories/commands-repository/commentsCommandsRepository";
+import { PostsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
 import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { transformCommentsResponse } from "../utils/comments-utils/transformCommentsResponse";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 
-class CommentsService {
-  usersQueryRepository: UsersQueryRepository;
-  constructor() {
-    this.usersQueryRepository = new UsersQueryRepository();
-  }
+export class CommentsService {
+  constructor(
+    private readonly usersQueryRepository: UsersQueryRepository,
+    private readonly postsQueryRepository: PostsQueryRepository,
+    private readonly commentsCommandsRepository: CommentsCommandsRepository,
+  ) {}
 
   async createNewComment(
     postId: string,
     content: string,
     userId: string,
   ): Promise<CommentViewModel | null> {
-    const foundPost = await postsQueryRepository.findPostById(postId);
+    const foundPost = await this.postsQueryRepository.findPostById(postId);
     if (!foundPost) {
       return null;
     }
@@ -35,7 +36,7 @@ class CommentsService {
       },
     };
     const createdComment =
-      await commentsCommandsRepository.createComment(newComment);
+      await this.commentsCommandsRepository.createComment(newComment);
     const transformedComment = transformCommentsResponse({
       ...newComment,
       _id: createdComment,
@@ -44,19 +45,17 @@ class CommentsService {
   }
   async deleteCommentById(commentId: string): Promise<boolean> {
     const deletedComment =
-      await commentsCommandsRepository.deleteComment(commentId);
+      await this.commentsCommandsRepository.deleteComment(commentId);
     return deletedComment;
   }
   async updateCommentById(
     commentId: string,
     content: string,
   ): Promise<boolean> {
-    const updatedComment = await commentsCommandsRepository.updateComment(
+    const updatedComment = await this.commentsCommandsRepository.updateComment(
       commentId,
       content,
     );
     return updatedComment;
   }
 }
-
-export const commentsService = new CommentsService();

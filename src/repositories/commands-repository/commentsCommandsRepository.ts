@@ -2,7 +2,7 @@ import { ObjectId } from "mongodb";
 import { commentsCollection } from "../../db";
 import { CommentDBType } from "../../dto/commentsDTO/commentsDTO";
 
-class CommentsCommandsRepository {
+export class CommentsCommandsRepository {
   async createComment(newComment: CommentDBType): Promise<ObjectId> {
     const result = await commentsCollection.insertOne(newComment);
     return result.insertedId;
@@ -21,5 +21,3 @@ class CommentsCommandsRepository {
     return newUpdatedComment !== null;
   }
 }
-
-export const commentsCommandsRepository = new CommentsCommandsRepository();

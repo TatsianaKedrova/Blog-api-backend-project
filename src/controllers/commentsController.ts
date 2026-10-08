@@ -9,20 +9,24 @@ import {
   RequestWithURIParamsAndBody,
 } from "../dto/common/RequestModels";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
-import { commentsQueryRepository } from "../repositories/query-repository/commentsQueryRepository";
 import { StatusCodes } from "http-status-codes";
-import { commentsService } from "../service/commentsService";
 import { transformCommentsResponse } from "../utils/comments-utils/transformCommentsResponse";
 import { PaginationSortingQueryParams } from "../dto/common/SortPaginatorQueryParamsType";
 import { Paginator } from "../dto/common/PaginatorModel";
+import { CommentsService } from "../service/commentsService";
+import { CommentsQueryRepository } from "../repositories/query-repository/commentsQueryRepository";
 
-class CommentsController {
+export class CommentsController {
+  constructor(
+    protected readonly commentsService: CommentsService,
+    private readonly commentsQueryRepository: CommentsQueryRepository,
+  ) {}
   async createComment(
     req: RequestWithURIParamsAndBody<URIParamsRequest, CommentInputModel>,
     res: Response<CommentViewModel>,
   ) {
     const { content } = req.body;
-    const createdComment = await commentsService.createNewComment(
+    const createdComment = await this.commentsService.createNewComment(
       req.params.id,
       content,
       req.userId,
@@ -47,7 +51,7 @@ class CommentsController {
       sortDirection = "desc",
     } = req.query;
     const commentsForSpecifiedPost =
-      await commentsQueryRepository.findCommentsForSpecifiedPost(
+      await this.commentsQueryRepository.findCommentsForSpecifiedPost(
         req.params.id,
         Number(pageNumber),
         sortBy,
@@ -64,7 +68,7 @@ class CommentsController {
     req: RequestWithURIParam<URIParamsRequest>,
     res: Response<CommentViewModel>,
   ) {
-    const foundComment = await commentsQueryRepository.findCommentById(
+    const foundComment = await this.commentsQueryRepository.findCommentById(
       req.params.id,
     );
     if (!foundComment) {
@@ -78,7 +82,9 @@ class CommentsController {
     req: RequestWithURIParam<URIParamsRequest>,
     res: Response,
   ) {
-    const deletedComment = commentsService.deleteCommentById(req.params.id);
+    const deletedComment = this.commentsService.deleteCommentById(
+      req.params.id,
+    );
     if (!deletedComment) {
       res.sendStatus(StatusCodes.NOT_FOUND);
     }
@@ -89,7 +95,7 @@ class CommentsController {
     res: Response,
   ) {
     const { content } = req.body;
-    const updatedComment = await commentsService.updateCommentById(
+    const updatedComment = await this.commentsService.updateCommentById(
       req.params.id,
       content,
     );
@@ -99,5 +105,3 @@ class CommentsController {
     res.sendStatus(StatusCodes.NO_CONTENT);
   }
 }
-
-export const commentsController = new CommentsController();

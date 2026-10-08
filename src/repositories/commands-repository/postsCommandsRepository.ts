@@ -2,7 +2,7 @@ import { PostDBType, PostInputModel } from "../../dto/postsDTO/PostModel";
 import { blogsCollection, postsCollection } from "../../db";
 import { ObjectId } from "mongodb";
 
-class PostsCommandsRepository {
+export class PostsCommandsRepository {
   async createNewPost(newPost: PostDBType): Promise<ObjectId> {
     const result = await postsCollection.insertOne(newPost);
     return result.insertedId;
@@ -38,5 +38,3 @@ class PostsCommandsRepository {
     return deleteResult.deletedCount === 1;
   }
 }
-
-export const postsCommandsRepository = new PostsCommandsRepository();

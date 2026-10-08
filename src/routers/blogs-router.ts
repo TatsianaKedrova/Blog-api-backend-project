@@ -6,23 +6,22 @@ import { responseErrorValidationMiddleware } from "../middlewares/responseErrorV
 
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
 import { postsValidatorForSpecificBlog } from "../utils/posts-utils/postsValidator";
-import { postsController } from "../controllers/postsController";
-import { blogsController } from "../controllers/blogsController";
+import { blogsController, postsController } from "../composition-route";
 export const blogsRouter = express.Router({});
 
 //TODO: GET LIST OF BLOGS
-blogsRouter.get("/", blogsController.getBlogs);
+blogsRouter.get("/", blogsController.getBlogs.bind(blogsController));
 //TODO: GET BLOG BY ID
 blogsRouter.get(
   "/:id",
   validateObjectIdMiddleware,
-  blogsController.getBlogsById,
+  blogsController.getBlogsById.bind(blogsController),
 );
 //TODO: GET ALL POSTS FOR SPECIFIC BLOG
 blogsRouter.get(
   "/:id/posts",
   validateObjectIdMiddleware,
-  blogsController.getBlogPosts,
+  blogsController.getBlogPosts.bind(blogsController),
 );
 
 //TODO: CREATE POST FOR SPECIFIC BLOG
@@ -32,7 +31,7 @@ blogsRouter.post(
   validateObjectIdMiddleware,
   postsValidatorForSpecificBlog,
   responseErrorValidationMiddleware,
-  postsController.createNewPost,
+  postsController.createNewPost.bind(postsController),
 );
 //TODO: CREATE A NEW BLOG
 blogsRouter.post(
@@ -40,7 +39,7 @@ blogsRouter.post(
   basicAuthMiddleware,
   blogsValidator,
   responseErrorValidationMiddleware,
-  blogsController.createNewBlog,
+  blogsController.createNewBlog.bind(blogsController),
 );
 
 //TODO: UPDATE BLOG BY ID
@@ -50,7 +49,7 @@ blogsRouter.put(
   validateObjectIdMiddleware,
   blogsValidator,
   responseErrorValidationMiddleware,
-  blogsController.updateBlogById,
+  blogsController.updateBlogById.bind(blogsController),
 );
 
 //TODO: DELETE BLOG BY ID
@@ -58,5 +57,5 @@ blogsRouter.delete(
   "/:id",
   basicAuthMiddleware,
   validateObjectIdMiddleware,
-  blogsController.deleteBlogById,
+  blogsController.deleteBlogById.bind(blogsController),
 );

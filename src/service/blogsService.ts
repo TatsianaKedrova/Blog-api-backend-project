@@ -3,12 +3,15 @@ import {
   BlogInputModel,
   BlogViewModel,
 } from "../dto/blogsDTO/BlogModel";
+import { BlogsCommandsRepository } from "../repositories/commands-repository/blogsCommandsRepository";
 
-import { blogsCommandsRepository } from "../repositories/commands-repository/blogsCommandsRepository";
 import { transformBlogsResponse } from "../utils/blogs-utils/transformBlogsResponse";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 
-class BlogsService {
+export class BlogsService {
+  constructor(
+    private readonly blogsCommandsRepository: BlogsCommandsRepository,
+  ) {}
   async createNewBlog(body: BlogInputModel): Promise<BlogViewModel> {
     const { name, description, websiteUrl } = body;
     const newBlog = new BlogDBType({
@@ -18,7 +21,8 @@ class BlogsService {
       createdAt: creationDate(),
       isMembership: false,
     });
-    const createdBlogId = await blogsCommandsRepository.createNewBlog(newBlog);
+    const createdBlogId =
+      await this.blogsCommandsRepository.createNewBlog(newBlog);
     const blogTransformedResponse = transformBlogsResponse({
       ...newBlog,
       _id: createdBlogId,
@@ -26,11 +30,9 @@ class BlogsService {
     return blogTransformedResponse;
   }
   async updateBlogById(id: string, body: BlogInputModel): Promise<boolean> {
-    return await blogsCommandsRepository.updateBlogById(id, body);
+    return await this.blogsCommandsRepository.updateBlogById(id, body);
   }
   async deleteBlogById(id: string): Promise<boolean> {
-    return await blogsCommandsRepository.deleteBlogById(id);
+    return await this.blogsCommandsRepository.deleteBlogById(id);
   }
 }
-
-export const blogsService = new BlogsService();
