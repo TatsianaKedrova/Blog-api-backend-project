@@ -5,6 +5,7 @@ import { PostsController } from "./controllers/postsController";
 import { SecurityDevicesController } from "./controllers/securityDevicesController";
 import { UsersController } from "./controllers/usersController";
 import { createEmailManager } from "./globals/email/email-manager";
+import { createForbiddenResponseMiddleware } from "./middlewares/forbiddenResponseMiddleware";
 import { createRateLimiterMiddleware } from "./middlewares/rateLimiterMiddleware";
 import { createRefreshTokenValidityMiddleware } from "./middlewares/refreshTokenValidityMiddleware";
 import { ApiCallsCommandsRepository } from "./repositories/commands-repository/apiCallsCommandsRepository";
@@ -100,6 +101,10 @@ export const refreshTokenValidityMiddleware =
 
 export const rateLimiterMiddleware =
   createRateLimiterMiddleware(apiCallsService);
+
+export const forbiddenResponseMiddleware = createForbiddenResponseMiddleware(
+  commentsQueryRepository,
+);
 
 // ==========================================
 // 4. Controllers

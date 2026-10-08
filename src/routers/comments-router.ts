@@ -1,17 +1,19 @@
 import { responseErrorValidationMiddleware } from "./../middlewares/responseErrorValidationMiddleware";
 import express from "express";
 import { accessTokenValidityMiddleware } from "../middlewares/accessTokenValidityMiddleware";
-import { forbiddenResponseMiddleware } from "../middlewares/forbiddenResponseMiddleware";
 import { commentValidator } from "../utils/comments-utils/commentValidator";
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
-import { commentsController } from "../controllers/commentsController";
+import {
+  commentsController,
+  forbiddenResponseMiddleware,
+} from "../composition-route";
 
 export const commentsRouter = express.Router({});
 
 commentsRouter.get(
   "/:id",
   validateObjectIdMiddleware,
-  commentsController.getCommentById,
+  commentsController.getCommentById.bind(commentsController),
 );
 
 commentsRouter.delete(
@@ -19,7 +21,7 @@ commentsRouter.delete(
   accessTokenValidityMiddleware,
   validateObjectIdMiddleware,
   forbiddenResponseMiddleware,
-  commentsController.deleteComment,
+  commentsController.deleteComment.bind(commentsController),
 );
 
 commentsRouter.put(
@@ -29,5 +31,5 @@ commentsRouter.put(
   forbiddenResponseMiddleware,
   commentValidator,
   responseErrorValidationMiddleware,
-  commentsController.updateComment,
+  commentsController.updateComment.bind(commentsController),
 );
