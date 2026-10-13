@@ -6,6 +6,8 @@ import { AuthCommandsRepository } from "../repositories/commands-repository/auth
 import { TYPES } from "../constants/tokens";
 import { SecurityDevicesQueryRepository } from "../repositories/query-repository/securityDevicesQueryRepository";
 import { createRefreshTokenValidityMiddleware } from "../middlewares/refreshTokenValidityMiddleware";
+import { ApiCallsService } from "../service/apiCallsService";
+import { createRateLimiterMiddleware } from "../middlewares/rateLimiterMiddleware";
 
 export const AuthModule = new ContainerModule((options) => {
   options.bind<AuthController>(AuthController).to(AuthController);
@@ -31,4 +33,8 @@ export const AuthModule = new ContainerModule((options) => {
         authQueryRepository,
       });
     });
+  options.bind(TYPES.RateLimiterMiddleware).toDynamicValue((context) => {
+    const apiCallsService = context.get<ApiCallsService>(ApiCallsService);
+    return createRateLimiterMiddleware(apiCallsService);
+  });
 });

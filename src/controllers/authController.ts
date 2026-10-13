@@ -26,7 +26,6 @@ import { AuthService } from "../service/authService";
 import { SecurityDevicesService } from "../service/securityDevicesService";
 import { controller, httpGet, httpPost } from "inversify-express-utils";
 import { inject } from "inversify";
-import { rateLimiterMiddleware } from "../composition-route";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import { authValidator } from "../utils/auth-utils/authValidator";
 import { accessTokenValidityMiddleware } from "../middlewares/accessTokenValidityMiddleware";
@@ -48,7 +47,7 @@ export class AuthController {
 
   @httpPost(
     "/login",
-    rateLimiterMiddleware,
+    TYPES.RateLimiterMiddleware,
     authValidator,
     responseErrorValidationMiddleware,
   )
@@ -88,7 +87,7 @@ export class AuthController {
   }
   @httpPost(
     "/registration",
-    rateLimiterMiddleware,
+    TYPES.RateLimiterMiddleware,
     createUserValidator,
     responseErrorValidationMiddleware,
   )
@@ -102,7 +101,7 @@ export class AuthController {
 
   @httpPost(
     "/registration-confirmation",
-    rateLimiterMiddleware,
+    TYPES.RateLimiterMiddleware,
     confirmationCodeValidator,
     responseErrorValidationMiddleware,
   )
@@ -132,7 +131,7 @@ export class AuthController {
 
   @httpPost(
     "/registration-email-resending",
-    rateLimiterMiddleware,
+    TYPES.RateLimiterMiddleware,
     emailValidator,
     responseErrorValidationMiddleware,
   )
