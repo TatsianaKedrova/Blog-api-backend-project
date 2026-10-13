@@ -1,9 +1,12 @@
 import { ObjectId } from "mongodb";
 import { SecurityDevicesCommandsRepository } from "../repositories/commands-repository/securityDevicesCommandsRepository";
 import { SecurityDeviceDBType } from "../dto/securityDevicesDTO/securityDevicesDTO";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class SecurityDevicesService {
   constructor(
+    @inject(SecurityDevicesCommandsRepository)
     protected readonly securityDevicesCommandsRepository: SecurityDevicesCommandsRepository,
   ) {}
   async createDeviceSession(

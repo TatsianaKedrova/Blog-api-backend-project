@@ -1,7 +1,9 @@
 import { ObjectId } from "mongodb";
 import { securityDevicesCollection } from "../../db";
 import { SecurityDeviceDBType } from "../../dto/securityDevicesDTO/securityDevicesDTO";
+import { injectable } from "inversify";
 
+@injectable()
 export class SecurityDevicesCommandsRepository {
   async createDeviceSession(
     sessionData: SecurityDeviceDBType,

@@ -14,7 +14,7 @@ import { Response } from "express";
 import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { UsersService } from "../service/usersService";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
-import { inject, injectable } from "inversify";
+import { inject } from "inversify";
 import {
   controller,
   httpDelete,
@@ -26,7 +26,6 @@ import { createUserValidator } from "../utils/usersUtils/users-validator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
 
-@injectable()
 @controller("/users")
 export class UsersController {
   constructor(

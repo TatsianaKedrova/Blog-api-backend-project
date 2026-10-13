@@ -20,12 +20,18 @@ import {
 import { AuthCommandsRepository } from "../repositories/commands-repository/authCommandsRepository";
 import { SecurityDevicesService } from "./securityDevicesService";
 import { emailManager } from "../composition-route";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class AuthService {
   constructor(
+    @inject(AuthCommandsRepository)
     private readonly authCommandsRepository: AuthCommandsRepository,
+    @inject(UsersCommandsRepository)
     private readonly usersCommandsRepository: UsersCommandsRepository,
+    @inject(UsersQueryRepository)
     private readonly usersQueryRepository: UsersQueryRepository,
+    @inject(SecurityDevicesService)
     protected readonly securityDevicesService: SecurityDevicesService,
   ) {}
   async confirmCode(code: string): Promise<TFieldError | string> {

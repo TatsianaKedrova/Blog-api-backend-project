@@ -4,7 +4,9 @@ import {
   DeviceViewModel,
   SecurityDeviceDBType,
 } from "../../dto/securityDevicesDTO/securityDevicesDTO";
+import { injectable } from "inversify";
 
+@injectable()
 export class SecurityDevicesQueryRepository {
   async getActiveSessions(userId: string): Promise<DeviceViewModel[]> {
     const allActiveSessions = await securityDevicesCollection

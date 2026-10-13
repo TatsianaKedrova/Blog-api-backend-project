@@ -24,14 +24,34 @@ import { UsersQueryRepository } from "../repositories/query-repository/usersQuer
 import { UsersService } from "../service/usersService";
 import { AuthService } from "../service/authService";
 import { SecurityDevicesService } from "../service/securityDevicesService";
+import { controller, httpGet, httpPost } from "inversify-express-utils";
+import { inject } from "inversify";
+import { rateLimiterMiddleware } from "../composition-route";
+import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
+import { authValidator } from "../utils/auth-utils/authValidator";
+import { accessTokenValidityMiddleware } from "../middlewares/accessTokenValidityMiddleware";
+import { createUserValidator } from "../utils/usersUtils/users-validator";
+import { confirmationCodeValidator } from "../utils/usersUtils/confirmationCodeValidator";
+import { emailValidator } from "../utils/usersUtils/emailValidator";
+import { TYPES } from "../constants/tokens";
 
+@controller("/auth")
 export class AuthController {
   constructor(
+    @inject(UsersQueryRepository)
     private readonly usersQueryRepository: UsersQueryRepository,
-    protected readonly usersService: UsersService,
-    protected readonly authService: AuthService,
+    @inject(UsersService) protected readonly usersService: UsersService,
+    @inject(AuthService) protected readonly authService: AuthService,
+    @inject(SecurityDevicesService)
     protected readonly securityDevicesService: SecurityDevicesService,
   ) {}
+
+  @httpPost(
+    "/login",
+    rateLimiterMiddleware,
+    authValidator,
+    responseErrorValidationMiddleware,
+  )
   async logIn(req: RequestBodyModel<LoginInputModel>, res: Response) {
     const user = await this.usersService.checkCredentials(
       req.body.loginOrEmail,
@@ -55,6 +75,8 @@ export class AuthController {
     res.cookie("refreshToken", refreshToken, getCookieOptions());
     return res.status(StatusCodes.OK).send({ accessToken });
   }
+
+  @httpGet("/me", accessTokenValidityMiddleware)
   async getInfoAboutUser(req: Request, res: Response<MeViewModel>) {
     const foundUser = await this.usersQueryRepository.findUserById(req.userId);
     if (foundUser) {
@@ -64,6 +86,12 @@ export class AuthController {
       res.sendStatus(StatusCodes.UNAUTHORIZED);
     }
   }
+  @httpPost(
+    "/registration",
+    rateLimiterMiddleware,
+    createUserValidator,
+    responseErrorValidationMiddleware,
+  )
   async registerUser(
     req: RequestBodyModel<UserInputModel>,
     res: Response<TApiErrorResultObject>,
@@ -71,6 +99,13 @@ export class AuthController {
     await this.usersService.createUser(req.body, false);
     res.sendStatus(StatusCodes.NO_CONTENT);
   }
+
+  @httpPost(
+    "/registration-confirmation",
+    rateLimiterMiddleware,
+    confirmationCodeValidator,
+    responseErrorValidationMiddleware,
+  )
   async confirmRegistration(
     req: RequestBodyModel<RegistrationConfirmationCodeModel>,
     res: Response<TApiErrorResultObject>,
@@ -94,6 +129,13 @@ export class AuthController {
     }
     res.sendStatus(StatusCodes.NO_CONTENT);
   }
+
+  @httpPost(
+    "/registration-email-resending",
+    rateLimiterMiddleware,
+    emailValidator,
+    responseErrorValidationMiddleware,
+  )
   async resendRegistrationEmail(
     req: RequestBodyModel<RegistrationEmailResending>,
     res: Response<TApiErrorResultObject>,
@@ -118,6 +160,8 @@ export class AuthController {
     }
     res.status(StatusCodes.NO_CONTENT).send();
   }
+
+  @httpPost("/refresh-token", TYPES.RefreshTokenValidityMiddleware)
   async refreshTokenFunction(
     req: Request,
     res: Response<{ accessToken: string }>,
@@ -133,6 +177,8 @@ export class AuthController {
     res.cookie("refreshToken", refreshToken, getCookieOptions());
     return res.status(StatusCodes.OK).send({ accessToken });
   }
+
+  @httpPost("/logout", TYPES.RefreshTokenValidityMiddleware)
   async logout(req: Request, res: Response) {
     const refreshToken = req.cookies.refreshToken;
     const userId = req.userId;
