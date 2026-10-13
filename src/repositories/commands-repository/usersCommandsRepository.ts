@@ -3,12 +3,11 @@ import { usersCollection } from "../../db";
 import { UserDBType } from "../../dto/usersDTO/usersDTO";
 import { UsersQueryRepository } from "../query-repository/usersQueryRepository";
 import { inject, injectable } from "inversify";
-import { TYPES } from "../../dto/common/inversifyDTO/InversifyDTO";
 
 @injectable()
 export class UsersCommandsRepository {
   constructor(
-    @inject(TYPES.UsersQueryRepository)
+    @inject(UsersQueryRepository)
     private readonly usersQueryRepository: UsersQueryRepository,
   ) {}
 

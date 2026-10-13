@@ -69,10 +69,15 @@ const authService = new AuthService(
   usersQueryRepository,
   securityDevicesService,
 );
+export const emailManager = createEmailManager({
+  usersCommandsRepository,
+  usersQueryRepository,
+});
 const usersService = new UsersService(
   usersQueryRepository,
   usersCommandsRepository,
   authService,
+  emailManager,
 );
 const postsService = new PostsService(
   blogsQueryRepository,
@@ -88,10 +93,6 @@ const blogsService = new BlogsService(blogsCommandsRepository);
 // ==========================================
 // 3. Middlewares / Global Utilities
 // ==========================================
-export const emailManager = createEmailManager({
-  usersCommandsRepository,
-  usersQueryRepository,
-});
 
 export const refreshTokenValidityMiddleware =
   createRefreshTokenValidityMiddleware({

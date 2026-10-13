@@ -17,13 +17,20 @@ import {
   generateHash,
 } from "../globals/bcrypt/bcryptService";
 import { AuthService } from "./authService";
-import { emailManager } from "../composition-route";
+import { inject, injectable } from "inversify";
+import { createEmailManager } from "../globals/email/email-manager";
+import { TYPES } from "../constants/tokens";
 
+@injectable()
 export class UsersService {
   constructor(
+    @inject(UsersQueryRepository)
     protected readonly usersQueryRepository: UsersQueryRepository,
+    @inject(UsersCommandsRepository)
     protected readonly usersCommandsRepository: UsersCommandsRepository,
-    protected readonly authService: AuthService,
+    @inject(AuthService) protected readonly authService: AuthService,
+    @inject(TYPES.EmailManager)
+    private readonly emailManager: ReturnType<typeof createEmailManager>,
   ) {}
 
   async createUser(
@@ -67,7 +74,7 @@ export class UsersService {
         ...newUserData,
         _id: createdUserId,
       });
-      await emailManager.sendEmail(newUserData);
+      await this.emailManager.sendEmail(newUserData);
       await this.authService.createRefreshTokenBlacklistForUser(
         new ObjectId(createdUserId),
       );

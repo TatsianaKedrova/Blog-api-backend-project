@@ -5,7 +5,9 @@ import { usersCollection } from "../../db";
 import { Paginator } from "../../dto/common/PaginatorModel";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { transformUsersResponse } from "../../utils/usersUtils/transformUsersResponse";
+import { injectable } from "inversify";
 
+@injectable()
 export class UsersQueryRepository {
   async getUsers(
     pageNumber: number,
