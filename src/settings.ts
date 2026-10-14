@@ -3,53 +3,38 @@ import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
 import { StatusCodes } from "http-status-codes";
 import "./composition-route";
-
+import { httpMethodsCheckMiddleware } from "./middlewares/httpMethodsCheckMiddleware";
+import { createAppError } from "./utils/appErrors";
+import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 import { testingRouter } from "./routers/testing-router";
 import { blogsRouter } from "./routers/blogs-router";
 import { postsRouter } from "./routers/posts-router";
 import { commentsRouter } from "./routers/comments-router";
 import { securityDevicesRouter } from "./routers/securityDevices-router";
+import { usersRouter } from "./routers/usersRouter";
+import { authRouter } from "./routers/authRouter";
 
-import { httpMethodsCheckMiddleware } from "./middlewares/httpMethodsCheckMiddleware";
-import { createAppError } from "./utils/appErrors";
-import { globalErrorHandler } from "./middlewares/globalErrorHandler";
-import { Container } from "inversify";
-import { InversifyExpressServer } from "inversify-express-utils";
-import { UsersModule } from "./modules/users.module";
-import { AuthModule } from "./modules/auth.module";
+export const app = express();
 
-const container = new Container();
-container.load(UsersModule);
-container.load(AuthModule);
-const server = new InversifyExpressServer(container, null, {
-  rootPath: "/api",
+app.use(morgan("dev"));
+app.use(httpMethodsCheckMiddleware);
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.use("/api/testing", testingRouter);
+app.use("/api/blogs", blogsRouter);
+app.use("/api/posts", postsRouter);
+app.use("/api/comments", commentsRouter);
+app.use("/api/security/devices", securityDevicesRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/auth", authRouter);
+
+// 6. Global Post-routing Handling (Fallback 404 & Global Errors)
+app.use((req: Request, res: Response, next: NextFunction) => {
+  throw createAppError(
+    "The requested API endpoint does not exist",
+    StatusCodes.NOT_FOUND,
+  );
 });
-
-//WE configure here global middlewares
-server.setConfig((expressApp) => {
-  expressApp.use(morgan("dev"));
-  expressApp.use(express.json());
-  expressApp.use(express.urlencoded({ extended: true }));
-  expressApp.use(httpMethodsCheckMiddleware);
-  expressApp.use(cookieParser());
-
-  expressApp.use("/api/testing", testingRouter);
-  expressApp.use("/api/blogs", blogsRouter);
-  expressApp.use("/api/posts", postsRouter);
-  expressApp.use("/api/comments", commentsRouter);
-  expressApp.use("/api/security/devices", securityDevicesRouter);
-});
-
-server.setErrorConfig((expressApp) => {
-  expressApp.use((req: Request, res: Response, next: NextFunction) => {
-    throw createAppError(
-      "The requested API endpoint does not exist",
-      StatusCodes.NOT_FOUND,
-    );
-  });
-
-  //The Global Error Handler
-  expressApp.use(globalErrorHandler);
-});
-
-export const app = server.build();
+app.use(globalErrorHandler);
