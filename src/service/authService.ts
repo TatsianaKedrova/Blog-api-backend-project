@@ -1,7 +1,6 @@
 import { TFieldError } from "../dto/common/ErrorResponseModel";
 import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { IncorrectConfirmationCodeError } from "../utils/errors-utils/registration-confirmation-errors/IncorrectConfirmationCodeError";
-import { UpdateUserError } from "../utils/errors-utils/registration-confirmation-errors/UpdateUserError";
 import { UserIsConfirmedError } from "../utils/errors-utils/registration-confirmation-errors/UserIsConfirmedError";
 import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration-confirmation-errors/ConfirmationCodeExpiredError";
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
@@ -51,14 +50,9 @@ export class AuthService {
       user.emailConfirmation.expirationDate < new Date().toISOString()
     ) {
       return new ConfirmationCodeExpiredError();
-    } else {
-      const updateIsConfirmedUser =
-        await this.usersCommandsRepository.updateUserIsConfirmed(user._id);
-      if (!updateIsConfirmedUser) {
-        return new UpdateUserError("registration-confirmation");
-      }
-      return user.accountData.login;
     }
+    await this.usersCommandsRepository.updateUserIsConfirmed(user._id);
+    return user.accountData.login;
   }
   async resendEmail(email: string): Promise<TFieldError | string> {
     const user = await this.usersQueryRepository.findUserByEmail(email);
@@ -68,10 +62,7 @@ export class AuthService {
     if (user.emailConfirmation.isConfirmed) {
       return new EmailAlreadyConfirmedError();
     }
-    const resendEmailResult = await this.emailManager.resendEmailWithCode(user);
-    if (!resendEmailResult) {
-      return new UpdateUserError("registration-email-resending");
-    }
+    await this.emailManager.resendEmailWithCode(user);
     return user.accountData.email;
   }
   async loginAndSessionCreate(
@@ -130,5 +121,13 @@ export class AuthService {
       accessToken: accessToken as AccessToken,
       refreshToken: refreshToken as RefreshToken,
     };
+  }
+  async sendPasswordCode(email: string) {
+    const user = await this.usersQueryRepository.findByLoginOrEmail(email);
+    if (!user) {
+      return;
+    }
+    const userId = user._id;
+    await this.emailManager.sendPasswordRecoveryLetter(userId, email);
   }
 }

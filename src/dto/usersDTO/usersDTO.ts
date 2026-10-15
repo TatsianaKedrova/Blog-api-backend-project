@@ -26,6 +26,10 @@ export class UserDBType {
     confirmationCode: string | null;
     expirationDate: string | null;
   };
+  public passwordConfirmation: {
+    passwordResetHash?: string;
+    passwordResetExpires?: Date;
+  };
   public isAddedBySuperAdmin: boolean;
 
   constructor(
@@ -41,11 +45,16 @@ export class UserDBType {
       confirmationCode: string | null;
       expirationDate: string | null;
     },
+    passwordConfirmation: {
+      passwordResetHash?: string;
+      passwordResetExpires?: Date;
+    },
     isAddedBySuperAdmin: boolean,
   ) {
     this.accountData = accountData;
     this.emailConfirmation = emailConfirmation;
     this.isAddedBySuperAdmin = isAddedBySuperAdmin;
+    this.passwordConfirmation = passwordConfirmation;
   }
 }
 

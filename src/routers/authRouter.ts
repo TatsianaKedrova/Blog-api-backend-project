@@ -13,8 +13,15 @@ import {
 export const authRouter = express.Router({});
 
 authRouter.post(
-  "/login",
+  "/password-recovery",
   rateLimiterMiddleware,
+  emailValidator,
+  responseErrorValidationMiddleware,
+  authController.recoverPassword.bind(authController),
+);
+
+authRouter.post(
+  "/login",
   authValidator,
   responseErrorValidationMiddleware,
   authController.logIn.bind(authController),
