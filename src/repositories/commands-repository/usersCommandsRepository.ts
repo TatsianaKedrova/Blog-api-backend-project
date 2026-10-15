@@ -6,7 +6,10 @@ import { inject, injectable } from "inversify";
 
 @injectable()
 export class UsersCommandsRepository {
-  constructor(@inject(UsersQueryRepository) private readonly usersQueryRepository: UsersQueryRepository) {}
+  constructor(
+    @inject(UsersQueryRepository)
+    private readonly usersQueryRepository: UsersQueryRepository,
+  ) {}
 
   async createNewUser(newUser: UserDBType): Promise<ObjectId> {
     const createdUser = await usersCollection.insertOne(newUser);
@@ -34,10 +37,26 @@ export class UsersCommandsRepository {
     );
     return updateIsUserConfirmed.modifiedCount === 1;
   }
+  async updateUserPassCodeAndPassExpiration(
+    userId: ObjectId,
+    code: string,
+    expirationDate: Date,
+  ) {
+    const updatedUser = await usersCollection.updateMany(
+      { _id: userId },
+      {
+        $set: {
+          passwordConfirmation: {
+            passwordResetExpires: expirationDate,
+          },
+        },
+      },
+    );
+  }
   async updateUserCodeAndExpirationDate(
     _id: ObjectId,
     code: string,
-    expirationDate: string,
+    expirationDate: Date,
   ): Promise<boolean> {
     const findUser = this.usersQueryRepository.findUserById(_id.toString());
     if (!findUser) return false;

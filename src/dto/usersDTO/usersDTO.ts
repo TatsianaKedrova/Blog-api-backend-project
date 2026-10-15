@@ -24,37 +24,25 @@ export class UserDBType {
   public emailConfirmation: {
     isConfirmed: boolean;
     confirmationCode: string | null;
-    expirationDate: string | null;
+    expirationDate: Date | null;
   };
+
+  public isAddedBySuperAdmin: boolean;
   public passwordConfirmation: {
     passwordResetHash?: string;
     passwordResetExpires?: Date;
   };
-  public isAddedBySuperAdmin: boolean;
 
-  constructor(
-    accountData: {
-      login: string;
-      email: string;
-      createdAt: string;
-      passwordHash: string;
-      passwordSalt: string;
-    },
-    emailConfirmation: {
-      isConfirmed: boolean;
-      confirmationCode: string | null;
-      expirationDate: string | null;
-    },
-    passwordConfirmation: {
-      passwordResetHash?: string;
-      passwordResetExpires?: Date;
-    },
-    isAddedBySuperAdmin: boolean,
-  ) {
-    this.accountData = accountData;
-    this.emailConfirmation = emailConfirmation;
-    this.isAddedBySuperAdmin = isAddedBySuperAdmin;
-    this.passwordConfirmation = passwordConfirmation;
+  constructor(init: {
+    accountData: UserDBType["accountData"];
+    emailConfirmation: UserDBType["emailConfirmation"];
+    isAddedBySuperAdmin: UserDBType["isAddedBySuperAdmin"];
+    passwordConfirmation?: UserDBType["passwordConfirmation"];
+  }) {
+    this.accountData = init.accountData;
+    this.emailConfirmation = init.emailConfirmation;
+    this.isAddedBySuperAdmin = init.isAddedBySuperAdmin;
+    this.passwordConfirmation = init.passwordConfirmation ?? {};
   }
 }
 

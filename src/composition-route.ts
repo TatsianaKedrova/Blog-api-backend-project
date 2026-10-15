@@ -63,16 +63,18 @@ const apiCallsService = new ApiCallsService(
 const securityDevicesService = new SecurityDevicesService(
   securityDevicesCommandsRepository,
 );
+export const emailManager = createEmailManager({
+  usersCommandsRepository,
+  usersQueryRepository,
+});
 const authService = new AuthService(
   authCommandsRepository,
   usersCommandsRepository,
   usersQueryRepository,
   securityDevicesService,
+  emailManager,
 );
-export const emailManager = createEmailManager({
-  usersCommandsRepository,
-  usersQueryRepository,
-});
+
 const usersService = new UsersService(
   usersQueryRepository,
   usersCommandsRepository,

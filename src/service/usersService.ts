@@ -24,8 +24,10 @@ import { TYPES } from "../constants/tokens";
 @injectable()
 export class UsersService {
   constructor(
-    @inject(UsersQueryRepository) protected readonly usersQueryRepository: UsersQueryRepository,
-    @inject(UsersCommandsRepository) protected readonly usersCommandsRepository: UsersCommandsRepository,
+    @inject(UsersQueryRepository)
+    protected readonly usersQueryRepository: UsersQueryRepository,
+    @inject(UsersCommandsRepository)
+    protected readonly usersCommandsRepository: UsersCommandsRepository,
     @inject(AuthService) protected readonly authService: AuthService,
     @inject(TYPES.EmailManager)
     private readonly emailManager: ReturnType<typeof createEmailManager>,
@@ -46,37 +48,37 @@ export class UsersService {
       );
     } else {
       const { passwordSalt, passwordHash } = await generateHash(password);
-      const newUserData = new UserDBType(
-        {
+      const newUserData = new UserDBType({
+        accountData: {
           passwordSalt,
           passwordHash,
           login,
           email,
           createdAt: creationDate(),
         },
-        {
+        emailConfirmation: {
           confirmationCode: isAddedBySuperAdmin
             ? null
             : createConfirmationCode(),
-          isConfirmed: isAddedBySuperAdmin ? true : false,
+          isConfirmed: isAddedBySuperAdmin,
           expirationDate: isAddedBySuperAdmin
             ? null
             : createCodeExpirationDate(),
         },
-        false,
-      );
+        isAddedBySuperAdmin: false,
+      });
 
       const createdUserId =
         await this.usersCommandsRepository.createNewUser(newUserData);
-      const newUser = transformUsersResponse({
+      const transformedUserResponse = transformUsersResponse({
         ...newUserData,
         _id: createdUserId,
       });
-      await this.emailManager.sendEmail(newUserData);
+      await this.emailManager.sendEmailConfirmationLetter(newUserData);
       await this.authService.createRefreshTokenBlacklistForUser(
         new ObjectId(createdUserId),
       );
-      return newUser;
+      return transformedUserResponse;
     }
   }
   async deleteUser(id: string) {

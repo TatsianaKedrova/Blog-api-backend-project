@@ -47,7 +47,7 @@ export class AuthService {
     }
     if (
       user?.emailConfirmation.expirationDate &&
-      user.emailConfirmation.expirationDate < new Date().toISOString()
+      user.emailConfirmation.expirationDate < new Date()
     ) {
       return new ConfirmationCodeExpiredError();
     }
