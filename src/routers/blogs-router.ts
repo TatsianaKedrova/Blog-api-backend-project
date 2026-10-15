@@ -6,7 +6,7 @@ import { responseErrorValidationMiddleware } from "../middlewares/responseErrorV
 
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
 import { postsValidatorForSpecificBlog } from "../utils/posts-utils/postsValidator";
-import { blogsController, postsController } from "../composition-route";
+import { blogsController, postsController } from "../inversify.config";
 export const blogsRouter = express.Router({});
 
 //TODO: GET LIST OF BLOGS

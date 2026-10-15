@@ -14,26 +14,14 @@ import { Response } from "express";
 import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { UsersService } from "../service/usersService";
 import { URIParamsRequest } from "../dto/common/URIParamsRequest";
-import { inject } from "inversify";
-import {
-  controller,
-  httpDelete,
-  httpGet,
-  httpPost,
-} from "inversify-express-utils";
-import { basicAuthMiddleware } from "../middlewares/basicAuth";
-import { createUserValidator } from "../utils/usersUtils/users-validator";
-import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
-import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
-
-@controller("/users")
+import { inject, injectable } from "inversify";
+@injectable()
 export class UsersController {
   constructor(
     @inject(UsersService) protected readonly usersService: UsersService,
-    @inject(UsersQueryRepository)
-    protected readonly usersQueryRepository: UsersQueryRepository,
+    @inject(UsersQueryRepository) protected readonly usersQueryRepository: UsersQueryRepository,
   ) {}
-  @httpGet("/", basicAuthMiddleware)
+
   async getAllUsers(
     req: RequestQueryParamsModel<UsersQueryParams>,
     res: Response<Paginator<UserViewModel>>,
@@ -56,12 +44,7 @@ export class UsersController {
     );
     res.status(StatusCodes.OK).send(allUsers);
   }
-  @httpPost(
-    "/",
-    basicAuthMiddleware,
-    createUserValidator,
-    responseErrorValidationMiddleware,
-  )
+
   async addNewUserBySuperAdmin(
     req: RequestBodyModel<UserInputModel>,
     res: Response<UserViewModel>,
@@ -70,7 +53,7 @@ export class UsersController {
 
     res.status(StatusCodes.CREATED).send(newUser as UserViewModel);
   }
-  @httpDelete("/:id", basicAuthMiddleware, validateObjectIdMiddleware)
+
   async deleteUser(req: RequestWithURIParam<URIParamsRequest>, res: Response) {
     const deletedUser = await this.usersService.deleteUser(req.params.id);
     if (!deletedUser) {

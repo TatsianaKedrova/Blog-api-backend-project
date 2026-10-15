@@ -7,7 +7,9 @@ import { PostDBType, PostViewModel } from "../../dto/postsDTO/PostModel";
 import { transformPostsResponse } from "../../utils/posts-utils/transformPostsResponse";
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
+import { injectable } from "inversify";
 
+@injectable()
 export class BlogsQueryRepository {
   async findBlogs(
     searchNameTerm: string,

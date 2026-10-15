@@ -15,11 +15,13 @@ import { QueryParamsWithSearch } from "../dto/common/SortPaginatorQueryParamsTyp
 import { Paginator } from "../dto/common/PaginatorModel";
 import { PostViewModel } from "../dto/postsDTO/PostModel";
 import { BlogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class BlogsController {
   constructor(
-    protected readonly blogsService: BlogsService,
-    private readonly blogsQueryRepository: BlogsQueryRepository,
+    @inject(BlogsService) protected readonly blogsService: BlogsService,
+    @inject(BlogsQueryRepository) private readonly blogsQueryRepository: BlogsQueryRepository,
   ) {}
   async getBlogs(
     req: RequestQueryParamsModel<QueryParamsWithSearch>,

@@ -18,10 +18,13 @@ import { Paginator } from "../dto/common/PaginatorModel";
 import { QueryParamsWithSearch } from "../dto/common/SortPaginatorQueryParamsType";
 import { transformPostsResponse } from "../utils/posts-utils/transformPostsResponse";
 import { PostsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class PostsController {
   constructor(
-    protected readonly postsService: PostsService,
+    @inject(PostsService) protected readonly postsService: PostsService,
+    @inject(PostsQueryRepository)
     private readonly postsQueryRepository: PostsQueryRepository,
   ) {}
   async getPosts(

@@ -1,3 +1,4 @@
+import { inject, injectable } from "inversify";
 import {
   BlogDBType,
   BlogInputModel,
@@ -8,8 +9,10 @@ import { BlogsCommandsRepository } from "../repositories/commands-repository/blo
 import { transformBlogsResponse } from "../utils/blogs-utils/transformBlogsResponse";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 
+@injectable()
 export class BlogsService {
   constructor(
+    @inject(BlogsCommandsRepository)
     private readonly blogsCommandsRepository: BlogsCommandsRepository,
   ) {}
   async createNewBlog(body: BlogInputModel): Promise<BlogViewModel> {

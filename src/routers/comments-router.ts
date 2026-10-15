@@ -6,7 +6,7 @@ import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddl
 import {
   commentsController,
   forbiddenResponseMiddleware,
-} from "../composition-route";
+} from "../inversify.config";
 
 export const commentsRouter = express.Router({});
 

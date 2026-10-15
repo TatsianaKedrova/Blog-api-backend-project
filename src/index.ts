@@ -1,30 +1,39 @@
 import "reflect-metadata";
+import { app } from "./settings";
 
 import { runDB } from "./db";
-import { app } from "./settings";
 import ngrok from "@ngrok/ngrok";
 
 const port = process.env.PORT || 5000;
 app.set("trust proxy", true);
 
 const startApp = async () => {
-  await runDB();
-  app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
-  });
-  // 4. Fire up ngrok directly from your code!
-  // try {
-  const forwarder = await ngrok.forward({
-    addr: `localhost:${port}`,
-    authtoken: process.env.NGROK_AUTHTOKEN, // Read token securely from your .env file
-    domain: "treefrog-fun-doberman.ngrok-free.app",
-  });
+  try {
+    await runDB();
+    app.listen(port, () => {
+      console.log(`Express 5 successfully running on port ${port}`);
+    });
+    try {
+      const forwarder = await ngrok.forward({
+        addr: `localhost:${port}`,
+        authtoken: process.env.NGROK_AUTHTOKEN,
+        domain: "treefrog-fun-doberman.ngrok-free.app",
+      });
 
-  console.log(`🌐 Outside public link active at: ${forwarder.url()}`);
-  // } catch (err) {
-  //   console.log("ngrok failed to initialize");
-  // }
+      console.log(`🌐 Outside public link active at: ${forwarder.url()}`);
+    } catch (ngrokError) {
+      console.error(
+        "❌ Ngrok failed to initialize, but local server is safe:",
+        ngrokError,
+      );
+    }
+  } catch (criticalError) {
+    console.error(
+      "💥 Critical startup failure! Application shutting down:",
+      criticalError,
+    );
+    process.exit(1);
+  }
 };
+
 startApp();
-export default app;
-// module.exports = app

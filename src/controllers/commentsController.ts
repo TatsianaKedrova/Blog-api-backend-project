@@ -15,11 +15,13 @@ import { PaginationSortingQueryParams } from "../dto/common/SortPaginatorQueryPa
 import { Paginator } from "../dto/common/PaginatorModel";
 import { CommentsService } from "../service/commentsService";
 import { CommentsQueryRepository } from "../repositories/query-repository/commentsQueryRepository";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class CommentsController {
   constructor(
-    protected readonly commentsService: CommentsService,
-    private readonly commentsQueryRepository: CommentsQueryRepository,
+    @inject(CommentsService) protected readonly commentsService: CommentsService,
+    @inject(CommentsQueryRepository) private readonly commentsQueryRepository: CommentsQueryRepository,
   ) {}
   async createComment(
     req: RequestWithURIParamsAndBody<URIParamsRequest, CommentInputModel>,

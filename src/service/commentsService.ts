@@ -1,3 +1,4 @@
+import { inject, injectable } from "inversify";
 import {
   CommentDBType,
   CommentViewModel,
@@ -8,10 +9,14 @@ import { UsersQueryRepository } from "../repositories/query-repository/usersQuer
 import { transformCommentsResponse } from "../utils/comments-utils/transformCommentsResponse";
 import { creationDate } from "../utils/common-utils/creation-publication-dates";
 
+@injectable()
 export class CommentsService {
   constructor(
+    @inject(UsersQueryRepository)
     private readonly usersQueryRepository: UsersQueryRepository,
+    @inject(PostsQueryRepository)
     private readonly postsQueryRepository: PostsQueryRepository,
+    @inject(CommentsCommandsRepository)
     private readonly commentsCommandsRepository: CommentsCommandsRepository,
   ) {}
 

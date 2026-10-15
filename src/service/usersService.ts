@@ -24,10 +24,8 @@ import { TYPES } from "../constants/tokens";
 @injectable()
 export class UsersService {
   constructor(
-    @inject(UsersQueryRepository)
-    protected readonly usersQueryRepository: UsersQueryRepository,
-    @inject(UsersCommandsRepository)
-    protected readonly usersCommandsRepository: UsersCommandsRepository,
+    @inject(UsersQueryRepository) protected readonly usersQueryRepository: UsersQueryRepository,
+    @inject(UsersCommandsRepository) protected readonly usersCommandsRepository: UsersCommandsRepository,
     @inject(AuthService) protected readonly authService: AuthService,
     @inject(TYPES.EmailManager)
     private readonly emailManager: ReturnType<typeof createEmailManager>,

@@ -2,7 +2,6 @@ import cookieParser from "cookie-parser";
 import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
 import { StatusCodes } from "http-status-codes";
-import "./composition-route";
 import { httpMethodsCheckMiddleware } from "./middlewares/httpMethodsCheckMiddleware";
 import { createAppError } from "./utils/appErrors";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";

@@ -10,14 +10,16 @@ import { ApiCallsService } from "../service/apiCallsService";
 import { createRateLimiterMiddleware } from "../middlewares/rateLimiterMiddleware";
 
 export const AuthModule = new ContainerModule((options) => {
-  options.bind<AuthController>(AuthController).to(AuthController);
-  options.bind<AuthService>(AuthService).to(AuthService);
+  options.bind<AuthController>(AuthController).toSelf().inSingletonScope();
+  options.bind<AuthService>(AuthService).toSelf().inSingletonScope();
   options
     .bind<AuthQueryRepository>(AuthQueryRepository)
-    .to(AuthQueryRepository);
+    .toSelf()
+    .inSingletonScope();
   options
     .bind<AuthCommandsRepository>(AuthCommandsRepository)
-    .to(AuthCommandsRepository);
+    .toSelf()
+    .inSingletonScope();
   options
     .bind(TYPES.RefreshTokenValidityMiddleware)
     .toDynamicValue((context) => {
@@ -32,9 +34,15 @@ export const AuthModule = new ContainerModule((options) => {
         securityDevicesQueryRepository,
         authQueryRepository,
       });
-    });
-  options.bind(TYPES.RateLimiterMiddleware).toDynamicValue((context) => {
-    const apiCallsService = context.get<ApiCallsService>(ApiCallsService);
-    return createRateLimiterMiddleware(apiCallsService);
-  });
+    })
+    .inSingletonScope();
+  options
+    .bind(TYPES.RateLimiterMiddleware)
+    .toDynamicValue((context) => {
+      const apiCallsService = context.get<ApiCallsService>(ApiCallsService);
+      return createRateLimiterMiddleware(apiCallsService);
+    })
+    .inSingletonScope();
 });
+
+

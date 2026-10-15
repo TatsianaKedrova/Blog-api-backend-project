@@ -9,9 +9,14 @@ import { Paginator } from "../../dto/common/PaginatorModel";
 import { PostsQueryRepository } from "./postsQueryRepository";
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class CommentsQueryRepository {
-  constructor(private readonly postsQueryRepository: PostsQueryRepository) {}
+  constructor(
+    @inject(PostsQueryRepository)
+    private readonly postsQueryRepository: PostsQueryRepository,
+  ) {}
   async findCommentById(id: string): Promise<CommentDBType | null> {
     const comment = await commentsCollection.findOne({
       _id: new ObjectId(id),

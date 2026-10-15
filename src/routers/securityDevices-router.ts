@@ -3,7 +3,7 @@ import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddl
 import {
   refreshTokenValidityMiddleware,
   securityDevicesController,
-} from "../composition-route";
+} from "../inversify.config";
 export const securityDevicesRouter = express.Router({});
 
 /**returns all devices with active sessions for current user*/

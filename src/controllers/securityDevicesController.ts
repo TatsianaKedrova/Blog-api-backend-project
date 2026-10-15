@@ -5,10 +5,13 @@ import { RequestWithURIParam } from "../dto/common/RequestModels";
 import { createAppError } from "../utils/appErrors";
 import { SecurityDevicesService } from "../service/securityDevicesService";
 import { SecurityDevicesQueryRepository } from "../repositories/query-repository/securityDevicesQueryRepository";
+import { inject } from "inversify";
 
 export class SecurityDevicesController {
   constructor(
+    @inject(SecurityDevicesService)
     private readonly securityDevicesService: SecurityDevicesService,
+    @inject(SecurityDevicesQueryRepository)
     private readonly securityDevicesQueryRepository: SecurityDevicesQueryRepository,
   ) {}
   async getAllActiveSessions(req: Request, res: Response<DeviceViewModel[]>) {

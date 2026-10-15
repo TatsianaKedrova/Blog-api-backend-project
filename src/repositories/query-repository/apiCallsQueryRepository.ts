@@ -1,5 +1,7 @@
+import { injectable } from "inversify";
 import { apiCallsCollection } from "../../db";
 
+@injectable()
 export class ApiCallsQueryRepository {
   async countApiCalls(
     ip: string,

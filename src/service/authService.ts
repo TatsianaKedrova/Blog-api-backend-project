@@ -19,8 +19,9 @@ import {
 } from "../globals/jwt-service";
 import { AuthCommandsRepository } from "../repositories/commands-repository/authCommandsRepository";
 import { SecurityDevicesService } from "./securityDevicesService";
-import { emailManager } from "../composition-route";
 import { inject, injectable } from "inversify";
+import { TYPES } from "../constants/tokens";
+import { createEmailManager } from "../globals/email/email-manager";
 
 @injectable()
 export class AuthService {
@@ -33,6 +34,8 @@ export class AuthService {
     private readonly usersQueryRepository: UsersQueryRepository,
     @inject(SecurityDevicesService)
     protected readonly securityDevicesService: SecurityDevicesService,
+    @inject(TYPES.EmailManager)
+    protected readonly emailManager: ReturnType<typeof createEmailManager>,
   ) {}
   async confirmCode(code: string): Promise<TFieldError | string> {
     const user =
@@ -65,7 +68,7 @@ export class AuthService {
     if (user.emailConfirmation.isConfirmed) {
       return new EmailAlreadyConfirmedError();
     }
-    const resendEmailResult = await emailManager.resendEmailWithCode(user);
+    const resendEmailResult = await this.emailManager.resendEmailWithCode(user);
     if (!resendEmailResult) {
       return new UpdateUserError("registration-email-resending");
     }

@@ -9,7 +9,7 @@ import {
   authController,
   rateLimiterMiddleware,
   refreshTokenValidityMiddleware,
-} from "../composition-route";
+} from "../inversify.config";
 export const authRouter = express.Router({});
 
 authRouter.post(

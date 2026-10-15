@@ -1,10 +1,14 @@
+import { inject, injectable } from "inversify";
 import { ApiCallsDBType } from "../dto/apiCallsDTO/apiCallsDTO";
 import { ApiCallsCommandsRepository } from "../repositories/commands-repository/apiCallsCommandsRepository";
 import { ApiCallsQueryRepository } from "../repositories/query-repository/apiCallsQueryRepository";
 
+@injectable()
 export class ApiCallsService {
   constructor(
+    @inject(ApiCallsQueryRepository)
     protected readonly apiCallsQueryRepository: ApiCallsQueryRepository,
+    @inject(ApiCallsCommandsRepository)
     protected readonly apiCallsCommandsRepository: ApiCallsCommandsRepository,
   ) {}
   async checkIpRequestCount(url: string, ip: string): Promise<boolean> {

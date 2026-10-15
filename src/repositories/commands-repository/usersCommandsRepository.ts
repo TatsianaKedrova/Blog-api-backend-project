@@ -6,10 +6,7 @@ import { inject, injectable } from "inversify";
 
 @injectable()
 export class UsersCommandsRepository {
-  constructor(
-    @inject(UsersQueryRepository)
-    private readonly usersQueryRepository: UsersQueryRepository,
-  ) {}
+  constructor(@inject(UsersQueryRepository) private readonly usersQueryRepository: UsersQueryRepository) {}
 
   async createNewUser(newUser: UserDBType): Promise<ObjectId> {
     const createdUser = await usersCollection.insertOne(newUser);

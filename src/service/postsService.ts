@@ -8,10 +8,14 @@ import { ObjectId } from "mongodb";
 import { transformPostsResponse } from "../utils/posts-utils/transformPostsResponse";
 import { BlogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
 import { PostsCommandsRepository } from "../repositories/commands-repository/postsCommandsRepository";
+import { inject, injectable } from "inversify";
 
+@injectable()
 export class PostsService {
   constructor(
+    @inject(BlogsQueryRepository)
     private readonly blogsQueryRepository: BlogsQueryRepository,
+    @inject(PostsCommandsRepository)
     private readonly postsCommandsRepository: PostsCommandsRepository,
   ) {}
   async createNewPost(

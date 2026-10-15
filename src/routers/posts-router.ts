@@ -6,7 +6,7 @@ import { responseErrorValidationMiddleware } from "../middlewares/responseErrorV
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
 import { accessTokenValidityMiddleware } from "../middlewares/accessTokenValidityMiddleware";
 import { commentValidator } from "../utils/comments-utils/commentValidator";
-import { commentsController, postsController } from "../composition-route";
+import { commentsController, postsController } from "../inversify.config";
 export const postsRouter = express.Router({});
 
 //TODO: GET LIST OF POSTS
