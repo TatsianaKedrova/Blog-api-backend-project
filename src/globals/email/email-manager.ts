@@ -1,7 +1,10 @@
 import { ObjectId, WithId } from "mongodb";
 import { UserDBType } from "../../dto/usersDTO/usersDTO";
 import { htmlEmailConfirmationCodeLetter } from "../../utils/html-utils/emailConfirmationCodeLetter";
-import { createConfirmationCode } from "../../utils/auth-utils/createUserConfirmationCode";
+import {
+  createConfirmationCode,
+  generateResetToken,
+} from "../../utils/auth-utils/createUserConfirmationCode";
 import { createCodeExpirationDate } from "../../utils/auth-utils/createCodeExpirationDate";
 import { EmailManagerDeps } from "../../dto/common/EmailDTO";
 import { passwordRecoveryLetter } from "../../utils/html-utils/passwordRecoveryLetter";
@@ -19,14 +22,14 @@ export const createEmailManager = ({
     },
 
     async sendPasswordRecoveryLetter(userId: ObjectId, email: string) {
-      const newCode = createConfirmationCode();
+      const { rawToken, hashedToken } = generateResetToken();
       const newExpirationDate = createCodeExpirationDate();
-      const html = passwordRecoveryLetter(newCode);
+      const html = passwordRecoveryLetter(rawToken);
 
       await sendEmail(email, html);
       await usersCommandsRepository.updateUserPassCodeAndPassExpiration(
         userId,
-        newCode,
+        hashedToken,
         newExpirationDate,
       );
     },

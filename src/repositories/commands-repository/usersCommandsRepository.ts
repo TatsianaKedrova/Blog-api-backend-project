@@ -39,14 +39,15 @@ export class UsersCommandsRepository {
   }
   async updateUserPassCodeAndPassExpiration(
     userId: ObjectId,
-    code: string,
+    hashedToken: string,
     expirationDate: Date,
   ) {
-    const updatedUser = await usersCollection.updateMany(
+    await usersCollection.updateMany(
       { _id: userId },
       {
         $set: {
           passwordConfirmation: {
+            passwordResetHash: hashedToken,
             passwordResetExpires: expirationDate,
           },
         },
