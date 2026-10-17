@@ -1,8 +1,10 @@
 import { CustomValidator } from "express-validator";
 import { ObjectId } from "mongodb";
-import { stringInputValidatorCommon, stringsInputValidatorWithLength } from "../common-utils/validatorForStrings";
 import { blogsCollection } from "../../db";
-
+import {
+  stringInputValidatorCommon,
+  stringsInputValidatorWithLength,
+} from "../validators/commonValidator";
 
 /** This blogId validator is for hardcoded db */
 export const isValidObjectId: CustomValidator = (blogId: string) => {
@@ -11,7 +13,7 @@ export const isValidObjectId: CustomValidator = (blogId: string) => {
       return true;
     } else {
       throw new Error(
-        "This blogId is invalid and doesn't fit the ObjectId 24 hex characters structure"
+        "This blogId is invalid and doesn't fit the ObjectId 24 hex characters structure",
       );
     }
   } catch (error) {
@@ -29,7 +31,7 @@ export const isValidBlogId: CustomValidator = async (blogId: string) => {
     return true;
   } catch (error) {
     throw new Error(
-      "This blogId is invalid and doesn't fit the ObjectId 24 hex characters structure"
+      "This blogId is invalid and doesn't fit the ObjectId 24 hex characters structure",
     );
   }
 };

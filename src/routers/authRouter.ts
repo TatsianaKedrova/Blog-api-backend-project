@@ -1,10 +1,13 @@
 import express from "express";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
-import { authValidator } from "../utils/auth-utils/authValidator";
+import {
+  userRegistrationValidator,
+  loginValidator,
+  passwordResetValidator,
+  emailValidator,
+  confirmationCodeValidator,
+} from "../utils/validators/authValidator";
 import { accessTokenValidityMiddleware } from "../middlewares/accessTokenValidityMiddleware";
-import { createUserValidator } from "../utils/usersUtils/users-validator";
-import { confirmationCodeValidator } from "../utils/usersUtils/confirmationCodeValidator";
-import { emailValidator } from "../utils/usersUtils/emailValidator";
 import {
   authController,
   rateLimiterMiddleware,
@@ -21,8 +24,16 @@ authRouter.post(
 );
 
 authRouter.post(
+  "/new-password",
+  rateLimiterMiddleware,
+  passwordResetValidator,
+  responseErrorValidationMiddleware,
+  authController.createNewPassword.bind(authController),
+);
+
+authRouter.post(
   "/login",
-  authValidator,
+  loginValidator,
   responseErrorValidationMiddleware,
   authController.logIn.bind(authController),
 );
@@ -36,7 +47,7 @@ authRouter.get(
 authRouter.post(
   "/registration",
   rateLimiterMiddleware,
-  createUserValidator,
+  userRegistrationValidator,
   responseErrorValidationMiddleware,
   authController.registerUser.bind(authController),
 );

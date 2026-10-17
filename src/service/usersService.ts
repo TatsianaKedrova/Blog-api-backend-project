@@ -7,8 +7,8 @@ import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { UsersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { ObjectId, WithId } from "mongodb";
-import { createConfirmationCode } from "../utils/auth-utils/createUserConfirmationCode";
-import { createCodeExpirationDate } from "../utils/auth-utils/createCodeExpirationDate";
+import { createConfirmationCode } from "../utils/crypto/createUserConfirmationCode";
+import { createExpirationDate } from "../utils/auth-utils/createCodeExpirationDate";
 import { createAppError } from "../utils/appErrors";
 import { StatusCodes } from "http-status-codes";
 import { transformUsersResponse } from "../utils/usersUtils/transformUsersResponse";
@@ -63,7 +63,7 @@ export class UsersService {
           isConfirmed: isAddedBySuperAdmin,
           expirationDate: isAddedBySuperAdmin
             ? null
-            : createCodeExpirationDate(),
+            : createExpirationDate({ hours: 1 }),
         },
         isAddedBySuperAdmin: false,
       });

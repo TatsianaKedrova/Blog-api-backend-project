@@ -6,9 +6,10 @@ export const createConfirmationCode = (): string => {
 
 export const generateResetToken = () => {
   const rawToken = crypto.randomUUID();
-  const hashedToken = crypto
-    .createHash("sha256")
-    .update(rawToken)
-    .digest("hex");
+  const hashedToken = generateHashedToken(rawToken);
   return { rawToken, hashedToken };
+};
+
+export const generateHashedToken = (rawToken: string) => {
+  return crypto.createHash("sha256").update(rawToken).digest("hex");
 };

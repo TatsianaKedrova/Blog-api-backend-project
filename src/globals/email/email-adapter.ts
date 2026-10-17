@@ -1,7 +1,11 @@
 import smtpTransport from "nodemailer-smtp-transport";
 import nodemailer from "nodemailer";
 
-export const sendEmail = async (email: string, html: string) => {
+export const sendEmail = async (
+  email: string,
+  html: string,
+  subject: string,
+) => {
   const emailSender = process.env.AUTH_EMAIL;
   const appPassword = process.env.AUTH_PASSWORD;
   if (!emailSender || !appPassword) {
@@ -22,7 +26,7 @@ export const sendEmail = async (email: string, html: string) => {
   const mailOptions = {
     from: `"Baletrot" <${emailSender}>`,
     to: email,
-    subject: "Email confirmation code",
+    subject: subject,
     html,
   };
 

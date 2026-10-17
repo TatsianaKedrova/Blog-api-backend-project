@@ -4,8 +4,8 @@ import { htmlEmailConfirmationCodeLetter } from "../../utils/html-utils/emailCon
 import {
   createConfirmationCode,
   generateResetToken,
-} from "../../utils/auth-utils/createUserConfirmationCode";
-import { createCodeExpirationDate } from "../../utils/auth-utils/createCodeExpirationDate";
+} from "../../utils/crypto/createUserConfirmationCode";
+import { createExpirationDate } from "../../utils/auth-utils/createCodeExpirationDate";
 import { EmailManagerDeps } from "../../dto/common/EmailDTO";
 import { passwordRecoveryLetter } from "../../utils/html-utils/passwordRecoveryLetter";
 import { sendEmail } from "./email-adapter";
@@ -18,15 +18,15 @@ export const createEmailManager = ({
     async sendEmailConfirmationLetter(user: UserDBType) {
       const code = user.emailConfirmation.confirmationCode;
       const html = htmlEmailConfirmationCodeLetter(code);
-      await sendEmail(user.accountData.email, html);
+      await sendEmail(user.accountData.email, html, "Email confirmation code");
     },
 
     async sendPasswordRecoveryLetter(userId: ObjectId, email: string) {
       const { rawToken, hashedToken } = generateResetToken();
-      const newExpirationDate = createCodeExpirationDate();
+      const newExpirationDate = createExpirationDate({ minutes: 15 });
       const html = passwordRecoveryLetter(rawToken);
 
-      await sendEmail(email, html);
+      await sendEmail(email, html, "Password recovery code");
       await usersCommandsRepository.updateUserPassCodeAndPassExpiration(
         userId,
         hashedToken,
@@ -35,10 +35,10 @@ export const createEmailManager = ({
     },
     async resendEmailWithCode(user: WithId<UserDBType>) {
       const newCode = createConfirmationCode();
-      const newExpirationDate = createCodeExpirationDate();
+      const newExpirationDate = createExpirationDate({ minutes: 15 });
       const html = htmlEmailConfirmationCodeLetter(newCode);
 
-      await sendEmail(user.accountData.email, html);
+      await sendEmail(user.accountData.email, html, "Email confirmation code");
       await usersCommandsRepository.updateUserCodeAndExpirationDate(
         user._id,
         newCode,

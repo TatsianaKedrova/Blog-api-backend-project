@@ -34,7 +34,7 @@ export type RefreshToken = string & { readonly __brand: unique symbol };
 export type TokenPairResponse = {
   accessToken: AccessToken;
   refreshToken: RefreshToken;
-}
+};
 
 export type AccessTokenPayloadType = {
   userId: string;
@@ -48,3 +48,8 @@ export interface RefreshTokenMiddlewareDeps {
   securityDevicesQueryRepository: SecurityDevicesQueryRepository;
   authQueryRepository: AuthQueryRepository;
 }
+
+export type NewPasswordRecoveryInputModel = {
+  newPassword: string;
+  recoveryCode: string;
+};

@@ -1,9 +1,9 @@
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
 import express from "express";
 import { basicAuthMiddleware } from "../middlewares/basicAuth";
-import { createUserValidator } from "../utils/usersUtils/users-validator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import { usersController } from "../inversify.config";
+import { userRegistrationValidator } from "../utils/validators/authValidator";
 export const usersRouter = express.Router({});
 
 usersRouter.get(
@@ -14,7 +14,7 @@ usersRouter.get(
 usersRouter.post(
   "/",
   basicAuthMiddleware,
-  createUserValidator,
+  userRegistrationValidator,
   responseErrorValidationMiddleware,
   usersController.addNewUserBySuperAdmin.bind(usersController),
 );

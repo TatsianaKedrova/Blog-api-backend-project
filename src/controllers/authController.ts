@@ -3,6 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import {
   LoginInputModel,
   MeViewModel,
+  NewPasswordRecoveryInputModel,
   RegistrationConfirmationCodeModel,
   RegistrationEmailResending,
 } from "../dto/authDTO/authDTO";
@@ -157,6 +158,14 @@ export class AuthController {
   ) {
     const email = req.body.email;
     await this.authService.sendPasswordCode(email);
+    res.status(StatusCodes.NO_CONTENT).send();
+  }
+
+  async createNewPassword(
+    req: RequestBodyModel<NewPasswordRecoveryInputModel>,
+    res: Response,
+  ) {
+    const createNewPassword = await this.authService.createNewPassword(req.body);
     res.status(StatusCodes.NO_CONTENT).send();
   }
 }
