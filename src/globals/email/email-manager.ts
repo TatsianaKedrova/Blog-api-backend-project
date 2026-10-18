@@ -31,7 +31,7 @@ export const createEmailManager = ({
         hashedToken,
         newExpirationDate,
       );
-      await sendEmail(email, html, "Password recovery code");
+      sendEmail(email, html, "Password recovery code");
     },
     async resendEmailWithCode(user: WithId<UserDBType>) {
       const newCode = createConfirmationCode();
