@@ -167,7 +167,13 @@ export class AuthController {
   ) {
     const isCodeValid = await this.authService.createNewPassword(req.body);
     if (!isCodeValid) {
-      res.sendStatus(StatusCodes.BAD_REQUEST);
+      res
+        .status(StatusCodes.BAD_REQUEST)
+        .send(
+          responseErrorFunction([
+            { field: "recoveryCode", message: "Recovery Code is incorrect" },
+          ]),
+        );
     }
     res.status(StatusCodes.NO_CONTENT).send();
   }
