@@ -77,10 +77,13 @@ export class UsersCommandsRepository {
     passwordSalt: string,
     passwordHash: string,
   ): Promise<boolean> {
-    const user = await usersCollection.findOneAndUpdate(
+    const user = await usersCollection.findOne({
+      "passwordConfirmation.passwordResetHash": hashedToken,
+      "passwordConfirmation.passwordResetExpires": { $gt: new Date() },
+    });
+    const updatedUser = await usersCollection.updateOne(
       {
-        "passwordConfirmation.passwordResetHash": hashedToken,
-        "passwordConfirmation.passwordResetExpires": { $gt: new Date() },
+        _id: user?._id,
       },
       {
         $set: {
@@ -93,8 +96,7 @@ export class UsersCommandsRepository {
           "passwordConfirmation.passwordResetAttempts": 1,
         },
       },
-      { returnDocument: "after" },
     );
-    return !!user;
+    return !!updatedUser;
   }
 }
