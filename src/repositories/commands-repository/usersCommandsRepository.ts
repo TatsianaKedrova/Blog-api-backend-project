@@ -81,6 +81,9 @@ export class UsersCommandsRepository {
       "passwordConfirmation.passwordResetHash": hashedToken,
       "passwordConfirmation.passwordResetExpires": { $gt: new Date() },
     });
+    if (!user) {
+      return false;
+    }
     const updatedUser = await usersCollection.updateOne(
       {
         _id: user?._id,
@@ -97,6 +100,6 @@ export class UsersCommandsRepository {
         },
       },
     );
-    return !!updatedUser;
+    return true;
   }
 }
