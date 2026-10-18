@@ -51,6 +51,13 @@ export const runDB = async () => {
       { "accountData.login": 1 },
       { name: "login", unique: true },
     );
+    await usersCollection.createIndex(
+      {
+        "passwordConfirmation.passwordResetHash": 1,
+        "passwordConfirmation.passwordResetExpires": 1,
+      },
+      { name: "password_reset_lookup" },
+    );
     console.log("User unique indexes established");
 
     // --- Api Calls / Rate Limiting Indexes ---
