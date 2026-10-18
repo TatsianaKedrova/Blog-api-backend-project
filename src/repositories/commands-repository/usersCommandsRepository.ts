@@ -72,4 +72,29 @@ export class UsersCommandsRepository {
     );
     return updateIsUserConfirmed.modifiedCount === 1;
   }
+  async updatePasswordByResetHash(
+    hashedToken: string,
+    passwordSalt: string,
+    passwordHash: string,
+  ): Promise<boolean> {
+    const user = await usersCollection.findOneAndUpdate(
+      {
+        "passwordConfirmation.passwordResetHash": hashedToken,
+        "passwordConfirmation.passwordResetExpires": { $gt: new Date() },
+      },
+      {
+        $set: {
+          "accountData.passwordSalt": passwordSalt,
+          "accountData.passwordHash": passwordHash,
+        },
+        $unset: {
+          "passwordConfirmation.passwordResetHash": 1,
+          "passwordConfirmation.passwordResetExpires": 1,
+          "passwordConfirmation.passwordResetAttempts": 1,
+        },
+      },
+      { returnDocument: "after" },
+    );
+    return !!user;
+  }
 }

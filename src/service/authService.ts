@@ -140,7 +140,7 @@ export class AuthService {
     const hashedToken = generateHashedToken(recoveryCode);
     const { passwordSalt, passwordHash } = await generateJWTHash(newPassword);
 
-    return await this.usersQueryRepository.findUserByPasswordResetHash(
+    return await this.usersCommandsRepository.updatePasswordByResetHash(
       hashedToken,
       passwordSalt,
       passwordHash,
