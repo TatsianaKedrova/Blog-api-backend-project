@@ -41,7 +41,7 @@ export const runDB = async () => {
       refreshTokenExpirationDate: -1,
     });
     console.log("Compound query index for user device lookup established");
-
+    
     // --- Unique User Indexes ---
     await usersCollection.createIndex(
       { "accountData.email": 1 },
