@@ -31,8 +31,8 @@ export const sendEmail = async (
   };
 
   try {
-    const info = await transport.sendMail(mailOptions);
-    console.log("📨 Email sent successfully! Message ID:", info.messageId);
+    const info = /* await */ transport.sendMail(mailOptions);
+    // console.log("📨 Email sent successfully! Message ID:", info.messageId);
   } catch (error) {
     console.error("❌ Nodemailer failed to dispatch email:", error);
   }
