@@ -25,13 +25,14 @@ export const createEmailManager = ({
       const { rawToken, hashedToken } = generateResetToken();
       const newExpirationDate = createExpirationDate({ minutes: 15 });
       const html = passwordRecoveryLetter(rawToken);
-
-      await sendEmail(email, html, "Password recovery code");
-      await usersCommandsRepository.updateUserPassCodeAndPassExpiration(
-        userId,
-        hashedToken,
-        newExpirationDate,
-      );
+      await Promise.all([
+        sendEmail(email, html, "Password recovery code"),
+        usersCommandsRepository.updateUserPassCodeAndPassExpiration(
+          userId,
+          hashedToken,
+          newExpirationDate,
+        ),
+      ]);
     },
     async resendEmailWithCode(user: WithId<UserDBType>) {
       const newCode = createConfirmationCode();
