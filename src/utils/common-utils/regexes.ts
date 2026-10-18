@@ -1,5 +1,5 @@
 export const userEmailRegex = new RegExp(
-  "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+  "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$",
 );
 export const userLoginRegex = new RegExp("^[a-zA-Z0-9_-]*$");
 export const urlBlogsRegex = new RegExp(
