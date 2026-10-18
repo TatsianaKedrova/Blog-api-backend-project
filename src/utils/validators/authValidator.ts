@@ -10,8 +10,8 @@ export const loginValidator = [
 ];
 
 export const passwordResetValidator = [
-  stringInputValidatorCommon("recoveryCode"),
   stringsInputValidatorWithLength("newPassword", 20, 6),
+  stringInputValidatorCommon("recoveryCode"),
 ];
 export const userRegistrationValidator = [
   stringsInputValidatorWithLength("login", 10, 3)
@@ -36,5 +36,3 @@ export const emailValidator = [
       `Email doesn't match this regular expression: ${userEmailRegex}`,
     ),
 ];
-
-

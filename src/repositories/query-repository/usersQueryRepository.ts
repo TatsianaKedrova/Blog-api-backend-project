@@ -53,6 +53,14 @@ export class UsersQueryRepository {
     const foundUser = await usersCollection.findOne({ _id: new ObjectId(id) });
     return foundUser;
   }
+  async findUserByConfirmationCode(
+    code: string,
+  ): Promise<WithId<UserDBType> | null> {
+    const foundUser = await usersCollection.findOne({
+      "emailConfirmation.confirmationCode": code,
+    });
+    return foundUser;
+  }
   async findByLoginOrEmail(
     loginOrEmail: string,
   ): Promise<WithId<UserDBType> | null> {
@@ -63,14 +71,6 @@ export class UsersQueryRepository {
       ],
     });
     return user;
-  }
-  async findUserByConfirmationCode(
-    code: string,
-  ): Promise<WithId<UserDBType> | null> {
-    const foundUser = await usersCollection.findOne({
-      "emailConfirmation.confirmationCode": code,
-    });
-    return foundUser;
   }
   async findUserByEmail(email: string): Promise<WithId<UserDBType> | null> {
     const user = await usersCollection.findOne({ "accountData.email": email });
@@ -84,5 +84,32 @@ export class UsersQueryRepository {
       $or: [{ "accountData.login": login }, { "accountData.email": email }],
     });
     return !!isUserExist;
+  }
+  async findUserByPasswordResetHash(
+    hashedToken: string,
+    passwordSalt: string,
+    passwordHash: string,
+  ): Promise<boolean> {
+    const user = await usersCollection.findOneAndUpdate(
+      {
+        passwordConfirmation: {
+          passwordResetHash: hashedToken,
+          passwordResetExpires: { $gt: new Date() },
+        },
+      },
+      {
+        $set: {
+          "accountData.passwordSalt": passwordSalt,
+          "accountData.passwordHash": passwordHash,
+        },
+        $unset: {
+          "passwordConfirmation.passwordResetHash": 1,
+          "passwordConfirmation.passwordResetExpires": 1,
+          "passwordConfirmation.passwordResetAttempts": 1,
+        },
+      },
+      { returnDocument: "after" },
+    );
+    return !!user;
   }
 }

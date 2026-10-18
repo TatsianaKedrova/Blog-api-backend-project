@@ -3,18 +3,17 @@ import {
   UserInputModel,
   UserViewModel,
 } from "../dto/usersDTO/usersDTO";
-import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { UsersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { ObjectId, WithId } from "mongodb";
-import { createConfirmationCode } from "../utils/crypto/createUserConfirmationCode";
-import { createExpirationDate } from "../utils/auth-utils/createCodeExpirationDate";
+import { createConfirmationCode } from "../utils/crypto/cryptoUtils";
+import { createExpirationDate, creationDate } from "../utils/date/dateUtils";
 import { createAppError } from "../utils/appErrors";
 import { StatusCodes } from "http-status-codes";
 import { transformUsersResponse } from "../utils/usersUtils/transformUsersResponse";
 import {
   comparePasswords,
-  generateHash,
+  generateJWTHash,
 } from "../globals/bcrypt/bcryptService";
 import { AuthService } from "./authService";
 import { inject, injectable } from "inversify";
@@ -47,7 +46,7 @@ export class UsersService {
         StatusCodes.BAD_REQUEST,
       );
     } else {
-      const { passwordSalt, passwordHash } = await generateHash(password);
+      const { passwordSalt, passwordHash } = await generateJWTHash(password);
       const newUserData = new UserDBType({
         accountData: {
           passwordSalt,

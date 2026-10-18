@@ -8,6 +8,7 @@ import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/Wrong
 import { ObjectId } from "mongodb";
 import {
   AccessToken,
+  NewPasswordRecoveryInputModel,
   RefreshToken,
   TokenPairResponse,
 } from "../dto/authDTO/authDTO";
@@ -15,12 +16,14 @@ import { UsersCommandsRepository } from "../repositories/commands-repository/use
 import {
   createAccessRefreshTokensResponse,
   getTokenCreationDate,
-} from "../globals/jwt-service";
+} from "../utils/jwt/jwtUtils";
 import { AuthCommandsRepository } from "../repositories/commands-repository/authCommandsRepository";
 import { SecurityDevicesService } from "./securityDevicesService";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../constants/tokens";
 import { createEmailManager } from "../globals/email/email-manager";
+import { generateHashedToken } from "../utils/crypto/cryptoUtils";
+import { generateJWTHash } from "../globals/bcrypt/bcryptService";
 
 @injectable()
 export class AuthService {
@@ -129,5 +132,18 @@ export class AuthService {
     }
     const userId = user._id;
     await this.emailManager.sendPasswordRecoveryLetter(userId, email);
+  }
+  async createNewPassword(
+    data: NewPasswordRecoveryInputModel,
+  ): Promise<boolean> {
+    const { newPassword, recoveryCode } = data;
+    const hashedToken = generateHashedToken(recoveryCode);
+    const { passwordSalt, passwordHash } = await generateJWTHash(newPassword);
+
+    return await this.usersQueryRepository.findUserByPasswordResetHash(
+      hashedToken,
+      passwordSalt,
+      passwordHash,
+    );
   }
 }

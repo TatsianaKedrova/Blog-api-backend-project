@@ -165,7 +165,10 @@ export class AuthController {
     req: RequestBodyModel<NewPasswordRecoveryInputModel>,
     res: Response,
   ) {
-    const createNewPassword = await this.authService.createNewPassword(req.body);
+    const isCodeValid = await this.authService.createNewPassword(req.body);
+    if (!isCodeValid) {
+      res.sendStatus(StatusCodes.BAD_REQUEST);
+    }
     res.status(StatusCodes.NO_CONTENT).send();
   }
 }

@@ -4,8 +4,8 @@ import { htmlEmailConfirmationCodeLetter } from "../../utils/html-utils/emailCon
 import {
   createConfirmationCode,
   generateResetToken,
-} from "../../utils/crypto/createUserConfirmationCode";
-import { createExpirationDate } from "../../utils/auth-utils/createCodeExpirationDate";
+} from "../../utils/crypto/cryptoUtils";
+import { createExpirationDate } from "../../utils/date/dateUtils";
 import { EmailManagerDeps } from "../../dto/common/EmailDTO";
 import { passwordRecoveryLetter } from "../../utils/html-utils/passwordRecoveryLetter";
 import { sendEmail } from "./email-adapter";
