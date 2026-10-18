@@ -4,14 +4,14 @@ import jwt, {
   NotBeforeError,
   TokenExpiredError,
 } from "jsonwebtoken";
-import { JwtPayloadResult } from "../dto/common/jwt/JwtPayloadResult";
+import { JwtPayloadResult } from "../../dto/common/jwt/JwtPayloadResult";
 import {
   AccessToken,
   AccessTokenPayloadType,
   RefreshToken,
   RefreshTokenPayloadType,
   TokenPairResponse,
-} from "../dto/authDTO/authDTO";
+} from "../../dto/authDTO/authDTO";
 
 export function createJWT(
   payload: AccessTokenPayloadType | RefreshTokenPayloadType,

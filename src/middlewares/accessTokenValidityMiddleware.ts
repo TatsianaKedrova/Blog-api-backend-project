@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { getJwtPayloadResult } from "../globals/jwt-service";
+import { getJwtPayloadResult } from "../utils/jwt/jwtUtils";
 
 export const accessTokenValidityMiddleware = async (
   req: Request,

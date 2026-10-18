@@ -4,7 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import { beforeAll, beforeEach, describe, expect, test } from "@jest/globals";
 import { UserInputModel } from "./dto/usersDTO/usersDTO";
 import { securityDevicesCollection } from "../src/db";
-import { getJwtPayloadResult } from "./globals/jwt-service";
+import { getJwtPayloadResult } from "./utils/jwt/jwtUtils";
 import { UsersQueryRepository } from "./repositories/query-repository/usersQueryRepository";
 const usersQueryRepository = new UsersQueryRepository();
 const userAgents = {
