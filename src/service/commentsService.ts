@@ -7,7 +7,7 @@ import { CommentsCommandsRepository } from "../repositories/commands-repository/
 import { PostsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
 import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { transformCommentsResponse } from "../utils/comments-utils/transformCommentsResponse";
-import { creationDate } from "../utils/common-utils/creation-publication-dates";
+import { creationDate } from "../utils/date/dateUtils";
 
 @injectable()
 export class CommentsService {

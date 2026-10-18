@@ -3,12 +3,12 @@ import {
   PostInputModel,
   PostViewModel,
 } from "../dto/postsDTO/PostModel";
-import { creationDate } from "../utils/common-utils/creation-publication-dates";
 import { ObjectId } from "mongodb";
 import { transformPostsResponse } from "../utils/posts-utils/transformPostsResponse";
 import { BlogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
 import { PostsCommandsRepository } from "../repositories/commands-repository/postsCommandsRepository";
 import { inject, injectable } from "inversify";
+import { creationDate } from "../utils/date/dateUtils";
 
 @injectable()
 export class PostsService {

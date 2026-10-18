@@ -7,7 +7,7 @@ import {
 import { BlogsCommandsRepository } from "../repositories/commands-repository/blogsCommandsRepository";
 
 import { transformBlogsResponse } from "../utils/blogs-utils/transformBlogsResponse";
-import { creationDate } from "../utils/common-utils/creation-publication-dates";
+import { creationDate } from "../utils/date/dateUtils";
 
 @injectable()
 export class BlogsService {
