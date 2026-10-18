@@ -1,7 +1,7 @@
 import smtpTransport from "nodemailer-smtp-transport";
 import nodemailer from "nodemailer";
 
-export const sendEmail = async (
+export const sendEmail = /* async */ (
   email: string,
   html: string,
   subject: string,
