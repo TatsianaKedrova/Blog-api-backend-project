@@ -5,7 +5,7 @@ import {
   MeViewModel,
   NewPasswordRecoveryInputModel,
   RegistrationConfirmationCodeModel,
-  RegistrationEmailResending,
+  EmailRequest,
 } from "../dto/authDTO/authDTO";
 import { RequestBodyModel } from "../dto/common/RequestModels";
 import { Request, Response } from "express";
@@ -98,7 +98,7 @@ export class AuthController {
   }
 
   async resendRegistrationEmail(
-    req: RequestBodyModel<RegistrationEmailResending>,
+    req: RequestBodyModel<EmailRequest>,
     res: Response<TApiErrorResultObject>,
   ) {
     const resendEmailResult = await this.authService.resendEmail(
@@ -152,10 +152,7 @@ export class AuthController {
     }
     res.status(StatusCodes.NO_CONTENT).send();
   }
-  async recoverPassword(
-    req: RequestBodyModel<RegistrationEmailResending>,
-    res: Response,
-  ) {
+  async recoverPassword(req: RequestBodyModel<EmailRequest>, res: Response) {
     const email = req.body.email;
     await this.authService.sendPasswordCode(email);
     res.status(StatusCodes.NO_CONTENT).send();
@@ -167,16 +164,14 @@ export class AuthController {
   ) {
     const isCodeValid = await this.authService.createNewPassword(req.body);
     if (!isCodeValid) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .send(
-          responseErrorFunction([
-            {
-              field: "recoveryCode",
-              message: "Recovery Code is incorrect or expired",
-            },
-          ]),
-        );
+      return res.status(StatusCodes.BAD_REQUEST).send(
+        responseErrorFunction([
+          {
+            field: "recoveryCode",
+            message: "Recovery Code is incorrect or expired",
+          },
+        ]),
+      );
     }
     return res.status(StatusCodes.NO_CONTENT).send();
   }

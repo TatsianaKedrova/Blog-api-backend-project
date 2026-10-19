@@ -21,8 +21,8 @@ export type RegistrationConfirmationCodeModel = {
   code: string; //Code that be sent via Email inside link
 };
 
-export type RegistrationEmailResending = {
-  email: string; //^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$   Email of already registered but not confirmed user
+export type EmailRequest = {
+  email: string; //^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$   Email of already registered but not confirmed user
 };
 
 export type RefreshTokensBlacklistDB = {
