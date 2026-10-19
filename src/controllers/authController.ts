@@ -155,7 +155,7 @@ export class AuthController {
   async recoverPassword(req: RequestBodyModel<EmailRequest>, res: Response) {
     const email = req.body.email;
     await this.authService.sendPasswordCode(email);
-    res.status(StatusCodes.NO_CONTENT).send();
+    res.sendStatus(StatusCodes.NO_CONTENT);
   }
 
   async createNewPassword(
@@ -173,6 +173,6 @@ export class AuthController {
         ]),
       );
     }
-    return res.status(StatusCodes.NO_CONTENT).send();
+    return res.sendStatus(StatusCodes.NO_CONTENT);
   }
 }

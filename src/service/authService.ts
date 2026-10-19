@@ -127,7 +127,10 @@ export class AuthService {
   }
   async sendPasswordCode(email: string) {
     const user = await this.usersQueryRepository.findByLoginOrEmail(email);
-    return await this.emailManager.sendPasswordRecoveryLetter(user, email);
+    if (!user) {
+      return;
+    }
+    await this.emailManager.sendPasswordRecoveryLetter(user._id, email);
   }
   async createNewPassword(
     data: NewPasswordRecoveryInputModel,
