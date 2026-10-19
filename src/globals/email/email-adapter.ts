@@ -1,15 +1,15 @@
 import smtpTransport from "nodemailer-smtp-transport";
 import nodemailer from "nodemailer";
 
-export const sendEmail =async (
+export const sendEmail = async (
   email: string,
   html: string,
   subject: string,
 ) => {
-  if (process.env.NODE_ENV === "test") {
-    console.log(`[TEST_EMAIL] To: ${email} | Subject: ${subject}`);
-    console.log(`[TEST_EMAIL_CONTENT] ${html}`);
-  }
+  // if (process.env.NODE_ENV === "test") {
+  //   console.log(`[TEST_EMAIL] To: ${email} | Subject: ${subject}`);
+  //   console.log(`[TEST_EMAIL_CONTENT] ${html}`);
+  // }
 
   const emailSender = process.env.AUTH_EMAIL;
   const appPassword = process.env.AUTH_PASSWORD;
