@@ -21,16 +21,21 @@ export const createEmailManager = ({
       await sendEmail(user.accountData.email, html, "Email confirmation code");
     },
 
-    async sendPasswordRecoveryLetter(userId: ObjectId, email: string) {
+    async sendPasswordRecoveryLetter(
+      user: WithId<UserDBType> | null,
+      email: string,
+    ) {
       const { rawToken, hashedToken } = generateResetToken();
       const newExpirationDate = createExpirationDate({ minutes: 15 });
       const html = passwordRecoveryLetter(rawToken);
+      if (user) {
+        await usersCommandsRepository.updateUserPassCodeAndPassExpiration(
+          user._id,
+          hashedToken,
+          newExpirationDate,
+        );
+      }
 
-      await usersCommandsRepository.updateUserPassCodeAndPassExpiration(
-        userId,
-        hashedToken,
-        newExpirationDate,
-      );
       await sendEmail(email, html, "Password recovery code");
     },
     async resendEmailWithCode(user: WithId<UserDBType>) {
