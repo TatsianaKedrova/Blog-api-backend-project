@@ -6,6 +6,11 @@ export const sendEmail =async (
   html: string,
   subject: string,
 ) => {
+  if (process.env.NODE_ENV === "test") {
+    console.log(`[TEST_EMAIL] To: ${email} | Subject: ${subject}`);
+    console.log(`[TEST_EMAIL_CONTENT] ${html}`);
+  }
+
   const emailSender = process.env.AUTH_EMAIL;
   const appPassword = process.env.AUTH_PASSWORD;
   if (!emailSender || !appPassword) {
@@ -31,8 +36,8 @@ export const sendEmail =async (
   };
 
   try {
-    const info = /* await */ transport.sendMail(mailOptions);
-    // console.log("📨 Email sent successfully! Message ID:", info.messageId);
+    const info = await transport.sendMail(mailOptions);
+    console.log("📨 Email sent successfully! Message ID:", info.messageId);
   } catch (error) {
     console.error("❌ Nodemailer failed to dispatch email:", error);
   }
