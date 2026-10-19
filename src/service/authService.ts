@@ -126,7 +126,7 @@ export class AuthService {
     };
   }
   async sendPasswordCode(email: string) {
-    const user = await this.usersQueryRepository.findByLoginOrEmail(email);
+    const user = await this.usersQueryRepository.findUserByEmail(email);
     if (!user) {
       return;
     }

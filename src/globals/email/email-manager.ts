@@ -36,7 +36,7 @@ export const createEmailManager = ({
         newExpirationDate,
       );
 
-      emailAdapter.sendEmail(email, html, "Password recovery code");
+      await emailAdapter.sendEmail(email, html, "Password recovery code");
     },
     async resendEmailWithCode(user: WithId<UserDBType>) {
       const newCode = createConfirmationCode();
