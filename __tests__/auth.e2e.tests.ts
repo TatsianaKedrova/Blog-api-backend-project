@@ -2,8 +2,9 @@ import request from "supertest";
 import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
 import { beforeAll, describe, expect, jest, test } from "@jest/globals";
-import { refreshTokensBlacklistedCollection, usersCollection } from "../src/db";
 import { ObjectId } from "mongodb";
+import { refreshTokensBlacklistedCollection } from "./db/nativeMongoDB/mongoNative";
+import { UserModel } from "./db/mongoose/models/user.model";
 
 const correctAuthToken = "YWRtaW46cXdlcnR5";
 let registeredUserID1: string;
@@ -17,7 +18,7 @@ const userCredentials = {
   password: "kedrova",
 };
 const findUserInDB = async (userId: string) => {
-  const foundUser = await usersCollection.findOne({
+  const foundUser = await UserModel.findOne({
     _id: new ObjectId(userId),
   });
   return foundUser;

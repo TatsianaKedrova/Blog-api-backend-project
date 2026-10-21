@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { mongoDB } from "../db";
+import { mongoDB } from "../db/nativeMongoDB/mongoNative";
 export const testingRouter = express.Router({});
 
 //TODO REMOVE ALL COURSES

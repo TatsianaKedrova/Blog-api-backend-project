@@ -1,10 +1,10 @@
 import { CustomValidator } from "express-validator";
 import { ObjectId } from "mongodb";
-import { blogsCollection } from "../../db";
 import {
   stringInputValidatorCommon,
   stringsInputValidatorWithLength,
 } from "../validators/commonValidator";
+import { blogsCollection } from "../../db/nativeMongoDB/mongoNative";
 
 /** This blogId validator is for hardcoded db */
 export const isValidObjectId: CustomValidator = (blogId: string) => {

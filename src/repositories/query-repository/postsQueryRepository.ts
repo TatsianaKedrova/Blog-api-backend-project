@@ -1,10 +1,10 @@
 import { ObjectId, SortDirection } from "mongodb";
-import { postsCollection } from "../../db";
 import { PostDBType, PostViewModel } from "../../dto/postsDTO/PostModel";
 import { transformPostsResponse } from "../../utils/posts-utils/transformPostsResponse";
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { Paginator } from "../../dto/common/PaginatorModel";
+import { postsCollection } from "../../db/nativeMongoDB/mongoNative";
 
 export class PostsQueryRepository {
   async findPosts(

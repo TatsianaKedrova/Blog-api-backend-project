@@ -1,6 +1,5 @@
 import { transformCommentsResponse } from "../../utils/comments-utils/transformCommentsResponse";
 import { ObjectId, SortDirection } from "mongodb";
-import { commentsCollection } from "../../db";
 import {
   CommentDBType,
   CommentViewModel,
@@ -10,6 +9,7 @@ import { PostsQueryRepository } from "./postsQueryRepository";
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { inject, injectable } from "inversify";
+import { commentsCollection } from "../../db/nativeMongoDB/mongoNative";
 
 @injectable()
 export class CommentsQueryRepository {

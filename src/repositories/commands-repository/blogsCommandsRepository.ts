@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
-import { blogsCollection } from "../../db";
 import { BlogDBType, BlogInputModel } from "../../dto/blogsDTO/BlogModel";
 import { ObjectId } from "mongodb";
+import { blogsCollection } from "../../db/nativeMongoDB/mongoNative";
 
 @injectable()
 export class BlogsCommandsRepository {

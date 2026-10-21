@@ -3,9 +3,9 @@ import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
 import { beforeAll, beforeEach, describe, expect, test } from "@jest/globals";
 import { UserInputModel } from "./dto/usersDTO/usersDTO";
-import { securityDevicesCollection } from "../src/db";
 import { getJwtPayloadResult } from "./utils/jwt/jwtUtils";
 import { UsersQueryRepository } from "./repositories/query-repository/usersQueryRepository";
+import { securityDevicesCollection } from "./db/nativeMongoDB/mongoNative";
 const usersQueryRepository = new UsersQueryRepository();
 const userAgents = {
   chromeWindows:

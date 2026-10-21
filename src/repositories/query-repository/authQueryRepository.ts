@@ -1,6 +1,6 @@
 import { ObjectId, WithId } from "mongodb";
-import { refreshTokensBlacklistedCollection } from "../../db";
 import { RefreshTokensBlacklistDB } from "../../dto/authDTO/authDTO";
+import { refreshTokensBlacklistedCollection } from "../../db/nativeMongoDB/mongoNative";
 
 export class AuthQueryRepository {
   async findBlacklistedUserRefreshTokenById(

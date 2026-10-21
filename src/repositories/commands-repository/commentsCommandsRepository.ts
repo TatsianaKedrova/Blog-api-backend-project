@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
-import { commentsCollection } from "../../db";
 import { CommentDBType } from "../../dto/commentsDTO/commentsDTO";
 import { injectable } from "inversify";
+import { commentsCollection } from "../../db/nativeMongoDB/mongoNative";
 
 @injectable()
 export class CommentsCommandsRepository {

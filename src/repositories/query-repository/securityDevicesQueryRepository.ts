@@ -1,10 +1,10 @@
 import { ObjectId } from "mongodb";
-import { securityDevicesCollection } from "../../db";
 import {
   DeviceViewModel,
   SecurityDeviceDBType,
 } from "../../dto/securityDevicesDTO/securityDevicesDTO";
 import { injectable } from "inversify";
+import { securityDevicesCollection } from "../../db/nativeMongoDB/mongoNative";
 
 @injectable()
 export class SecurityDevicesQueryRepository {

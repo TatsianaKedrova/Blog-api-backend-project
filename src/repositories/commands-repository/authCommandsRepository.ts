@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
-import { refreshTokensBlacklistedCollection } from "../../db";
 import { injectable } from "inversify";
+import { refreshTokensBlacklistedCollection } from "../../db/nativeMongoDB/mongoNative";
 @injectable()
 export class AuthCommandsRepository {
   async createUserRefreshTokensBlacklist(userId: ObjectId): Promise<string> {
