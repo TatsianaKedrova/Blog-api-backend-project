@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { BlogInputModel, BlogViewModel } from "../dto/blogsDTO/BlogModel";
+import { BlogInputModel, BlogViewModel } from "../dto/blogsDTO/blogDTO";
 import { StatusCodes } from "http-status-codes";
 import {
   RequestBodyModel,
@@ -13,15 +13,17 @@ import { TApiErrorResultObject } from "../dto/common/ErrorResponseModel";
 import { BlogsService } from "../service/blogsService";
 import { QueryParamsWithSearch } from "../dto/common/SortPaginatorQueryParamsType";
 import { Paginator } from "../dto/common/PaginatorModel";
-import { PostViewModel } from "../dto/postsDTO/PostModel";
+import { PostViewModel } from "../dto/postsDTO/postDTO";
 import { BlogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";
 import { inject, injectable } from "inversify";
+import { transformBlogsResponse } from "../utils/blogs-utils/transformBlogsResponse";
 
 @injectable()
 export class BlogsController {
   constructor(
     @inject(BlogsService) protected readonly blogsService: BlogsService,
-    @inject(BlogsQueryRepository) private readonly blogsQueryRepository: BlogsQueryRepository,
+    @inject(BlogsQueryRepository)
+    private readonly blogsQueryRepository: BlogsQueryRepository,
   ) {}
   async getBlogs(
     req: RequestQueryParamsModel<QueryParamsWithSearch>,
@@ -86,7 +88,7 @@ export class BlogsController {
     if (!foundBlog) {
       res.sendStatus(StatusCodes.NOT_FOUND);
     } else {
-      res.status(StatusCodes.OK).send(foundBlog);
+      res.status(StatusCodes.OK).send(transformBlogsResponse(foundBlog));
     }
   }
   async createNewBlog(

@@ -1,6 +1,6 @@
 import { Db, MongoClient } from "mongodb";
-import { BlogDBType } from "../../dto/blogsDTO/BlogModel";
-import { PostDBType } from "../../dto/postsDTO/PostModel";
+import { BlogDBType } from "../../dto/blogsDTO/blogDTO";
+import { PostDBType } from "../../dto/postsDTO/postDTO";
 import { CommentDBType } from "../../dto/commentsDTO/commentsDTO";
 import { RefreshTokensBlacklistDB } from "../../dto/authDTO/authDTO";
 import { SecurityDeviceDBType } from "../../dto/securityDevicesDTO/securityDevicesDTO";

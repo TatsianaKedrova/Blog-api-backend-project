@@ -1,13 +1,16 @@
 import { Filter, ObjectId, SortDirection } from "mongodb";
-import { BlogDBType, BlogViewModel } from "../../dto/blogsDTO/BlogModel";
+import { BlogDBType, BlogViewModel } from "../../dto/blogsDTO/blogDTO";
 import { Paginator } from "../../dto/common/PaginatorModel";
 import { transformBlogsResponse } from "../../utils/blogs-utils/transformBlogsResponse";
-import { PostDBType, PostViewModel } from "../../dto/postsDTO/PostModel";
+import { PostDBType, PostViewModel } from "../../dto/postsDTO/postDTO";
 import { transformPostsResponse } from "../../utils/posts-utils/transformPostsResponse";
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { injectable } from "inversify";
-import { blogsCollection, postsCollection } from "../../db/nativeMongoDB/mongoNative";
+import {
+  blogsCollection,
+  postsCollection,
+} from "../../db/nativeMongoDB/mongoNative";
 
 @injectable()
 export class BlogsQueryRepository {

@@ -1,12 +1,15 @@
-import { PostDBType, PostViewModel } from "../../dto/postsDTO/PostModel";
+import { WithId } from "mongodb";
+import { PostDBType, PostViewModel } from "../../dto/postsDTO/postDTO";
 
-export const transformPostsResponse = (post: PostDBType): PostViewModel => {
+export const transformPostsResponse = (
+  post: WithId<PostDBType>,
+): PostViewModel => {
   return {
-    id: post._id!.toString(),
+    id: post._id.toString(),
     title: post.title,
     shortDescription: post.shortDescription,
     content: post.content,
-    createdAt: post.createdAt,
+    createdAt: post.createdAt.toISOString(),
     blogId: post.blogId.toString(),
     blogName: post.blogName,
   };

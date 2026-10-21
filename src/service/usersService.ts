@@ -1,5 +1,6 @@
 import {
   UserDBType,
+  UserDBTypeWithId,
   UserInputModel,
   UserViewModel,
 } from "../dto/usersDTO/usersDTO";
@@ -86,7 +87,7 @@ export class UsersService {
   async checkCredentials(
     loginOrEmail: string,
     password: string,
-  ): Promise<(UserDBType & { _id: Types.ObjectId }) | null> {
+  ): Promise<UserDBTypeWithId | null> {
     const user =
       await this.usersQueryRepository.findByLoginOrEmail(loginOrEmail);
     if (!user) return null;

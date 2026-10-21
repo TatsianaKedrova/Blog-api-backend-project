@@ -3,7 +3,7 @@ import {
   BlogDBType,
   BlogInputModel,
   BlogViewModel,
-} from "../dto/blogsDTO/BlogModel";
+} from "../dto/blogsDTO/blogDTO";
 import { BlogsCommandsRepository } from "../repositories/commands-repository/blogsCommandsRepository";
 
 import { transformBlogsResponse } from "../utils/blogs-utils/transformBlogsResponse";

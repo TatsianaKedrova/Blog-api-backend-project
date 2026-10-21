@@ -1,7 +1,10 @@
-import { PostDBType, PostInputModel } from "../../dto/postsDTO/PostModel";
+import { PostDBType, PostInputModel } from "../../dto/postsDTO/postDTO";
 import { ObjectId } from "mongodb";
 import { injectable } from "inversify";
-import { blogsCollection, postsCollection } from "../../db/nativeMongoDB/mongoNative";
+import {
+  blogsCollection,
+  postsCollection,
+} from "../../db/nativeMongoDB/mongoNative";
 
 @injectable()
 export class PostsCommandsRepository {

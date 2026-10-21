@@ -1,8 +1,8 @@
 import request from "supertest";
 import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
-import { PostViewModel } from "../src/dto/postsDTO/PostModel";
-import { BlogViewModel } from "../src/dto/blogsDTO/BlogModel";
+import { PostViewModel } from "./dto/postsDTO/postDTO";
+import { BlogViewModel } from "./dto/blogsDTO/blogDTO";
 import { beforeAll, describe, expect, test } from "@jest/globals";
 
 const correctAuthToken = "YWRtaW46cXdlcnR5";
@@ -125,7 +125,7 @@ describe("API for posts", () => {
       .send(inputData)
       .expect(StatusCodes.CREATED);
     expect(postResponse.body.content).toEqual(
-      "ggggggggggggggggggggggggggggggg"
+      "ggggggggggggggggggggggggggggggg",
     );
     createdPost1 = postResponse.body;
     const getAllExistingCourses = await request(app)
@@ -198,7 +198,7 @@ describe("API for posts", () => {
       .expect(StatusCodes.CREATED);
     createdPost2 = postResponse.body;
     expect(postResponse.body.shortDescription).toEqual(
-      "Valery is the Hockey World Champion"
+      "Valery is the Hockey World Champion",
     );
 
     const getAllExistingCourses = await request(app)
@@ -257,7 +257,7 @@ describe("API for posts", () => {
 
     expect(getAllExistingCourses.body.items[0].title).toEqual("new Tania");
     expect(getAllExistingCourses.body.items[0].shortDescription).toEqual(
-      "experimenting with life"
+      "experimenting with life",
     );
   });
 
@@ -280,7 +280,7 @@ describe("API for posts", () => {
 
     expect(getAllExistingCourses.body.items[0].title).toEqual("new Tania");
     expect(getAllExistingCourses.body.items[0].shortDescription).toEqual(
-      "experimenting with life"
+      "experimenting with life",
     );
   });
 
@@ -303,7 +303,7 @@ describe("API for posts", () => {
 
     expect(getAllExistingCourses.body.items[0].title).toEqual("new Tania");
     expect(getAllExistingCourses.body.items[0].shortDescription).toEqual(
-      "experimenting with life"
+      "experimenting with life",
     );
   });
 
@@ -339,7 +339,7 @@ describe("API for posts", () => {
 
     expect(getAllExistingCourses.body.items[0].title).toEqual("new Tania");
     expect(getAllExistingCourses.body.items[0].shortDescription).toEqual(
-      "experimenting with life"
+      "experimenting with life",
     );
   });
 
@@ -360,7 +360,7 @@ describe("API for posts", () => {
           {
             message: "content field is required",
             field: "content",
-          }
+          },
         ],
       });
 
@@ -370,7 +370,7 @@ describe("API for posts", () => {
 
     expect(getAllExistingCourses.body.items[0].title).toEqual("new Tania");
     expect(getAllExistingCourses.body.items[0].shortDescription).toEqual(
-      "experimenting with life"
+      "experimenting with life",
     );
   });
   test("CREATE a new post with CORRECT input data and return status 201", async () => {
@@ -386,7 +386,7 @@ describe("API for posts", () => {
       .send(inputData)
       .expect(StatusCodes.CREATED);
     expect(postResponse.body.content).toEqual(
-      "My lovely daughter is amazing!!!"
+      "My lovely daughter is amazing!!!",
     );
     const getAllExistingCourses = await request(app)
       .get("/api/posts")
@@ -407,7 +407,7 @@ describe("API for posts", () => {
       .send(inputData)
       .expect(StatusCodes.CREATED);
     expect(postResponse.body.content).toEqual(
-      "My lovely mommy is wonderful and the only one!!!"
+      "My lovely mommy is wonderful and the only one!!!",
     );
     const getAllExistingCourses = await request(app)
       .get("/api/posts")

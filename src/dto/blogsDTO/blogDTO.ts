@@ -5,14 +5,14 @@ export class BlogDBType {
   public name: string;
   public description: string;
   public websiteUrl: string;
-  public createdAt: string;
+  public createdAt: Date;
   public isMembership: boolean;
   constructor(data: {
     _id?: ObjectId;
     name: string;
     description: string;
     websiteUrl: string;
-    createdAt: string;
+    createdAt: Date;
     isMembership: boolean;
   }) {
     this._id = data._id;

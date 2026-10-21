@@ -1,4 +1,7 @@
+import { Types } from "mongoose";
 import { PaginationSortingQueryParams } from "../common/SortPaginatorQueryParamsType";
+
+export type UserDBTypeWithId = UserDBType & { _id: Types.ObjectId };
 
 export type UserInputModel = {
   login: string; // maxLength: 10, minLength: 3, pattern: ^[a-zA-Z0-9_-]*$
@@ -17,7 +20,7 @@ export class UserDBType {
   public accountData: {
     login: string;
     email: string;
-    createdAt: string;
+    createdAt: Date;
     passwordHash: string;
     passwordSalt: string;
   };

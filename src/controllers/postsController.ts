@@ -4,7 +4,7 @@ import {
   CreatePostForSpecificBlogType,
   PostInputModel,
   PostViewModel,
-} from "../dto/postsDTO/PostModel";
+} from "../dto/postsDTO/postDTO";
 import { PostsService } from "../service/postsService";
 import {
   RequestBodyModel,

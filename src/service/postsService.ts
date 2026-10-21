@@ -2,7 +2,7 @@ import {
   PostDBType,
   PostInputModel,
   PostViewModel,
-} from "../dto/postsDTO/PostModel";
+} from "../dto/postsDTO/postDTO";
 import { ObjectId } from "mongodb";
 import { transformPostsResponse } from "../utils/posts-utils/transformPostsResponse";
 import { BlogsQueryRepository } from "../repositories/query-repository/blogsQueryRepository";

@@ -1,5 +1,5 @@
 import { ObjectId, SortDirection } from "mongodb";
-import { PostDBType, PostViewModel } from "../../dto/postsDTO/PostModel";
+import { PostDBType, PostViewModel } from "../../dto/postsDTO/postDTO";
 import { transformPostsResponse } from "../../utils/posts-utils/transformPostsResponse";
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";

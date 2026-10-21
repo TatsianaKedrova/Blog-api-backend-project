@@ -1,7 +1,7 @@
 import request from "supertest";
 import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
-import { BlogViewModel } from "../src/dto/blogsDTO/BlogModel";
+import { BlogViewModel } from "./dto/blogsDTO/blogDTO";
 import { beforeAll, describe, expect, test } from "@jest/globals";
 
 const correctAuthToken = "YWRtaW46cXdlcnR5";
@@ -248,7 +248,7 @@ describe("API for blogs", () => {
 
     expect(getAllExistingCourses.body.items[0].name).toEqual("Tania");
     expect(getAllExistingCourses.body.items[0].description).toEqual(
-      "Dog don't drive - DDD"
+      "Dog don't drive - DDD",
     );
   });
 
@@ -270,7 +270,7 @@ describe("API for blogs", () => {
 
     expect(getAllExistingCourses.body.items[0].name).toEqual("Tania");
     expect(getAllExistingCourses.body.items[0].description).toEqual(
-      "Dog don't drive - DDD"
+      "Dog don't drive - DDD",
     );
   });
 
@@ -292,7 +292,7 @@ describe("API for blogs", () => {
 
     expect(getAllExistingCourses.body.items[0].name).toEqual("Tania");
     expect(getAllExistingCourses.body.items[0].description).toEqual(
-      "Dog don't drive - DDD"
+      "Dog don't drive - DDD",
     );
   });
 
@@ -322,7 +322,7 @@ describe("API for blogs", () => {
 
     expect(getAllExistingCourses.body.items[0].name).toEqual("Tania");
     expect(getAllExistingCourses.body.items[0].description).toEqual(
-      "Dog don't drive - DDD"
+      "Dog don't drive - DDD",
     );
   });
 
@@ -358,7 +358,7 @@ describe("API for blogs", () => {
 
     expect(getAllExistingCourses.body.items[0].name).toEqual("Tania");
     expect(getAllExistingCourses.body.items[0].description).toEqual(
-      "Dog don't drive - DDD"
+      "Dog don't drive - DDD",
     );
   });
   test("Create a new blog with correct input data and return status 201", async () => {
@@ -410,7 +410,7 @@ describe("API for blogs", () => {
   });
   test("Should get the particular page with particular blogs", async () => {
     const paginationResult = await request(app).get(
-      "/api/blogs?pageSize=1&pageNumber=3"
+      "/api/blogs?pageSize=1&pageNumber=3",
     );
     expect(paginationResult.body.items.length).toEqual(1);
     expect(paginationResult.body.items[0].name).toEqual("Tania");
@@ -424,7 +424,7 @@ describe("API for blogs", () => {
   });
   test("Should sort blogs in ascending order", async () => {
     const paginationResult = await request(app).get(
-      "/api/blogs?sortBy=name&sortDirection=asc"
+      "/api/blogs?sortBy=name&sortDirection=asc",
     );
     expect(paginationResult.body.items.length).toEqual(3);
     expect(paginationResult.body.items[0].name).toEqual("Lida");

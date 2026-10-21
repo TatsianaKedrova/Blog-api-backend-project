@@ -20,13 +20,13 @@ export class CommentDBType {
   public _id?: ObjectId;
   public content: string;
   public commentatorInfo: CommentatorInfo;
-  public createdAt: string;
+  public createdAt: Date;
   public postId: string;
   constructor(data: {
     _id: ObjectId;
     content: string;
     commentatorInfo: CommentatorInfo;
-    createdAt: string;
+    createdAt: Date;
     postId: string;
   }) {
     this._id = data._id;

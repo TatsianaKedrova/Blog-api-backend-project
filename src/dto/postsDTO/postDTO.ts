@@ -7,7 +7,7 @@ export class PostDBType {
   public content: string;
   public blogId: ObjectId;
   public blogName: string;
-  public createdAt: string;
+  public createdAt: Date;
   constructor(data: {
     _id?: ObjectId;
     title: string;
@@ -15,7 +15,7 @@ export class PostDBType {
     content: string;
     blogId: ObjectId;
     blogName: string;
-    createdAt: string;
+    createdAt: Date;
   }) {
     this._id = data._id;
     this.title = data.title;

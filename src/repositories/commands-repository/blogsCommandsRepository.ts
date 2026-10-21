@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { BlogDBType, BlogInputModel } from "../../dto/blogsDTO/BlogModel";
+import { BlogDBType, BlogInputModel } from "../../dto/blogsDTO/blogDTO";
 import { ObjectId } from "mongodb";
 import { blogsCollection } from "../../db/nativeMongoDB/mongoNative";
 

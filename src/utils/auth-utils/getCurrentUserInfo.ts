@@ -1,9 +1,6 @@
-import { Types } from "mongoose";
-import { UserDBType } from "../../dto/usersDTO/usersDTO";
+import { UserDBTypeWithId } from "../../dto/usersDTO/usersDTO";
 
-export const getCurrentUserInfo = (
-  user: UserDBType & { _id: Types.ObjectId },
-) => {
+export const getCurrentUserInfo = (user: UserDBTypeWithId) => {
   return {
     email: user.accountData.email,
     login: user.accountData.login,
