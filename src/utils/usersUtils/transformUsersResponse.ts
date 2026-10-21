@@ -1,8 +1,8 @@
-import { WithId } from "mongodb";
+import { Types } from "mongoose";
 import { UserDBType, UserViewModel } from "../../dto/usersDTO/usersDTO";
 
 export const transformUsersResponse = (
-  user: WithId<UserDBType>,
+  user: UserDBType & { _id: Types.ObjectId },
 ): UserViewModel => {
   return {
     id: user._id?.toString(),

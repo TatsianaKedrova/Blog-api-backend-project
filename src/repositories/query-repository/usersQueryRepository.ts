@@ -1,11 +1,11 @@
-import { Filter, ObjectId, SortDirection, WithId } from "mongodb";
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { UserDBType, UserViewModel } from "../../dto/usersDTO/usersDTO";
-import { usersCollection } from "../../db";
 import { Paginator } from "../../dto/common/PaginatorModel";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { transformUsersResponse } from "../../utils/usersUtils/transformUsersResponse";
 import { injectable } from "inversify";
+import { UserModel } from "../../db/mongoose/models/user.model";
+import { QueryFilter, SortOrder, Types } from "mongoose";
 
 @injectable()
 export class UsersQueryRepository {
@@ -13,34 +13,33 @@ export class UsersQueryRepository {
     pageNumber: number,
     sortBy: string,
     pageSize: number,
-    sortDirection: SortDirection,
+    sortDirection: SortOrder,
     searchEmailTerm: string,
     searchLoginTerm: string,
   ): Promise<Paginator<UserViewModel>> {
     const skip = paginationHandler(pageNumber, pageSize);
-    const filterTotal: Array<Filter<UserDBType>> = [];
-    const filterEmail: Filter<UserDBType> = {};
-    const filterLogin: Filter<UserDBType> = {};
+    const filterTotal: Array<QueryFilter<UserDBType>> = [];
 
     if (searchEmailTerm) {
-      filterEmail.email = { $regex: searchEmailTerm, $options: "ix" };
-      filterTotal.push(filterEmail);
+      filterTotal.push({
+        "accountData.email": { $regex: searchEmailTerm, $options: "ix" },
+      });
     }
     if (searchLoginTerm) {
-      filterLogin.login = { $regex: searchLoginTerm, $options: "ix" };
-      filterTotal.push(filterLogin);
+      filterTotal.push({
+        "accountData.login": { $regex: searchLoginTerm, $options: "ix" },
+      });
     }
-    const filter = {
-      $or: filterTotal.length > 0 ? filterTotal : [{}],
-    };
-    const totalCount = await usersCollection.countDocuments(filter);
+    const filter: QueryFilter<UserDBType> =
+      filterTotal.length > 0 ? { $or: filterTotal } : {};
 
-    const foundUsers = await usersCollection
-      .find(filter)
-      .sort(sortBy, sortDirection)
+    const totalCount = await UserModel.countDocuments(filter);
+
+    const foundUsers = await UserModel.find(filter)
+      .sort({ [sortBy]: sortDirection })
       .skip(skip)
       .limit(pageSize)
-      .toArray();
+      .lean();
     return paginatorReturnObject<UserDBType>(
       foundUsers,
       transformUsersResponse,
@@ -49,38 +48,51 @@ export class UsersQueryRepository {
       pageNumber,
     );
   }
-  async findUserById(id: string): Promise<WithId<UserDBType> | null> {
-    const foundUser = await usersCollection.findOne({ _id: new ObjectId(id) });
+  async findUserById(id: string | Types.ObjectId): Promise<
+    | (UserDBType & {
+        _id: Types.ObjectId;
+      })
+    | null
+  > {
+    const foundUser = await UserModel.findOne({ _id: id }).lean();
     return foundUser;
   }
-  async findUserByConfirmationCode(
-    code: string,
-  ): Promise<WithId<UserDBType> | null> {
-    const foundUser = await usersCollection.findOne({
+  async findUserByConfirmationCode(code: string): Promise<
+    | (UserDBType & {
+        _id: Types.ObjectId;
+      })
+    | null
+  > {
+    const foundUser = await UserModel.findOne({
       "emailConfirmation.confirmationCode": code,
-    });
+    }).lean();
     return foundUser;
   }
   async findByLoginOrEmail(
     loginOrEmail: string,
-  ): Promise<WithId<UserDBType> | null> {
-    const user = await usersCollection.findOne({
+  ): Promise<(UserDBType & { _id: Types.ObjectId }) | null> {
+    const user = await UserModel.findOne({
       $or: [
         { "accountData.login": loginOrEmail },
         { "accountData.email": loginOrEmail },
       ],
-    });
+    }).lean();
     return user;
   }
-  async findUserByEmail(email: string): Promise<WithId<UserDBType> | null> {
-    const user = await usersCollection.findOne({ "accountData.email": email });
+  async findUserByEmail(email: string): Promise<
+    | (UserDBType & {
+        _id: Types.ObjectId;
+      })
+    | null
+  > {
+    const user = await UserModel.findOne({ "accountData.email": email }).lean();
     return user;
   }
   async findUserByEmailAndLogin(
     login: string,
     email: string,
   ): Promise<boolean> {
-    const isUserExist = await usersCollection.findOne({
+    const isUserExist = await UserModel.findOne({
       $or: [{ "accountData.login": login }, { "accountData.email": email }],
     });
     return !!isUserExist;

@@ -1,8 +1,8 @@
-import { ObjectId } from "mongodb";
-import { usersCollection } from "../../db";
+import { Types } from "mongoose";
 import { UserDBType } from "../../dto/usersDTO/usersDTO";
 import { UsersQueryRepository } from "../query-repository/usersQueryRepository";
 import { inject, injectable } from "inversify";
+import { UserModel } from "../../db/mongoose/models/user.model";
 
 @injectable()
 export class UsersCommandsRepository {
@@ -11,21 +11,21 @@ export class UsersCommandsRepository {
     private readonly usersQueryRepository: UsersQueryRepository,
   ) {}
 
-  async createNewUser(newUser: UserDBType): Promise<ObjectId> {
-    const createdUser = await usersCollection.insertOne(newUser);
-    return createdUser.insertedId;
+  async createNewUser(newUser: UserDBType): Promise<Types.ObjectId> {
+    const createdUser = await UserModel.create(newUser);
+    return createdUser._id;
   }
   async deleteUser(id: string): Promise<boolean> {
     const user = await this.usersQueryRepository.findUserById(id);
     if (!user) return false;
 
-    const deleteResult = await usersCollection.deleteOne({
-      _id: new ObjectId(id),
+    const deleteResult = await UserModel.deleteOne({
+      _id: id,
     });
     return deleteResult.deletedCount === 1;
   }
-  async updateUserIsConfirmed(_id: ObjectId): Promise<boolean> {
-    const updateIsUserConfirmed = await usersCollection.updateOne(
+  async updateUserIsConfirmed(_id: Types.ObjectId): Promise<boolean> {
+    const updateIsUserConfirmed = await UserModel.updateOne(
       { _id },
       {
         $set: {
@@ -38,11 +38,11 @@ export class UsersCommandsRepository {
     return updateIsUserConfirmed.modifiedCount === 1;
   }
   async updateUserPassCodeAndPassExpiration(
-    userId: ObjectId,
+    userId: Types.ObjectId,
     hashedToken: string,
     expirationDate: Date,
   ) {
-    await usersCollection.updateMany(
+    await UserModel.updateMany(
       { _id: userId },
       {
         $set: {
@@ -55,13 +55,13 @@ export class UsersCommandsRepository {
     );
   }
   async updateUserCodeAndExpirationDate(
-    _id: ObjectId,
+    _id: Types.ObjectId,
     code: string,
     expirationDate: Date,
   ): Promise<boolean> {
-    const findUser = this.usersQueryRepository.findUserById(_id.toString());
+    const findUser = await this.usersQueryRepository.findUserById(_id);
     if (!findUser) return false;
-    const updateIsUserConfirmed = await usersCollection.updateMany(
+    const updateIsUserConfirmed = await UserModel.updateMany(
       { _id },
       {
         $set: {
@@ -77,16 +77,18 @@ export class UsersCommandsRepository {
     passwordSalt: string,
     passwordHash: string,
   ): Promise<boolean> {
-    const user = await usersCollection.findOne({
+    const userId = (await UserModel.findOne({
       "passwordConfirmation.passwordResetHash": hashedToken,
       "passwordConfirmation.passwordResetExpires": { $gt: new Date() },
-    });
-    if (!user) {
+    })
+      .select("_id")
+      .lean()) as { _id: Types.ObjectId } | null;
+    if (!userId) {
       return false;
     }
-    const updatedUser = await usersCollection.updateOne(
+    await UserModel.updateOne(
       {
-        _id: user?._id,
+        _id: userId,
       },
       {
         $set: {

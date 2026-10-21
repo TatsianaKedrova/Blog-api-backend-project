@@ -31,7 +31,6 @@ export class UserDBType {
   public passwordConfirmation: {
     passwordResetHash?: string;
     passwordResetExpires?: Date;
-    passwordResetAttempts?: number;
   };
 
   constructor(init: {

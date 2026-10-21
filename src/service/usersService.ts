@@ -5,7 +5,6 @@ import {
 } from "../dto/usersDTO/usersDTO";
 import { UsersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
-import { ObjectId, WithId } from "mongodb";
 import { createConfirmationCode } from "../utils/crypto/cryptoUtils";
 import { createExpirationDate, creationDate } from "../utils/date/dateUtils";
 import { createAppError } from "../utils/appErrors";
@@ -19,6 +18,7 @@ import { AuthService } from "./authService";
 import { inject, injectable } from "inversify";
 import { createEmailManager } from "../globals/email/email-manager";
 import { TYPES } from "../constants/tokens";
+import { Types } from "mongoose";
 
 @injectable()
 export class UsersService {
@@ -75,7 +75,7 @@ export class UsersService {
       });
       await this.emailManager.sendEmailConfirmationLetter(newUserData);
       await this.authService.createRefreshTokenBlacklistForUser(
-        new ObjectId(createdUserId),
+        new Types.ObjectId(createdUserId),
       );
       return transformedUserResponse;
     }
@@ -86,7 +86,7 @@ export class UsersService {
   async checkCredentials(
     loginOrEmail: string,
     password: string,
-  ): Promise<WithId<UserDBType> | null> {
+  ): Promise<(UserDBType & { _id: Types.ObjectId }) | null> {
     const user =
       await this.usersQueryRepository.findByLoginOrEmail(loginOrEmail);
     if (!user) return null;
