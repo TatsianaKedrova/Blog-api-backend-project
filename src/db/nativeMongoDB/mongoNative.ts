@@ -5,7 +5,7 @@ import { CommentDBType } from "../../dto/commentsDTO/commentsDTO";
 import { RefreshTokensBlacklistDB } from "../../dto/authDTO/authDTO";
 import { SecurityDeviceDBType } from "../../dto/securityDevicesDTO/securityDevicesDTO";
 import { ApiCallsDBType } from "../../dto/apiCallsDTO/apiCallsDTO";
-import { runMongooseDB } from "../../db";
+import { runMongooseDB } from "../mongoose/db";
 import mongoose from "mongoose";
 
 const dbName = process.env.DB_NAME || "blogs-posts";
