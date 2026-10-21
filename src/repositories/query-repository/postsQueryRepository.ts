@@ -1,4 +1,4 @@
-import { ObjectId, SortDirection } from "mongodb";
+import { ObjectId, SortDirection, WithId } from "mongodb";
 import { PostDBType, PostViewModel } from "../../dto/postsDTO/postDTO";
 import { transformPostsResponse } from "../../utils/posts-utils/transformPostsResponse";
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
@@ -31,8 +31,8 @@ export class PostsQueryRepository {
     );
     return posts;
   }
-  async findPostById(id: string): Promise<PostDBType | null> {
-    const foundPost = await postsCollection.findOne<PostDBType>({
+  async findPostById(id: string): Promise<WithId<PostDBType> | null> {
+    const foundPost = await postsCollection.findOne<WithId<PostDBType>>({
       _id: new ObjectId(id),
     });
     return foundPost;

@@ -1,4 +1,4 @@
-import { Filter, ObjectId, SortDirection } from "mongodb";
+import { Filter, ObjectId, SortDirection, WithId } from "mongodb";
 import { BlogDBType, BlogViewModel } from "../../dto/blogsDTO/blogDTO";
 import { Paginator } from "../../dto/common/PaginatorModel";
 import { transformBlogsResponse } from "../../utils/blogs-utils/transformBlogsResponse";
@@ -67,8 +67,8 @@ export class BlogsQueryRepository {
       pageNumber,
     );
   }
-  async findBlogById(id: string): Promise<BlogDBType | null> {
-    const foundBlog = await blogsCollection.findOne<BlogDBType>({
+  async findBlogById(id: string): Promise<WithId<BlogDBType> | null> {
+    const foundBlog = await blogsCollection.findOne<WithId<BlogDBType>>({
       _id: new ObjectId(id),
     });
     return foundBlog;

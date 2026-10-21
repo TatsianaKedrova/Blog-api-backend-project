@@ -1,5 +1,5 @@
 import { transformCommentsResponse } from "../../utils/comments-utils/transformCommentsResponse";
-import { ObjectId, SortDirection } from "mongodb";
+import { ObjectId, SortDirection, WithId } from "mongodb";
 import {
   CommentDBType,
   CommentViewModel,
@@ -17,7 +17,7 @@ export class CommentsQueryRepository {
     @inject(PostsQueryRepository)
     private readonly postsQueryRepository: PostsQueryRepository,
   ) {}
-  async findCommentById(id: string): Promise<CommentDBType | null> {
+  async findCommentById(id: string): Promise<WithId<CommentDBType> | null> {
     const comment = await commentsCollection.findOne({
       _id: new ObjectId(id),
     });
