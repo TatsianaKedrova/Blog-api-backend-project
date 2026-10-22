@@ -7,7 +7,8 @@ import {
 import { createExpirationDate } from "../../utils/date/dateUtils";
 import { EmailManagerDeps } from "../../dto/common/EmailDTO";
 import { passwordRecoveryLetter } from "../../utils/html-utils/passwordRecoveryLetter";
-import { sendEmail } from "./email-adapter";
+import { emailAdapter } from "./email-adapter";
+import { Types } from "mongoose";
 
 //Factory Function
 export const createEmailManager = ({
@@ -17,32 +18,36 @@ export const createEmailManager = ({
     async sendEmailConfirmationLetter(user: UserDBType) {
       const code = user.emailConfirmation.confirmationCode;
       const html = htmlEmailConfirmationCodeLetter(code);
-      await sendEmail(user.accountData.email, html, "Email confirmation code");
+      await emailAdapter.sendEmail(
+        user.accountData.email,
+        html,
+        "Email confirmation code",
+      );
     },
 
-    async sendPasswordRecoveryLetter(
-      user: UserDBTypeWithId | null,
-      email: string,
-    ) {
+    async sendPasswordRecoveryLetter(userId: Types.ObjectId, email: string) {
       const { rawToken, hashedToken } = generateResetToken();
       const newExpirationDate = createExpirationDate({ minutes: 15 });
       const html = passwordRecoveryLetter(rawToken);
-      if (user) {
-        await usersCommandsRepository.updateUserPassCodeAndPassExpiration(
-          user._id,
-          hashedToken,
-          newExpirationDate,
-        );
-      }
 
-      await sendEmail(email, html, "Password recovery code");
+      await usersCommandsRepository.updateUserPassCodeAndPassExpiration(
+        userId,
+        hashedToken,
+        newExpirationDate,
+      );
+
+      await emailAdapter.sendEmail(email, html, "Password recovery code");
     },
     async resendEmailWithCode(user: UserDBTypeWithId) {
       const newCode = createConfirmationCode();
       const newExpirationDate = createExpirationDate({ minutes: 15 });
       const html = htmlEmailConfirmationCodeLetter(newCode);
 
-      await sendEmail(user.accountData.email, html, "Email confirmation code");
+      await emailAdapter.sendEmail(
+        user.accountData.email,
+        html,
+        "Email confirmation code",
+      );
       await usersCommandsRepository.updateUserCodeAndExpirationDate(
         user._id.toString(),
         newCode,

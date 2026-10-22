@@ -65,7 +65,7 @@ export class UsersService {
             ? null
             : createExpirationDate({ hours: 1 }),
         },
-        isAddedBySuperAdmin: false,
+        isAddedBySuperAdmin,
       });
 
       const createdUserId =
@@ -74,7 +74,10 @@ export class UsersService {
         ...newUserData,
         _id: createdUserId,
       });
-      await this.emailManager.sendEmailConfirmationLetter(newUserData);
+      if (!newUserData.isAddedBySuperAdmin) {
+        await this.emailManager.sendEmailConfirmationLetter(newUserData);
+      }
+
       await this.authService.createRefreshTokenBlacklistForUser(
         new Types.ObjectId(createdUserId),
       );

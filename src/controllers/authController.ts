@@ -5,7 +5,7 @@ import {
   MeViewModel,
   NewPasswordRecoveryInputModel,
   RegistrationConfirmationCodeModel,
-  RegistrationEmailResending,
+  EmailRequest,
 } from "../dto/authDTO/authDTO";
 import { RequestBodyModel } from "../dto/common/RequestModels";
 import { Request, Response } from "express";
@@ -98,7 +98,7 @@ export class AuthController {
   }
 
   async resendRegistrationEmail(
-    req: RequestBodyModel<RegistrationEmailResending>,
+    req: RequestBodyModel<EmailRequest>,
     res: Response<TApiErrorResultObject>,
   ) {
     const resendEmailResult = await this.authService.resendEmail(
@@ -152,13 +152,10 @@ export class AuthController {
     }
     res.status(StatusCodes.NO_CONTENT).send();
   }
-  async recoverPassword(
-    req: RequestBodyModel<RegistrationEmailResending>,
-    res: Response,
-  ) {
+  async recoverPassword(req: RequestBodyModel<EmailRequest>, res: Response) {
     const email = req.body.email;
     await this.authService.sendPasswordCode(email);
-    res.status(StatusCodes.NO_CONTENT).send();
+    res.sendStatus(StatusCodes.NO_CONTENT);
   }
 
   async createNewPassword(
@@ -176,6 +173,6 @@ export class AuthController {
         ]),
       );
     }
-    return res.status(StatusCodes.NO_CONTENT).send();
+    return res.sendStatus(StatusCodes.NO_CONTENT);
   }
 }
