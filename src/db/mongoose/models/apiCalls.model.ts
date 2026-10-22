@@ -24,4 +24,4 @@ apiCallsSchema.index(
   { name: "rate_limit_ttl", expireAfterSeconds: 20 },
 );
 
-export const apiCallsModel = model("ApiCalls", apiCallsSchema, "apiCalls");
+export const ApiCallsModel = model("ApiCalls", apiCallsSchema, "apiCalls");

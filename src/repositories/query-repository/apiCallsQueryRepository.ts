@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { apiCallsCollection } from "../../db/nativeMongoDB/mongoDB";
+import { ApiCallsModel } from "../../db/mongoose/models/apiCalls.model";
 
 @injectable()
 export class ApiCallsQueryRepository {
@@ -8,13 +8,10 @@ export class ApiCallsQueryRepository {
     url: string,
     timeLimit: Date,
   ): Promise<number> {
-    const result = await apiCallsCollection
-      .find({
-        ip: ip,
-        url: url,
-        date: { $gte: timeLimit },
-      })
-      .toArray();
-    return result.length;
+    return await ApiCallsModel.countDocuments({
+      ip: ip,
+      url: url,
+      date: { $gte: timeLimit },
+    });
   }
 }

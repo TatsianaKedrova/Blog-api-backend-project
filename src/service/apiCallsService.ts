@@ -13,7 +13,7 @@ export class ApiCallsService {
   ) {}
   async checkIpRequestCount(url: string, ip: string): Promise<boolean> {
     const now = new Date();
-    const tenSecondsAgo = new Date(Date.now() - 10 * 1000);
+    const tenSecondsAgo = new Date(now.getTime() - 10 * 1000);
     const normalizedUrl = url.replace(/\/$/, "");
     const existingApiCalls = await this.apiCallsQueryRepository.countApiCalls(
       ip,
@@ -24,7 +24,7 @@ export class ApiCallsService {
     if (existingApiCalls >= 5) {
       return false;
     }
-    const apiCallsObject = new ApiCallsDBType(ip, url, now);
+    const apiCallsObject = new ApiCallsDBType(ip, normalizedUrl, now);
     await this.apiCallsCommandsRepository.addApiCall(apiCallsObject);
     return true;
   }
