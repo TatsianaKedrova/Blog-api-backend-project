@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { apiCallsCollection } from "../../db/nativeMongoDB/mongoNative";
+import { apiCallsCollection } from "../../db/nativeMongoDB/mongoDB";
 
 @injectable()
 export class ApiCallsQueryRepository {

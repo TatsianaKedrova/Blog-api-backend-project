@@ -9,7 +9,7 @@ import { PostsQueryRepository } from "./postsQueryRepository";
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { inject, injectable } from "inversify";
-import { commentsCollection } from "../../db/nativeMongoDB/mongoNative";
+import { commentsCollection } from "../../db/nativeMongoDB/mongoDB";
 
 @injectable()
 export class CommentsQueryRepository {

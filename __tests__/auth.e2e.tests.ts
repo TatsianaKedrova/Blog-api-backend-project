@@ -3,7 +3,7 @@ import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
 import { beforeAll, describe, expect, jest, test } from "@jest/globals";
 import { ObjectId } from "mongodb";
-import { refreshTokensBlacklistedCollection } from "./db/nativeMongoDB/mongoNative";
+import { refreshTokensBlacklistedCollection } from "./db/nativeMongoDB/mongoDB";
 import { UserModel } from "./db/mongoose/models/user.model";
 
 const correctAuthToken = "YWRtaW46cXdlcnR5";
@@ -227,7 +227,7 @@ describe("API for auth", () => {
 
     expect(dbUserAfterChange?.emailConfirmation.isConfirmed).toEqual(false);
     expect(dbUserAfterChange?.emailConfirmation.confirmationCode).toEqual(
-      registeredUserConfirmationCode1
+      registeredUserConfirmationCode1,
     );
   });
   test("user SHOULD be able to RESEND EMAIL", async () => {
@@ -243,7 +243,7 @@ describe("API for auth", () => {
 
     expect(dbUserAfterChange?.emailConfirmation.isConfirmed).toEqual(false);
     expect(dbUserAfterChange?.emailConfirmation.confirmationCode).not.toEqual(
-      registeredUserConfirmationCode1
+      registeredUserConfirmationCode1,
     );
   });
   test("user SHOULD confirm email with correct confirmation code", async () => {
@@ -261,7 +261,7 @@ describe("API for auth", () => {
     const dbUserConfirmed = await findUserInDB(registeredUserID1);
     expect(dbUserConfirmed?.emailConfirmation.isConfirmed).toEqual(true);
     expect(dbUserConfirmed?.emailConfirmation.confirmationCode).not.toEqual(
-      confirmationCode
+      confirmationCode,
     );
     expect(dbUserConfirmed?.emailConfirmation.confirmationCode).toEqual(null);
   });
@@ -360,10 +360,10 @@ describe("API for auth", () => {
       });
     expect(refreshTokensBlacklist?.refreshTokensArray.length).toEqual(1);
     expect(refreshTokensBlacklist?.refreshTokensArray[0]).toEqual(
-      registeredUserRefreshToken1
+      registeredUserRefreshToken1,
     );
     expect(
-      result.headers["set-cookie"][0].split("=")[1].split(";")[0]
+      result.headers["set-cookie"][0].split("=")[1].split(";")[0],
     ).not.toEqual(registeredUserRefreshToken1);
     expect(result.body.accessToken).not.toEqual(registeredUserAccessToken1);
   });
@@ -378,7 +378,7 @@ describe("API for auth", () => {
       });
     expect(refreshTokensBlacklist?.refreshTokensArray.length).toEqual(1);
     expect(refreshTokensBlacklist?.refreshTokensArray[0]).toEqual(
-      registeredUserRefreshToken1
+      registeredUserRefreshToken1,
     );
     expect(result.body).toEqual({});
   });

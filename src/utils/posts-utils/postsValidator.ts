@@ -4,7 +4,7 @@ import {
   stringInputValidatorCommon,
   stringsInputValidatorWithLength,
 } from "../validators/commonValidator";
-import { blogsCollection } from "../../db/nativeMongoDB/mongoNative";
+import { blogsCollection } from "../../db/nativeMongoDB/mongoDB";
 
 /** This blogId validator is for hardcoded db */
 export const isValidObjectId: CustomValidator = (blogId: string) => {

@@ -10,7 +10,7 @@ import { injectable } from "inversify";
 import {
   blogsCollection,
   postsCollection,
-} from "../../db/nativeMongoDB/mongoNative";
+} from "../../db/nativeMongoDB/mongoDB";
 
 @injectable()
 export class BlogsQueryRepository {

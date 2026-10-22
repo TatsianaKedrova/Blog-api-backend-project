@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { app } from "./settings";
 
 import ngrok from "@ngrok/ngrok";
-import { runDB } from "./db/nativeMongoDB/mongoNative";
+import { runDB } from "./db/nativeMongoDB/mongoDB";
 
 const port = process.env.PORT || 5000;
 app.set("trust proxy", true);

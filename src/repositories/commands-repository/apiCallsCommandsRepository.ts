@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { ApiCallsDBType } from "../../dto/apiCallsDTO/apiCallsDTO";
-import { apiCallsCollection } from "../../db/nativeMongoDB/mongoNative";
+import { apiCallsCollection } from "../../db/nativeMongoDB/mongoDB";
 
 @injectable()
 export class ApiCallsCommandsRepository {
