@@ -68,7 +68,9 @@ export class UsersQueryRepository {
         { "accountData.login": loginOrEmail },
         { "accountData.email": loginOrEmail },
       ],
-    }).lean();
+    })
+      .select("+accountData.passwordHash")
+      .lean();
     return user;
   }
   async findUserByEmail(email: string): Promise<UserDBTypeWithId | null> {

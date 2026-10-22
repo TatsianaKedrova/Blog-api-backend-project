@@ -32,8 +32,8 @@ export class UserDBType {
 
   public isAddedBySuperAdmin: boolean;
   public passwordConfirmation: {
-    passwordResetHash?: string | null;
-    passwordResetExpires?: Date | null;
+    passwordResetHash?: string;
+    passwordResetExpires?: Date;
   };
 
   constructor(init: {

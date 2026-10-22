@@ -28,8 +28,8 @@ const userSchema = new Schema<UserDBType>({
   },
   isAddedBySuperAdmin: { type: Boolean, required: true },
   passwordConfirmation: {
-    passwordResetHash: { type: String, select: false, default: null },
-    passwordResetExpires: { type: Date, select: false, default: null },
+    passwordResetHash: { type: String, select: false },
+    passwordResetExpires: { type: Date, select: false },
   },
 });
 userSchema.index(

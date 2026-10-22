@@ -30,12 +30,12 @@ export function createAccessRefreshTokensResponse(
   const accessToken = createJWT(
     { userId },
     process.env.ACCESS_TOKEN_SECRET as string,
-    10,
+    60 * 7,
   );
   const refreshToken = createJWT(
     { userId, deviceId },
     process.env.REFRESH_TOKEN_SECRET as string,
-    20,
+    60 * 30,
   );
   return {
     accessToken: accessToken as AccessToken,
