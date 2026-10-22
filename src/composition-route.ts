@@ -38,9 +38,7 @@ const apiCallsCommandsRepository = new ApiCallsCommandsRepository();
 const authCommandsRepository = new AuthCommandsRepository();
 const authQueryRepository = new AuthQueryRepository();
 const usersQueryRepository = new UsersQueryRepository();
-const usersCommandsRepository = new UsersCommandsRepository(
-  usersQueryRepository,
-);
+const usersCommandsRepository = new UsersCommandsRepository();
 const securityDevicesQueryRepository = new SecurityDevicesQueryRepository();
 const securityDevicesCommandsRepository =
   new SecurityDevicesCommandsRepository();
