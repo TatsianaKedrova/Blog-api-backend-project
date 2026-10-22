@@ -75,6 +75,5 @@ export function getJwtPayloadResult(
 export function getTokenCreationDate(token: string): Date {
   const decoded = jwt.decode(token) as JwtPayload;
   const creationTimestamp = decoded.iat;
-  const refreshTokenCreationDate = new Date(creationTimestamp! * 1000);
-  return refreshTokenCreationDate;
+  return new Date(creationTimestamp! * 1000);
 }

@@ -55,14 +55,14 @@ export class UsersCommandsRepository {
     );
   }
   async updateUserCodeAndExpirationDate(
-    _id: Types.ObjectId,
+    id: string,
     code: string,
     expirationDate: Date,
   ): Promise<boolean> {
-    const findUser = await this.usersQueryRepository.findUserById(_id);
+    const findUser = await this.usersQueryRepository.findUserById(id);
     if (!findUser) return false;
     const updateIsUserConfirmed = await UserModel.updateMany(
-      { _id },
+      { _id: id },
       {
         $set: {
           "emailConfirmation.confirmationCode": code,

@@ -5,7 +5,7 @@ import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnO
 import { transformUsersResponse } from "../../utils/usersUtils/transformUsersResponse";
 import { injectable } from "inversify";
 import { UserModel } from "../../db/mongoose/models/user.model";
-import { QueryFilter, SortOrder, Types } from "mongoose";
+import { QueryFilter, SortOrder } from "mongoose";
 
 @injectable()
 export class UsersQueryRepository {
@@ -48,9 +48,7 @@ export class UsersQueryRepository {
       pageNumber,
     );
   }
-  async findUserById(
-    id: string | Types.ObjectId,
-  ): Promise<UserDBTypeWithId | null> {
+  async findUserById(id: string): Promise<UserDBTypeWithId | null> {
     const foundUser = await UserModel.findOne({ _id: id }).lean();
     return foundUser;
   }

@@ -1,7 +1,8 @@
-import { ObjectId } from "mongodb";
 import { SecurityDevicesCommandsRepository } from "../repositories/commands-repository/securityDevicesCommandsRepository";
-import { SecurityDeviceDBType } from "../dto/securityDevicesDTO/securityDevicesDTO";
 import { inject, injectable } from "inversify";
+import { Types } from "mongoose";
+import { SecurityDeviceModel } from "../db/mongoose/models/sessions.model";
+import { createExpirationDate } from "../utils/date/dateUtils";
 
 @injectable()
 export class SecurityDevicesService {
@@ -15,15 +16,13 @@ export class SecurityDevicesService {
     userId: string,
   ): Promise<string> {
     const tokenCreationDate = new Date(); // The token generation date
-    const refreshTokenExpirationDate = new Date(
-      tokenCreationDate.getTime() + 30 * 60 * 1000,
-    );
-    const newSession = new SecurityDeviceDBType({
+    const refreshTokenExpirationDate = createExpirationDate({ minutes: 30 });
+    const newSession = new SecurityDeviceModel({
       ip: clientIP,
       title: deviceTitle,
       lastActiveDate: tokenCreationDate,
-      refreshTokenExpirationDate: refreshTokenExpirationDate,
-      userId: new ObjectId(userId),
+      refreshTokenExpirationDate,
+      userId: new Types.ObjectId(userId),
     });
     const deviceId =
       await this.securityDevicesCommandsRepository.createDeviceSession(
@@ -53,11 +52,14 @@ export class SecurityDevicesService {
     refreshTokenCreationDate: Date,
     userId: string,
   ): Promise<boolean> {
+    const refreshTokenExpirationDate = createExpirationDate({ minutes: 30 });
+
     const updateDeviceLastActiveDate =
       await this.securityDevicesCommandsRepository.updateLastActiveDate(
         deviceId,
-        refreshTokenCreationDate,
         userId,
+        refreshTokenCreationDate,
+        refreshTokenExpirationDate,
       );
     return updateDeviceLastActiveDate;
   }

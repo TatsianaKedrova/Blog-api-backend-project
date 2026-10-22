@@ -5,7 +5,7 @@ import { beforeAll, beforeEach, describe, expect, test } from "@jest/globals";
 import { UserInputModel } from "./dto/usersDTO/usersDTO";
 import { getJwtPayloadResult } from "./utils/jwt/jwtUtils";
 import { UsersQueryRepository } from "./repositories/query-repository/usersQueryRepository";
-import { securityDevicesCollection } from "./db/nativeMongoDB/mongoNative";
+import { SecurityDeviceModel } from "./db/mongoose/models/sessions.model";
 const usersQueryRepository = new UsersQueryRepository();
 const userAgents = {
   chromeWindows:
@@ -68,7 +68,7 @@ describe("Security Devices E2E tests", () => {
   });
 
   beforeEach(async () => {
-    await securityDevicesCollection.deleteMany({});
+    await SecurityDeviceModel.deleteMany({});
   });
   //Create common User-Agent for these 2 users
   const commonUserAgent =

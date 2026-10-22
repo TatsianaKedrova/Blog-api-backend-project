@@ -1,5 +1,4 @@
-import { ObjectId, WithId } from "mongodb";
-import { UserDBType } from "../../dto/usersDTO/usersDTO";
+import { UserDBType, UserDBTypeWithId } from "../../dto/usersDTO/usersDTO";
 import { htmlEmailConfirmationCodeLetter } from "../../utils/html-utils/emailConfirmationCodeLetter";
 import {
   createConfirmationCode,
@@ -22,7 +21,7 @@ export const createEmailManager = ({
     },
 
     async sendPasswordRecoveryLetter(
-      user: WithId<UserDBType> | null,
+      user: UserDBTypeWithId | null,
       email: string,
     ) {
       const { rawToken, hashedToken } = generateResetToken();
@@ -38,14 +37,14 @@ export const createEmailManager = ({
 
       await sendEmail(email, html, "Password recovery code");
     },
-    async resendEmailWithCode(user: WithId<UserDBType>) {
+    async resendEmailWithCode(user: UserDBTypeWithId) {
       const newCode = createConfirmationCode();
       const newExpirationDate = createExpirationDate({ minutes: 15 });
       const html = htmlEmailConfirmationCodeLetter(newCode);
 
       await sendEmail(user.accountData.email, html, "Email confirmation code");
       await usersCommandsRepository.updateUserCodeAndExpirationDate(
-        user._id,
+        user._id.toString(),
         newCode,
         newExpirationDate,
       );

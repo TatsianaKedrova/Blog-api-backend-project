@@ -1,24 +1,29 @@
-import { ObjectId } from "mongodb";
 import { SecurityDeviceDBType } from "../../dto/securityDevicesDTO/securityDevicesDTO";
 import { injectable } from "inversify";
-import { securityDevicesCollection } from "../../db/nativeMongoDB/mongoNative";
+import { SecurityDeviceModel } from "../../db/mongoose/models/sessions.model";
 
 @injectable()
 export class SecurityDevicesCommandsRepository {
   async createDeviceSession(
     sessionData: SecurityDeviceDBType,
   ): Promise<string> {
-    const result = await securityDevicesCollection.insertOne(sessionData);
-    return result.insertedId.toString();
+    const result = await SecurityDeviceModel.create(sessionData);
+    return result._id.toString();
   }
   async updateLastActiveDate(
     deviceId: string,
-    refreshTokenCreationDate: Date,
     userId: string,
+    refreshTokenCreationDate: Date,
+    refreshTokenExpirationDate: Date,
   ): Promise<boolean> {
-    const isLastActiveTimeUpdated = await securityDevicesCollection.updateOne(
-      { _id: new ObjectId(deviceId), userId: new ObjectId(userId) },
-      { $set: { lastActiveDate: refreshTokenCreationDate } },
+    const isLastActiveTimeUpdated = await SecurityDeviceModel.updateOne(
+      { _id: deviceId, userId },
+      {
+        $set: {
+          lastActiveDate: refreshTokenCreationDate,
+          refreshTokenExpirationDate,
+        },
+      },
     );
     return isLastActiveTimeUpdated.matchedCount > 0;
   }
@@ -26,9 +31,9 @@ export class SecurityDevicesCommandsRepository {
     deviceId: string,
     userId: string,
   ): Promise<boolean> {
-    const result = await securityDevicesCollection.deleteOne({
-      userId: new ObjectId(userId),
-      _id: new ObjectId(deviceId),
+    const result = await SecurityDeviceModel.deleteOne({
+      userId,
+      _id: deviceId,
     });
     return result.deletedCount > 0;
   }
@@ -36,9 +41,9 @@ export class SecurityDevicesCommandsRepository {
     userId: string,
     currentDeviceId: string,
   ): Promise<boolean> {
-    const result = await securityDevicesCollection.deleteMany({
-      userId: new ObjectId(userId),
-      _id: { $ne: new ObjectId(currentDeviceId) },
+    const result = await SecurityDeviceModel.deleteMany({
+      userId,
+      _id: { $ne: currentDeviceId },
     });
     return result.deletedCount > 0;
   }

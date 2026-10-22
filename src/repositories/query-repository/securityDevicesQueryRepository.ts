@@ -1,18 +1,18 @@
-import { ObjectId } from "mongodb";
 import {
   DeviceViewModel,
   SecurityDeviceDBType,
 } from "../../dto/securityDevicesDTO/securityDevicesDTO";
 import { injectable } from "inversify";
-import { securityDevicesCollection } from "../../db/nativeMongoDB/mongoNative";
+import { SecurityDeviceModel } from "../../db/mongoose/models/sessions.model";
 
 @injectable()
 export class SecurityDevicesQueryRepository {
   async getActiveSessions(userId: string): Promise<DeviceViewModel[]> {
-    const allActiveSessions = await securityDevicesCollection
-      .find({ userId: new ObjectId(userId) })
-      .sort({ _id: 1 })
-      .toArray();
+    const allActiveSessions = await SecurityDeviceModel.find({
+      userId,
+    })
+      .sort({ refreshTokenExpirationDate: -1 })
+      .lean();
     if (allActiveSessions.length === 0) {
       return [];
     }
@@ -26,17 +26,9 @@ export class SecurityDevicesQueryRepository {
   async findSessionByDeviceId(
     deviceId: string,
   ): Promise<SecurityDeviceDBType | null> {
-    try {
-      if (!ObjectId.isValid(deviceId)) {
-        return null;
-      }
-      const foundDeviceSession = await securityDevicesCollection.findOne({
-        _id: new ObjectId(deviceId),
-      });
-      return foundDeviceSession;
-    } catch (error) {
-      console.error("Database error in findSessionByDeviceId:", error);
-      throw error;
-    }
+    const foundDeviceSession = await SecurityDeviceModel.findOne({
+      _id: deviceId,
+    }).lean();
+    return foundDeviceSession;
   }
 }

@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 import { UserDBType } from "../../../dto/usersDTO/usersDTO";
 
 const userSchema = new Schema<UserDBType>({
@@ -9,7 +9,6 @@ const userSchema = new Schema<UserDBType>({
       unique: true,
       trim: true,
       lowercase: true,
-      index: true,
     },
     email: {
       type: String,
@@ -17,7 +16,6 @@ const userSchema = new Schema<UserDBType>({
       unique: true,
       trim: true,
       lowercase: true,
-      index: true,
     },
     createdAt: { type: Date, required: true },
     passwordHash: { type: String, required: true, select: false },
@@ -30,8 +28,8 @@ const userSchema = new Schema<UserDBType>({
   },
   isAddedBySuperAdmin: { type: Boolean, required: true },
   passwordConfirmation: {
-    passwordResetHash: { type: String, select: false },
-    passwordResetExpires: { type: Date },
+    passwordResetHash: { type: String, select: false, default: null },
+    passwordResetExpires: { type: Date, select: false, default: null },
   },
 });
 userSchema.index(
@@ -39,7 +37,6 @@ userSchema.index(
     "passwordConfirmation.passwordResetHash": 1,
     "passwordConfirmation.passwordResetExpires": 1,
   },
-  { name: "password_reset_lookup" },
+  { name: "password_reset_lookup", sparse: true },
 );
-
-export const UserModel = mongoose.model("User", userSchema);
+export const UserModel = model("User", userSchema);
