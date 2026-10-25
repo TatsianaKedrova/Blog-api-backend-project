@@ -1,10 +1,8 @@
 import { PostDBType, PostInputModel } from "../../dto/postsDTO/postDTO";
 import { ObjectId } from "mongodb";
 import { injectable } from "inversify";
-import {
-  blogsCollection,
-  postsCollection,
-} from "../../db/nativeMongoDB/mongoDB";
+import { postsCollection } from "../../db/mongoDB/mongoDB";
+import { BlogsModel } from "../../db/mongoose/models/blogs.model";
 
 @injectable()
 export class PostsCommandsRepository {
@@ -20,7 +18,7 @@ export class PostsCommandsRepository {
     if (!foundPostById) {
       return false;
     } else {
-      const blog = await blogsCollection.findOne({ _id: new ObjectId(blogId) });
+      const blog = await BlogsModel.findOne({ _id: blogId });
       const updatedResult = await postsCollection.updateOne(
         { _id: foundPostById._id },
         {
