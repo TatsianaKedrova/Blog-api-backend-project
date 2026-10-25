@@ -1,18 +1,22 @@
 import { ObjectId } from "mongodb";
+import { Types } from "mongoose";
 
 export class SecurityDeviceDBType {
+  public _id: Types.ObjectId;
   public ip: string;
   public userId: ObjectId;
   public title: string;
   public lastActiveDate: Date;
   public refreshTokenExpirationDate: Date;
   constructor(data: {
+    _id: Types.ObjectId;
     ip: string;
     userId: ObjectId;
     title: string;
     lastActiveDate: Date;
     refreshTokenExpirationDate: Date;
   }) {
+    this._id = data._id;
     this.ip = data.ip;
     this.userId = data.userId;
     this.title = data.title;

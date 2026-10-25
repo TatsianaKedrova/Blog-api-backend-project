@@ -4,7 +4,7 @@ import { ApiCallsModel } from "../../db/mongoose/models/apiCalls.model";
 
 @injectable()
 export class ApiCallsCommandsRepository {
-  async addApiCall(apiCall: ApiCallsDBType): Promise<void> {
+  async addApiCall(apiCall: Omit<ApiCallsDBType, "_id">): Promise<void> {
     await ApiCallsModel.create(apiCall);
   }
 }

@@ -5,7 +5,9 @@ import { Types } from "mongoose";
 
 @injectable()
 export class BlogsCommandsRepository {
-  async createNewBlog(newBlog: BlogDBType): Promise<Types.ObjectId> {
+  async createNewBlog(
+    newBlog: Omit<BlogDBType, "_id">,
+  ): Promise<Types.ObjectId> {
     const result = await BlogsModel.create(newBlog);
     return result._id;
   }

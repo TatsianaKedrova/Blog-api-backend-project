@@ -1,8 +1,8 @@
 import { SecurityDevicesCommandsRepository } from "../repositories/commands-repository/securityDevicesCommandsRepository";
 import { inject, injectable } from "inversify";
 import { Types } from "mongoose";
-import { SecurityDeviceModel } from "../db/mongoose/models/sessions.model";
 import { createExpirationDate } from "../utils/date/dateUtils";
+import { SecurityDeviceDBType } from "../dto/securityDevicesDTO/securityDevicesDTO";
 
 @injectable()
 export class SecurityDevicesService {
@@ -17,13 +17,13 @@ export class SecurityDevicesService {
   ): Promise<string> {
     const tokenCreationDate = new Date(); // The token generation date
     const refreshTokenExpirationDate = createExpirationDate({ minutes: 30 });
-    const newSession = new SecurityDeviceModel({
+    const newSession: Omit<SecurityDeviceDBType, "_id"> = {
       ip: clientIP,
       title: deviceTitle,
       lastActiveDate: tokenCreationDate,
       refreshTokenExpirationDate,
       userId: new Types.ObjectId(userId),
-    });
+    };
     const deviceId =
       await this.securityDevicesCommandsRepository.createDeviceSession(
         newSession,

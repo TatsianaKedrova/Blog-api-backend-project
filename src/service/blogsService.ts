@@ -1,5 +1,9 @@
 import { inject, injectable } from "inversify";
-import { BlogInputModel, BlogViewModel } from "../dto/blogsDTO/blogDTO";
+import {
+  BlogDBType,
+  BlogInputModel,
+  BlogViewModel,
+} from "../dto/blogsDTO/blogDTO";
 import { BlogsCommandsRepository } from "../repositories/commands-repository/blogsCommandsRepository";
 
 import { transformBlogsResponse } from "../utils/blogs-utils/transformBlogsResponse";
@@ -14,13 +18,13 @@ export class BlogsService {
   ) {}
   async createNewBlog(body: BlogInputModel): Promise<BlogViewModel> {
     const { name, description, websiteUrl } = body;
-    const newBlog = new BlogsModel({
+    const newBlog: Omit<BlogDBType, "_id"> = {
       name,
       description,
       websiteUrl,
       createdAt: creationDate(),
       isMembership: false,
-    });
+    };
     const createdBlogId =
       await this.blogsCommandsRepository.createNewBlog(newBlog);
     const blogTransformedResponse = transformBlogsResponse({

@@ -26,9 +26,8 @@ export class SecurityDevicesQueryRepository {
   async findSessionByDeviceId(
     deviceId: string,
   ): Promise<SecurityDeviceDBType | null> {
-    const foundDeviceSession = await SecurityDeviceModel.findOne({
-      _id: deviceId,
-    }).lean();
+    const foundDeviceSession =
+      await SecurityDeviceModel.findById(deviceId).lean();
     return foundDeviceSession;
   }
 }

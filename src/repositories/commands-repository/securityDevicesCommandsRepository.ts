@@ -5,7 +5,7 @@ import { SecurityDeviceModel } from "../../db/mongoose/models/sessions.model";
 @injectable()
 export class SecurityDevicesCommandsRepository {
   async createDeviceSession(
-    sessionData: SecurityDeviceDBType,
+    sessionData: Omit<SecurityDeviceDBType, "_id">,
   ): Promise<string> {
     const result = await SecurityDeviceModel.create(sessionData);
     return result._id.toString();

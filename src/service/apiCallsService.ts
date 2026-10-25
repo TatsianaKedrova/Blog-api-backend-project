@@ -24,7 +24,11 @@ export class ApiCallsService {
     if (existingApiCalls >= 5) {
       return false;
     }
-    const apiCallsObject = new ApiCallsDBType(ip, normalizedUrl, now);
+    const apiCallsObject: Omit<ApiCallsDBType, "_id"> = {
+      ip,
+      url: normalizedUrl,
+      date: now,
+    };
     await this.apiCallsCommandsRepository.addApiCall(apiCallsObject);
     return true;
   }
