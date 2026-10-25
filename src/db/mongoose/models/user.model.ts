@@ -1,35 +1,40 @@
-import mongoose, { model, Schema } from "mongoose";
+import { model, Schema } from "mongoose";
 import { UserDBType } from "../../../dto/usersDTO/usersDTO";
 
-const userSchema = new Schema<UserDBType>({
-  accountData: {
-    login: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
+const userSchema = new Schema<UserDBType>(
+  {
+    accountData: {
+      login: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+      },
+      email: {
+        type: String,
+        required: true,
+        unique: true,
+        lowercase: true,
+      },
+      createdAt: { type: Date, required: true },
+      passwordHash: { type: String, required: true, select: false },
+      passwordSalt: { type: String, required: true, select: false },
     },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
+    emailConfirmation: {
+      isConfirmed: { type: Boolean },
+      confirmationCode: { type: String, default: null },
+      expirationDate: { type: Date, default: null },
     },
-    createdAt: { type: Date, required: true },
-    passwordHash: { type: String, required: true, select: false },
-    passwordSalt: { type: String, required: true, select: false },
+    isAddedBySuperAdmin: { type: Boolean, required: true },
+    passwordConfirmation: {
+      passwordResetHash: { type: String, select: false },
+      passwordResetExpires: { type: Date, select: false },
+    },
   },
-  emailConfirmation: {
-    isConfirmed: { type: Boolean },
-    confirmationCode: { type: String, default: null },
-    expirationDate: { type: Date, default: null },
+  {
+    versionKey: false,
   },
-  isAddedBySuperAdmin: { type: Boolean, required: true },
-  passwordConfirmation: {
-    passwordResetHash: { type: String, select: false },
-    passwordResetExpires: { type: Date, select: false },
-  },
-});
+);
 userSchema.index(
   {
     "passwordConfirmation.passwordResetHash": 1,

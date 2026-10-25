@@ -1,11 +1,16 @@
 import { model, Schema } from "mongoose";
 import { ApiCallsDBType } from "../../../dto/apiCallsDTO/apiCallsDTO";
 
-export const apiCallsSchema = new Schema<ApiCallsDBType>({
-  ip: { type: String, required: true },
-  url: { type: String, required: true },
-  date: { type: Date, required: true },
-});
+export const apiCallsSchema = new Schema<ApiCallsDBType>(
+  {
+    ip: { type: String, required: true },
+    url: { type: String, required: true },
+    date: { type: Date, required: true },
+  },
+  {
+    versionKey: false,
+  },
+);
 // Api Calls / Rate Limiting Indexes
 apiCallsSchema.index(
   {

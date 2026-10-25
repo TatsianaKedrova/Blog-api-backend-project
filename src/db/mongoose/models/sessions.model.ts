@@ -1,13 +1,18 @@
 import { model, Schema } from "mongoose";
 import { SecurityDeviceDBType } from "../../../dto/securityDevicesDTO/securityDevicesDTO";
 
-const sessionSchema = new Schema<SecurityDeviceDBType>({
-  ip: { type: String, required: true },
-  userId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
-  title: { type: String, required: true },
-  lastActiveDate: { type: Date, required: true },
-  refreshTokenExpirationDate: { type: Date, required: true },
-});
+const sessionSchema = new Schema<SecurityDeviceDBType>(
+  {
+    ip: { type: String, required: true },
+    userId: { type: Schema.Types.ObjectId, required: true, ref: "User" },
+    title: { type: String, required: true },
+    lastActiveDate: { type: Date, required: true },
+    refreshTokenExpirationDate: { type: Date, required: true },
+  },
+  {
+    versionKey: false,
+  },
+);
 
 // ⚡ 1. TTL Index for self-cleaning expired sessions
 sessionSchema.index(
