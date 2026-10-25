@@ -1,4 +1,4 @@
-import { UserDBType, UserDBTypeWithId } from "../../dto/usersDTO/usersDTO";
+import { UserDBType } from "../../dto/usersDTO/usersDTO";
 import { htmlEmailConfirmationCodeLetter } from "../../utils/html-utils/emailConfirmationCodeLetter";
 import {
   createConfirmationCode,
@@ -15,7 +15,7 @@ export const createEmailManager = ({
   usersCommandsRepository,
 }: EmailManagerDeps) => {
   return {
-    async sendEmailConfirmationLetter(user: UserDBType) {
+    async sendEmailConfirmationLetter(user: Omit<UserDBType, "_id">) {
       const code = user.emailConfirmation.confirmationCode;
       const html = htmlEmailConfirmationCodeLetter(code);
       await emailAdapter.sendEmail(
@@ -38,7 +38,7 @@ export const createEmailManager = ({
 
       await emailAdapter.sendEmail(email, html, "Password recovery code");
     },
-    async resendEmailWithCode(user: UserDBTypeWithId) {
+    async resendEmailWithCode(user: UserDBType) {
       const newCode = createConfirmationCode();
       const newExpirationDate = createExpirationDate({ minutes: 15 });
       const html = htmlEmailConfirmationCodeLetter(newCode);

@@ -1,8 +1,6 @@
-import { UserDBTypeWithId, UserViewModel } from "../../dto/usersDTO/usersDTO";
+import { UserDBType, UserViewModel } from "../../dto/usersDTO/usersDTO";
 
-export const transformUsersResponse = (
-  user: UserDBTypeWithId,
-): UserViewModel => {
+export const transformUsersResponse = (user: UserDBType): UserViewModel => {
   return {
     id: user._id.toString(),
     login: user.accountData.login,

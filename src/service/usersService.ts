@@ -1,6 +1,5 @@
 import {
   UserDBType,
-  UserDBTypeWithId,
   UserInputModel,
   UserViewModel,
 } from "../dto/usersDTO/usersDTO";
@@ -48,7 +47,7 @@ export class UsersService {
       );
     } else {
       const { passwordSalt, passwordHash } = await generateJWTHash(password);
-      const newUserData = new UserDBType({
+      const newUserData: Omit<UserDBType, "_id"> = {
         accountData: {
           passwordSalt,
           passwordHash,
@@ -66,7 +65,7 @@ export class UsersService {
             : createExpirationDate({ hours: 1 }),
         },
         isAddedBySuperAdmin,
-      });
+      };
 
       const createdUserId =
         await this.usersCommandsRepository.createNewUser(newUserData);
@@ -90,7 +89,7 @@ export class UsersService {
   async checkCredentials(
     loginOrEmail: string,
     password: string,
-  ): Promise<UserDBTypeWithId | null> {
+  ): Promise<UserDBType | null> {
     const user =
       await this.usersQueryRepository.findByLoginOrEmail(loginOrEmail);
     if (!user) return null;

@@ -1,8 +1,6 @@
 import { Types } from "mongoose";
 import { PaginationSortingQueryParams } from "../common/SortPaginatorQueryParamsType";
 
-export type UserDBTypeWithId = UserDBType & { _id: Types.ObjectId };
-
 export type UserInputModel = {
   login: string; // maxLength: 10, minLength: 3, pattern: ^[a-zA-Z0-9_-]*$
   password: string; // maxLength: 20, minLength: 6
@@ -17,6 +15,7 @@ export type UserViewModel = {
 };
 
 export class UserDBType {
+  public _id: Types.ObjectId;
   public accountData: {
     login: string;
     email: string;
@@ -31,17 +30,19 @@ export class UserDBType {
   };
 
   public isAddedBySuperAdmin: boolean;
-  public passwordConfirmation: {
+  public passwordConfirmation?: {
     passwordResetHash?: string;
     passwordResetExpires?: Date;
   };
 
   constructor(init: {
+    _id: Types.ObjectId;
     accountData: UserDBType["accountData"];
     emailConfirmation: UserDBType["emailConfirmation"];
     isAddedBySuperAdmin: UserDBType["isAddedBySuperAdmin"];
     passwordConfirmation?: UserDBType["passwordConfirmation"];
   }) {
+    this._id = init._id;
     this.accountData = init.accountData;
     this.emailConfirmation = init.emailConfirmation;
     this.isAddedBySuperAdmin = init.isAddedBySuperAdmin;

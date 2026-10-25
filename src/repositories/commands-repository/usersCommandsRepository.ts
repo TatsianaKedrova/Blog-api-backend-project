@@ -7,7 +7,9 @@ import { UserModel } from "../../db/mongoose/models/user.model";
 export class UsersCommandsRepository {
   constructor() {}
 
-  async createNewUser(newUser: UserDBType): Promise<Types.ObjectId> {
+  async createNewUser(
+    newUser: Omit<UserDBType, "_id">,
+  ): Promise<Types.ObjectId> {
     const createdUser = await UserModel.create(newUser);
     return createdUser._id;
   }
@@ -35,7 +37,7 @@ export class UsersCommandsRepository {
     hashedToken: string,
     expirationDate: Date,
   ) {
-    await UserModel.updateMany(
+    const result = await UserModel.updateOne(
       { _id: userId },
       {
         $set: {
@@ -44,13 +46,14 @@ export class UsersCommandsRepository {
         },
       },
     );
+    return result.matchedCount === 1;
   }
   async updateConfirmationCodeAndExpirationDate(
     id: string,
     code: string,
     expirationDate: Date,
   ): Promise<boolean> {
-    const updatedUser = await UserModel.findOneAndUpdate(
+    const updatedUser = await UserModel.updateOne(
       { _id: id },
       {
         $set: {
@@ -58,15 +61,15 @@ export class UsersCommandsRepository {
           "emailConfirmation.expirationDate": expirationDate,
         },
       },
-    ).lean();
-    return !!updatedUser;
+    );
+    return updatedUser.matchedCount === 1;
   }
   async updatePasswordByResetHash(
     hashedToken: string,
     passwordSalt: string,
     passwordHash: string,
   ): Promise<boolean> {
-    const user = await UserModel.findOneAndUpdate(
+    const user = await UserModel.findOneAndUpdate<UserDBType>(
       {
         "passwordConfirmation.passwordResetHash": hashedToken,
         "passwordConfirmation.passwordResetExpires": { $gt: new Date() },

@@ -1,5 +1,5 @@
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
-import { UserDBTypeWithId, UserViewModel } from "../../dto/usersDTO/usersDTO";
+import { UserDBType, UserViewModel } from "../../dto/usersDTO/usersDTO";
 import { Paginator } from "../../dto/common/PaginatorModel";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { transformUsersResponse } from "../../utils/usersUtils/transformUsersResponse";
@@ -18,7 +18,7 @@ export class UsersQueryRepository {
     searchLoginTerm: string,
   ): Promise<Paginator<UserViewModel>> {
     const skip = paginationHandler(pageNumber, pageSize);
-    const filterTotal: Array<QueryFilter<UserDBTypeWithId>> = [];
+    const filterTotal: Array<QueryFilter<UserDBType>> = [];
 
     if (searchEmailTerm) {
       filterTotal.push({
@@ -30,7 +30,7 @@ export class UsersQueryRepository {
         "accountData.login": { $regex: searchLoginTerm, $options: "ix" },
       });
     }
-    const filter: QueryFilter<UserDBTypeWithId> =
+    const filter: QueryFilter<UserDBType> =
       filterTotal.length > 0 ? { $or: filterTotal } : {};
 
     const totalCount = await UserModel.countDocuments(filter);
@@ -40,7 +40,7 @@ export class UsersQueryRepository {
       .skip(skip)
       .limit(pageSize)
       .lean();
-    return paginatorReturnObject<UserDBTypeWithId>(
+    return paginatorReturnObject<UserDBType>(
       foundUsers,
       transformUsersResponse,
       totalCount,
@@ -48,21 +48,17 @@ export class UsersQueryRepository {
       pageNumber,
     );
   }
-  async findUserById(id: string): Promise<UserDBTypeWithId | null> {
-    const foundUser = await UserModel.findOne({ _id: id }).lean();
+  async findUserById(id: string): Promise<UserDBType | null> {
+    const foundUser = await UserModel.findById(id).lean();
     return foundUser;
   }
-  async findUserByConfirmationCode(
-    code: string,
-  ): Promise<UserDBTypeWithId | null> {
+  async findUserByConfirmationCode(code: string): Promise<UserDBType | null> {
     const foundUser = await UserModel.findOne({
       "emailConfirmation.confirmationCode": code,
     }).lean();
     return foundUser;
   }
-  async findByLoginOrEmail(
-    loginOrEmail: string,
-  ): Promise<UserDBTypeWithId | null> {
+  async findByLoginOrEmail(loginOrEmail: string): Promise<UserDBType | null> {
     const user = await UserModel.findOne({
       $or: [
         { "accountData.login": loginOrEmail },
@@ -73,7 +69,7 @@ export class UsersQueryRepository {
       .lean();
     return user;
   }
-  async findUserByEmail(email: string): Promise<UserDBTypeWithId | null> {
+  async findUserByEmail(email: string): Promise<UserDBType | null> {
     const user = await UserModel.findOne({ "accountData.email": email }).lean();
     return user;
   }
