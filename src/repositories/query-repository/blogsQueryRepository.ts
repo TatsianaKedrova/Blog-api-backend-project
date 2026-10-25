@@ -1,4 +1,4 @@
-import { Filter, ObjectId, SortDirection, WithId } from "mongodb";
+import { Filter, ObjectId, SortDirection } from "mongodb";
 import { BlogDBType, BlogViewModel } from "../../dto/blogsDTO/blogDTO";
 import { Paginator } from "../../dto/common/PaginatorModel";
 import { transformBlogsResponse } from "../../utils/blogs-utils/transformBlogsResponse";
@@ -7,10 +7,9 @@ import { transformPostsResponse } from "../../utils/posts-utils/transformPostsRe
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { injectable } from "inversify";
-import {
-  blogsCollection,
-  postsCollection,
-} from "../../db/nativeMongoDB/mongoDB";
+import { postsCollection } from "../../db/mongoDB/mongoDB";
+import { BlogsModel } from "../../db/mongoose/models/blogs.model";
+import { SortOrder } from "mongoose";
 
 @injectable()
 export class BlogsQueryRepository {
@@ -19,20 +18,19 @@ export class BlogsQueryRepository {
     pageNumber: number,
     sortBy: string,
     pageSize: number,
-    sortDirection: SortDirection,
+    sortDirection: SortOrder,
   ): Promise<Paginator<BlogViewModel>> {
     let filter: Filter<BlogDBType> = {};
     const skip = paginationHandler(pageNumber, pageSize);
     if (searchNameTerm) {
       filter.name = { $regex: searchNameTerm, $options: "i" };
     }
-    const totalCount = await blogsCollection.countDocuments(filter);
-    const foundBlogs = await blogsCollection
-      .find(filter)
-      .sort(sortBy, sortDirection)
+    const totalCount = await BlogsModel.countDocuments(filter);
+    const foundBlogs = await BlogsModel.find(filter)
+      .sort({ [sortBy]: sortDirection })
       .skip(skip)
       .limit(pageSize)
-      .toArray();
+      .lean();
     return paginatorReturnObject<BlogDBType>(
       foundBlogs,
       transformBlogsResponse,
@@ -67,10 +65,7 @@ export class BlogsQueryRepository {
       pageNumber,
     );
   }
-  async findBlogById(id: string): Promise<WithId<BlogDBType> | null> {
-    const foundBlog = await blogsCollection.findOne<WithId<BlogDBType>>({
-      _id: new ObjectId(id),
-    });
-    return foundBlog;
+  async findBlogById(id: string): Promise<BlogDBType | null> {
+    return await BlogsModel.findById<BlogDBType>(id).lean();
   }
 }

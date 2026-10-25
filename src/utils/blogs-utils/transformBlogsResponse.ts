@@ -1,9 +1,6 @@
-import { WithId } from "mongodb";
 import { BlogDBType, BlogViewModel } from "../../dto/blogsDTO/blogDTO";
 
-export const transformBlogsResponse = (
-  blog: WithId<BlogDBType>,
-): BlogViewModel => {
+export const transformBlogsResponse = (blog: BlogDBType): BlogViewModel => {
   return {
     id: blog._id.toString(),
     name: blog.name,

@@ -9,4 +9,4 @@ export const blogsSchema = new Schema<BlogDBType>({
   isMembership: { type: Boolean, required: true },
 });
 
-export const BlogsModel = model("Blogs", blogsSchema, "blogs");
+export const BlogsModel = model<BlogDBType>("Blogs", blogsSchema, "blogs");

@@ -1,9 +1,10 @@
 import { inject, injectable } from "inversify";
-import { BlogDBType, BlogInputModel } from "../dto/blogsDTO/blogDTO";
+import { BlogInputModel, BlogViewModel } from "../dto/blogsDTO/blogDTO";
 import { BlogsCommandsRepository } from "../repositories/commands-repository/blogsCommandsRepository";
 
 import { transformBlogsResponse } from "../utils/blogs-utils/transformBlogsResponse";
 import { creationDate } from "../utils/date/dateUtils";
+import { BlogsModel } from "../db/mongoose/models/blogs.model";
 
 @injectable()
 export class BlogsService {
@@ -11,9 +12,9 @@ export class BlogsService {
     @inject(BlogsCommandsRepository)
     private readonly blogsCommandsRepository: BlogsCommandsRepository,
   ) {}
-  async createNewBlog(body: BlogInputModel): Promise<BlogDBType> {
+  async createNewBlog(body: BlogInputModel): Promise<BlogViewModel> {
     const { name, description, websiteUrl } = body;
-    const newBlog = new BlogDBType({
+    const newBlog = new BlogsModel({
       name,
       description,
       websiteUrl,
