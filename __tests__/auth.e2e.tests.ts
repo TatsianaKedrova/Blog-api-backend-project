@@ -3,7 +3,7 @@ import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
 import { beforeAll, describe, expect, jest, test } from "@jest/globals";
 import { ObjectId } from "mongodb";
-import { refreshTokensBlacklistedCollection } from "./db/nativeMongoDB/mongoDB";
+import { refreshTokensBlacklistedCollection } from "./db/mongoDB/mongoDB";
 import { UserModel } from "./db/mongoose/models/user.model";
 
 const correctAuthToken = "YWRtaW46cXdlcnR5";

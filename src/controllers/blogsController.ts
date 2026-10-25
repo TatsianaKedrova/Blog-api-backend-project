@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { BlogInputModel, BlogViewModel } from "../dto/blogsDTO/blogDTO";
+import { BlogDBType, BlogInputModel } from "../dto/blogsDTO/blogDTO";
 import { StatusCodes } from "http-status-codes";
 import {
   RequestBodyModel,
@@ -27,7 +27,7 @@ export class BlogsController {
   ) {}
   async getBlogs(
     req: RequestQueryParamsModel<QueryParamsWithSearch>,
-    res: Response<Paginator<BlogViewModel>>,
+    res: Response<Paginator<BlogDBType>>,
   ) {
     let {
       searchNameTerm = "",
@@ -37,7 +37,7 @@ export class BlogsController {
       sortDirection = "desc",
     } = req.query;
 
-    const blogs: Paginator<BlogViewModel> =
+    const blogs: Paginator<BlogDBType> =
       await this.blogsQueryRepository.findBlogs(
         searchNameTerm,
         Number(pageNumber),
@@ -80,7 +80,7 @@ export class BlogsController {
   }
   async getBlogsById(
     req: RequestWithURIParam<URIParamsRequest>,
-    res: Response<BlogViewModel>,
+    res: Response<BlogDBType>,
   ) {
     const foundBlog = await this.blogsQueryRepository.findBlogById(
       req.params.id,
@@ -93,7 +93,7 @@ export class BlogsController {
   }
   async createNewBlog(
     req: RequestBodyModel<BlogInputModel>,
-    res: Response<BlogViewModel | TApiErrorResultObject>,
+    res: Response<BlogDBType | TApiErrorResultObject>,
   ) {
     const newBlog = await this.blogsService.createNewBlog(req.body);
     res.status(StatusCodes.CREATED).send(newBlog);

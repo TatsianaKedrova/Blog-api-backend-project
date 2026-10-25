@@ -4,7 +4,7 @@ import { transformPostsResponse } from "../../utils/posts-utils/transformPostsRe
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { Paginator } from "../../dto/common/PaginatorModel";
-import { postsCollection } from "../../db/nativeMongoDB/mongoDB";
+import { postsCollection } from "../../db/mongoDB/mongoDB";
 
 export class PostsQueryRepository {
   async findPosts(

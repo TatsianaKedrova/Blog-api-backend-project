@@ -1,21 +1,16 @@
-import { ObjectId } from "mongodb";
-
 export class BlogDBType {
-  public _id?: ObjectId;
   public name: string;
   public description: string;
   public websiteUrl: string;
   public createdAt: Date;
   public isMembership: boolean;
   constructor(data: {
-    _id?: ObjectId;
     name: string;
     description: string;
     websiteUrl: string;
     createdAt: Date;
     isMembership: boolean;
   }) {
-    this._id = data._id;
     this.createdAt = data.createdAt;
     this.description = data.description;
     this.isMembership = data.isMembership;
@@ -23,15 +18,6 @@ export class BlogDBType {
     this.name = data.name;
   }
 }
-
-export type BlogViewModel = {
-  id?: string;
-  name: string;
-  description: string;
-  websiteUrl: string;
-  createdAt: string;
-  isMembership: boolean; //MUST be false. True if user has not expired membership subscription to blog
-};
 
 export type BlogInputModel = {
   name: string; //required, maxLength = 15

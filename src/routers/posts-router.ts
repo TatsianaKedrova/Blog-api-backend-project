@@ -1,6 +1,6 @@
 import express from "express";
 import { basicAuthMiddleware } from "../middlewares/basicAuth";
-import { postsValidator } from "../utils/posts-utils/postsValidator";
+import { postsValidatorBlogId } from "../utils/posts-utils/postsValidator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
@@ -23,7 +23,7 @@ postsRouter.get(
 postsRouter.post(
   "/",
   basicAuthMiddleware,
-  postsValidator,
+  postsValidatorBlogId,
   responseErrorValidationMiddleware,
   postsController.createNewPost.bind(postsController),
 );
@@ -33,7 +33,7 @@ postsRouter.put(
   "/:id",
   basicAuthMiddleware,
   validateObjectIdMiddleware,
-  postsValidator,
+  postsValidatorBlogId,
   responseErrorValidationMiddleware,
   postsController.updatePostById.bind(postsController),
 );

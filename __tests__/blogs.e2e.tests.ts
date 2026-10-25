@@ -1,8 +1,9 @@
 import request from "supertest";
 import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
-import { BlogViewModel } from "./dto/blogsDTO/blogDTO";
 import { beforeAll, describe, expect, test } from "@jest/globals";
+import { BlogDBType } from "./dto/blogsDTO/blogDTO";
+import { Types } from "mongoose";
 
 const correctAuthToken = "YWRtaW46cXdlcnR5";
 const incorrectAuthToken = "YWRtaW46c864XdlcnR5=5";
@@ -92,8 +93,8 @@ describe("API for blogs", () => {
     });
   });
 
-  let createdBlog1: BlogViewModel;
-  let createdBlog2: BlogViewModel;
+  let createdBlog1: BlogDBType & { _id: Types.ObjectId };
+  let createdBlog2: BlogDBType & { _id: Types.ObjectId };
   test("Create a new blog with correct input data and return status 201", async () => {
     const postResponse = await request(app)
       .post("/api/blogs")
@@ -176,7 +177,7 @@ describe("API for blogs", () => {
 
   test("GET blog ID with 200 status", async () => {
     await request(app)
-      .get(`/api/blogs/${createdBlog1.id}`)
+      .get(`/api/blogs/${createdBlog1._id}`)
       .expect(StatusCodes.OK);
   });
 
@@ -202,7 +203,7 @@ describe("API for blogs", () => {
 
   test("Should return Unauthorized status 401 cos' auth token is incorrect", async () => {
     await request(app)
-      .delete(`/api/blogs/${createdBlog2.id}`)
+      .delete(`/api/blogs/${createdBlog2._id}`)
       .set("Authorization", `Basic ${incorrectAuthToken}`)
       .expect(StatusCodes.UNAUTHORIZED);
     const getResponse = (await request(app).get("/api/blogs")).body.items;
@@ -222,7 +223,7 @@ describe("API for blogs", () => {
 
   test("Should delete blog by ID with correct ID", async () => {
     await request(app)
-      .delete(`/api/blogs/${createdBlog2.id}`)
+      .delete(`/api/blogs/${createdBlog2._id}`)
       .set("Authorization", `Basic ${correctAuthToken}`)
       .expect(StatusCodes.NO_CONTENT);
     const getResponse = (await request(app).get("/api/blogs")).body.items;
@@ -232,7 +233,7 @@ describe("API for blogs", () => {
 
   test("Should update name and description with status 204", async () => {
     const postResponse = await request(app)
-      .put(`/api/blogs/${createdBlog1.id}`)
+      .put(`/api/blogs/${createdBlog1._id}`)
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({
         name: "Tania",
@@ -254,7 +255,7 @@ describe("API for blogs", () => {
 
   test("Shouldn't update blog with incorrect Auth Type -  status 401", async () => {
     const postResponse = await request(app)
-      .put(`/api/blogs/${createdBlog1.id}`)
+      .put(`/api/blogs/${createdBlog1._id}`)
       .set("Authorization", `Bearer ${correctAuthToken}`)
       .send({
         name: "Stasty",
@@ -276,7 +277,7 @@ describe("API for blogs", () => {
 
   test("Shouldn't update blog with incorrect Auth Value -  status 401", async () => {
     const postResponse = await request(app)
-      .put(`/api/blogs/${createdBlog1.id}`)
+      .put(`/api/blogs/${createdBlog1._id}`)
       .set("Authorization", `Basic ${incorrectAuthToken}`)
       .send({
         name: "Stasty",
@@ -298,7 +299,7 @@ describe("API for blogs", () => {
 
   test("Shouldn't update blog with missing value `description` and `websiteUrl` -  status 400", async () => {
     await request(app)
-      .put(`/api/blogs/${createdBlog1.id}`)
+      .put(`/api/blogs/${createdBlog1._id}`)
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({
         name: "Stasty",
@@ -328,7 +329,7 @@ describe("API for blogs", () => {
 
   test("Shouldn't update blog with incorrect input values -  status 400", async () => {
     await request(app)
-      .put(`/api/blogs/${createdBlog1.id}`)
+      .put(`/api/blogs/${createdBlog1._id}`)
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({
         name: 0,
@@ -380,7 +381,7 @@ describe("API for blogs", () => {
 
     expect(getAllExistingCourses.body.items.length).toEqual(2);
   });
-  let createdBlog3: BlogViewModel;
+  let createdBlog3: BlogDBType & { _id: Types.ObjectId };
 
   test("Create a new blog with correct input data and return status 201", async () => {
     const postResponse = await request(app)
@@ -438,7 +439,7 @@ describe("API for blogs", () => {
   });
   test("CREATE post for specific blog", async () => {
     const result = await request(app)
-      .post(`/api/blogs/${createdBlog3.id}/posts`)
+      .post(`/api/blogs/${createdBlog3._id}/posts`)
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({
         title: "Stas",
@@ -451,7 +452,7 @@ describe("API for blogs", () => {
   });
   test("SHOULDN'T CREATE post for specific blog with invalid authToken", async () => {
     await request(app)
-      .post(`/api/blogs/${createdBlog3.id}/posts`)
+      .post(`/api/blogs/${createdBlog3._id}/posts`)
       .set("Authorization", `Basic ${incorrectAuthToken}`)
       .send({
         title: "Jenia",
@@ -462,7 +463,7 @@ describe("API for blogs", () => {
   });
   test("SHOULD CREATE post for specific blog with valid authToken", async () => {
     const result = await request(app)
-      .post(`/api/blogs/${createdBlog3.id}/posts`)
+      .post(`/api/blogs/${createdBlog3._id}/posts`)
       .set("Authorization", `Basic ${correctAuthToken}`)
       .send({
         title: "Jenia",
@@ -475,7 +476,7 @@ describe("API for blogs", () => {
   });
   test("GET all posts for specific blog with sorting by name with default descending order", async () => {
     const result = await request(app)
-      .get(`/api/blogs/${createdBlog3.id}/posts?sortBy=title`)
+      .get(`/api/blogs/${createdBlog3._id}/posts?sortBy=title`)
       .expect(StatusCodes.OK);
     expect(result.body.items.length).toEqual(2);
     expect(result.body.items[0].title).toEqual("Stas");
@@ -483,7 +484,7 @@ describe("API for blogs", () => {
   });
   test("GET all posts for specific blog with paging", async () => {
     await request(app)
-      .get(`/api/blogs/${createdBlog3.id}/posts?pageSize=2&pageNumber=2`)
+      .get(`/api/blogs/${createdBlog3._id}/posts?pageSize=2&pageNumber=2`)
       .expect(StatusCodes.OK, {
         pagesCount: 1,
         page: 2,
