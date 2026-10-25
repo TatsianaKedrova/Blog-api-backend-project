@@ -8,7 +8,6 @@ import { BlogsCommandsRepository } from "../repositories/commands-repository/blo
 
 import { transformBlogsResponse } from "../utils/blogs-utils/transformBlogsResponse";
 import { creationDate } from "../utils/date/dateUtils";
-import { BlogsModel } from "../db/mongoose/models/blogs.model";
 
 @injectable()
 export class BlogsService {

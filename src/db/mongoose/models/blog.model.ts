@@ -1,7 +1,7 @@
 import { model, Schema } from "mongoose";
 import { BlogDBType } from "../../../dto/blogsDTO/blogDTO";
 
-export const blogsSchema = new Schema<BlogDBType>({
+export const blogSchema = new Schema<BlogDBType>({
   name: { type: String, required: true },
   description: { type: String, required: true },
   websiteUrl: { type: String, required: true },
@@ -9,4 +9,4 @@ export const blogsSchema = new Schema<BlogDBType>({
   isMembership: { type: Boolean, required: true },
 });
 
-export const BlogsModel = model<BlogDBType>("Blogs", blogsSchema, "blogs");
+export const BlogModel = model<BlogDBType>("Blog", blogSchema, "blogs");

@@ -1,27 +1,26 @@
-import { ObjectId, SortDirection, WithId } from "mongodb";
 import { PostDBType, PostViewModel } from "../../dto/postsDTO/postDTO";
 import { transformPostsResponse } from "../../utils/posts-utils/transformPostsResponse";
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { Paginator } from "../../dto/common/PaginatorModel";
-import { postsCollection } from "../../db/mongoDB/mongoDB";
+import { PostModel } from "../../db/mongoose/models/post.model";
+import { SortOrder } from "mongoose";
 
 export class PostsQueryRepository {
   async findPosts(
     pageNumber: number,
     sortBy: string,
     pageSize: number,
-    sortDirection: SortDirection,
+    sortDirection: SortOrder,
   ): Promise<Paginator<PostViewModel>> {
     const skip = paginationHandler(pageNumber, pageSize);
-    const totalCount = await postsCollection.countDocuments();
-    const foundPosts = await postsCollection
-      .find()
+    const totalCount = await PostModel.countDocuments();
+    const foundPosts = await PostModel.find()
       .collation({ locale: "en" })
-      .sort(sortBy, sortDirection)
+      .sort({ [sortBy]: sortDirection })
       .skip(skip)
       .limit(pageSize)
-      .toArray();
+      .lean();
     const posts = paginatorReturnObject<PostDBType>(
       foundPosts,
       transformPostsResponse,
@@ -31,10 +30,8 @@ export class PostsQueryRepository {
     );
     return posts;
   }
-  async findPostById(id: string): Promise<WithId<PostDBType> | null> {
-    const foundPost = await postsCollection.findOne<WithId<PostDBType>>({
-      _id: new ObjectId(id),
-    });
+  async findPostById(id: string): Promise<PostDBType | null> {
+    const foundPost = await PostModel.findById<PostDBType>(id).lean();
     return foundPost;
   }
 }

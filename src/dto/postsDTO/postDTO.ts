@@ -1,19 +1,19 @@
-import { ObjectId } from "mongodb";
+import { Types } from "mongoose";
 
 export class PostDBType {
-  public _id?: ObjectId;
+  public _id: Types.ObjectId;
   public title: string;
   public shortDescription: string;
   public content: string;
-  public blogId: ObjectId;
+  public blogId: Types.ObjectId;
   public blogName: string;
   public createdAt: Date;
   constructor(data: {
-    _id?: ObjectId;
+    _id: Types.ObjectId;
     title: string;
     shortDescription: string;
     content: string;
-    blogId: ObjectId;
+    blogId: Types.ObjectId;
     blogName: string;
     createdAt: Date;
   }) {

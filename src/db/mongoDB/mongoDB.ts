@@ -1,5 +1,4 @@
 import { Db, MongoClient } from "mongodb";
-import { PostDBType } from "../../dto/postsDTO/postDTO";
 import { CommentDBType } from "../../dto/commentsDTO/commentsDTO";
 import { RefreshTokensBlacklistDB } from "../../dto/authDTO/authDTO";
 import { runMongooseDB } from "../mongoose/mongooseDB";
@@ -10,8 +9,6 @@ const mongoUri = process.env.MONGODB_DRIVER || "mongodb://0.0.0.0:27017";
 const client: MongoClient = new MongoClient(mongoUri as string);
 export const mongoDB: Db = client.db(dbName);
 
-export const postsCollection = mongoDB.collection<PostDBType>("posts");
-export const videosCollection = mongoDB.collection<any>("videos");
 export const commentsCollection = mongoDB.collection<CommentDBType>("comments");
 export const refreshTokensBlacklistedCollection =
   mongoDB.collection<RefreshTokensBlacklistDB>("refresh-tokens-blacklisted");

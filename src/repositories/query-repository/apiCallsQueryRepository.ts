@@ -1,5 +1,5 @@
 import { injectable } from "inversify";
-import { ApiCallsModel } from "../../db/mongoose/models/apiCalls.model";
+import { ApiCallModel } from "../../db/mongoose/models/apiCalls.model";
 
 @injectable()
 export class ApiCallsQueryRepository {
@@ -8,7 +8,7 @@ export class ApiCallsQueryRepository {
     url: string,
     timeLimit: Date,
   ): Promise<number> {
-    return await ApiCallsModel.countDocuments({
+    return await ApiCallModel.countDocuments({
       ip: ip,
       url: url,
       date: { $gte: timeLimit },

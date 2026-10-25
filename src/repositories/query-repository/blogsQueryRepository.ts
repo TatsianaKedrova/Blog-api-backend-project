@@ -1,4 +1,3 @@
-import { Filter, ObjectId, SortDirection } from "mongodb";
 import { BlogDBType, BlogViewModel } from "../../dto/blogsDTO/blogDTO";
 import { Paginator } from "../../dto/common/PaginatorModel";
 import { transformBlogsResponse } from "../../utils/blogs-utils/transformBlogsResponse";
@@ -7,9 +6,9 @@ import { transformPostsResponse } from "../../utils/posts-utils/transformPostsRe
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { injectable } from "inversify";
-import { postsCollection } from "../../db/mongoDB/mongoDB";
-import { BlogsModel } from "../../db/mongoose/models/blogs.model";
-import { SortOrder } from "mongoose";
+import { BlogModel } from "../../db/mongoose/models/blog.model";
+import { QueryFilter, SortOrder } from "mongoose";
+import { PostModel } from "../../db/mongoose/models/post.model";
 
 @injectable()
 export class BlogsQueryRepository {
@@ -20,13 +19,13 @@ export class BlogsQueryRepository {
     pageSize: number,
     sortDirection: SortOrder,
   ): Promise<Paginator<BlogViewModel>> {
-    let filter: Filter<BlogDBType> = {};
+    let filter: QueryFilter<BlogDBType> = {};
     const skip = paginationHandler(pageNumber, pageSize);
     if (searchNameTerm) {
       filter.name = { $regex: searchNameTerm, $options: "i" };
     }
-    const totalCount = await BlogsModel.countDocuments(filter);
-    const foundBlogs = await BlogsModel.find(filter)
+    const totalCount = await BlogModel.countDocuments(filter);
+    const foundBlogs = await BlogModel.find(filter)
       .sort({ [sortBy]: sortDirection })
       .skip(skip)
       .limit(pageSize)
@@ -44,19 +43,18 @@ export class BlogsQueryRepository {
     pageNumber: number,
     sortBy: string,
     pageSize: number,
-    sortDirection: SortDirection,
+    sortDirection: SortOrder,
   ): Promise<Paginator<PostViewModel>> {
     const skip = paginationHandler(pageNumber, pageSize);
 
-    const totalCount = await postsCollection.countDocuments({
-      blogId: new ObjectId(id),
+    const totalCount = await PostModel.countDocuments({
+      blogId: id,
     });
-    const foundPosts = await postsCollection
-      .find({ blogId: new ObjectId(id) })
-      .sort(sortBy, sortDirection)
+    const foundPosts = await PostModel.find({ blogId: id })
+      .sort({ [sortBy]: sortDirection })
       .skip(skip)
       .limit(pageSize)
-      .toArray();
+      .lean();
     return paginatorReturnObject<PostDBType>(
       foundPosts,
       transformPostsResponse,
@@ -66,6 +64,6 @@ export class BlogsQueryRepository {
     );
   }
   async findBlogById(id: string): Promise<BlogDBType | null> {
-    return await BlogsModel.findById<BlogDBType>(id).lean();
+    return await BlogModel.findById<BlogDBType>(id).lean();
   }
 }

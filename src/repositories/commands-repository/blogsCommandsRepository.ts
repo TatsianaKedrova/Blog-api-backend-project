@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { BlogDBType, BlogInputModel } from "../../dto/blogsDTO/blogDTO";
-import { BlogsModel } from "../../db/mongoose/models/blogs.model";
+import { BlogModel } from "../../db/mongoose/models/blog.model";
 import { Types } from "mongoose";
 
 @injectable()
@@ -8,11 +8,11 @@ export class BlogsCommandsRepository {
   async createNewBlog(
     newBlog: Omit<BlogDBType, "_id">,
   ): Promise<Types.ObjectId> {
-    const result = await BlogsModel.create(newBlog);
+    const result = await BlogModel.create(newBlog);
     return result._id;
   }
   async updateBlogById(id: string, body: BlogInputModel): Promise<boolean> {
-    const updatedResult = await BlogsModel.updateOne(
+    const updatedResult = await BlogModel.updateOne(
       { _id: id },
       { $set: body },
     );
@@ -20,7 +20,7 @@ export class BlogsCommandsRepository {
   }
 
   async deleteBlogById(id: string): Promise<boolean> {
-    const deleteResult = await BlogsModel.deleteOne({
+    const deleteResult = await BlogModel.deleteOne({
       _id: id,
     });
     return deleteResult.deletedCount === 1;
