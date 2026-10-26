@@ -6,7 +6,7 @@ export const blogSchema = new Schema<BlogDBType>(
     name: { type: String, required: true },
     description: { type: String, required: true },
     websiteUrl: { type: String, required: true },
-    createdAt: { type: Date, required: true },
+    createdAt: { type: Date, required: true, index: true },
     isMembership: { type: Boolean, required: true },
   },
   {

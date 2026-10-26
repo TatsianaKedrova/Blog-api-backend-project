@@ -13,7 +13,7 @@ export const postSchema = new Schema<PostDBType>(
       index: true,
     },
     blogName: { type: String, required: true },
-    createdAt: { type: Date, required: true },
+    createdAt: { type: Date, required: true, index: true },
   },
   {
     versionKey: false,

@@ -16,7 +16,7 @@ const userSchema = new Schema<UserDBType>(
         unique: true,
         lowercase: true,
       },
-      createdAt: { type: Date, required: true },
+      createdAt: { type: Date, required: true, index: true },
       passwordHash: { type: String, required: true, select: false },
       passwordSalt: { type: String, required: true, select: false },
     },
