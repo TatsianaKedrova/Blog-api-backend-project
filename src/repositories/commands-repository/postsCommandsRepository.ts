@@ -13,15 +13,13 @@ export class PostsCommandsRepository {
   }
   async updatePostById(
     id: string,
-    body: PostInputModel,
-    blogName: string,
+    updatedPayload: Omit<PostInputModel, "blogId">,
   ): Promise<boolean> {
     const updatedResult = await PostModel.updateOne(
       { _id: id },
       {
         $set: {
-          ...body,
-          blogName,
+          ...updatedPayload,
         },
       },
     );

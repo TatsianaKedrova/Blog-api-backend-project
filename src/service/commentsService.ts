@@ -33,11 +33,11 @@ export class CommentsService {
     const foundUser = await this.usersQueryRepository.findUserById(userId);
     if (!foundUser) return null;
     const newComment: Omit<CommentDBType, "_id"> = {
-      postId: new Types.ObjectId(),
+      postId: new Types.ObjectId(postId),
       content,
       createdAt: creationDate(),
-      userId: new Types.ObjectId(),
-      userLogin: foundUser!.accountData.login,
+      userId: new Types.ObjectId(userId),
+      userLogin: foundUser.accountData.login,
     };
     const createdComment =
       await this.commentsCommandsRepository.createComment(newComment);

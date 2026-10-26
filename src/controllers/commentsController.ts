@@ -16,6 +16,7 @@ import { Paginator } from "../dto/common/PaginatorModel";
 import { CommentsService } from "../service/commentsService";
 import { CommentsQueryRepository } from "../repositories/query-repository/commentsQueryRepository";
 import { inject, injectable } from "inversify";
+import { PostsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
 
 @injectable()
 export class CommentsController {
@@ -24,6 +25,8 @@ export class CommentsController {
     protected readonly commentsService: CommentsService,
     @inject(CommentsQueryRepository)
     private readonly commentsQueryRepository: CommentsQueryRepository,
+    @inject(PostsQueryRepository)
+    protected readonly postsQueryRepository: PostsQueryRepository,
   ) {}
   async createComment(
     req: RequestWithURIParamsAndBody<URIParamsRequest, CommentInputModel>,
@@ -48,6 +51,11 @@ export class CommentsController {
     >,
     res: Response<Paginator<CommentViewModel>>,
   ) {
+    const postId = req.params.id;
+    const foundPost = await this.postsQueryRepository.findPostById(postId);
+    if (!foundPost) {
+      return res.sendStatus(StatusCodes.NOT_FOUND);
+    }
     let {
       pageNumber = 1,
       sortBy = "createdAt",
@@ -56,16 +64,16 @@ export class CommentsController {
     } = req.query;
     const commentsForSpecifiedPost =
       await this.commentsQueryRepository.findCommentsForSpecifiedPost(
-        req.params.id,
         Number(pageNumber),
         sortBy,
         Number(pageSize),
         sortDirection,
+        postId,
       );
     if (!commentsForSpecifiedPost) {
-      res.sendStatus(StatusCodes.NOT_FOUND);
+      return res.sendStatus(StatusCodes.NOT_FOUND);
     } else {
-      res.status(StatusCodes.OK).send(commentsForSpecifiedPost);
+      return res.status(StatusCodes.OK).send(commentsForSpecifiedPost);
     }
   }
   async getCommentById(

@@ -42,12 +42,17 @@ export class PostsService {
     });
     return postTransformedResult;
   }
-  async updatePostById(id: string, body: PostInputModel): Promise<boolean> {
+  async updatePostById(postId: string, body: PostInputModel): Promise<boolean> {
+    const { blogId, ...updatedPayload } = body;
     const blog = await this.blogsQueryRepository.findBlogById(body.blogId);
     if (!blog) {
       return false;
     }
-    return await this.postsCommandsRepository.updatePostById(id, body, blog.name);
+
+    return await this.postsCommandsRepository.updatePostById(
+      postId,
+      updatedPayload,
+    );
   }
   async deletePostById(id: string): Promise<boolean> {
     return await this.postsCommandsRepository.deletePostById(id);

@@ -5,7 +5,7 @@ export const commentsSchema = new Schema<CommentDBType>({
   content: { type: String, required: true },
   userId: { type: Types.ObjectId, required: true, index: true },
   userLogin: { type: String, required: true },
-  createdAt: { type: Date, required: true },
+  createdAt: { type: Date, required: true, index: true },
   postId: { type: Types.ObjectId, required: true, index: true },
 });
 export const CommentModel = model<CommentDBType>(
