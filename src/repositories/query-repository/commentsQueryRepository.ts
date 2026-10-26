@@ -1,5 +1,4 @@
 import { transformCommentsResponse } from "../../utils/comments-utils/transformCommentsResponse";
-import { ObjectId, SortDirection, WithId } from "mongodb";
 import {
   CommentDBType,
   CommentViewModel,
@@ -9,7 +8,8 @@ import { PostsQueryRepository } from "./postsQueryRepository";
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { inject, injectable } from "inversify";
-import { commentsCollection } from "../../db/mongoDB/mongoDB";
+import { CommentModel } from "../../db/mongoose/models/comments.model";
+import { SortOrder } from "mongoose";
 
 @injectable()
 export class CommentsQueryRepository {
@@ -17,10 +17,8 @@ export class CommentsQueryRepository {
     @inject(PostsQueryRepository)
     private readonly postsQueryRepository: PostsQueryRepository,
   ) {}
-  async findCommentById(id: string): Promise<WithId<CommentDBType> | null> {
-    const comment = await commentsCollection.findOne({
-      _id: new ObjectId(id),
-    });
+  async findCommentById(id: string): Promise<CommentDBType | null> {
+    const comment = await CommentModel.findById(id).lean();
     return comment;
   }
   async findCommentsForSpecifiedPost(
@@ -28,24 +26,23 @@ export class CommentsQueryRepository {
     pageNumber: number,
     sortBy: string,
     pageSize: number,
-    sortDirection: SortDirection,
+    sortDirection: SortOrder,
   ): Promise<Paginator<CommentViewModel> | null> {
     const foundPost = await this.postsQueryRepository.findPostById(postId);
     if (!foundPost) return null;
     const skip = paginationHandler(pageNumber, pageSize);
-    const totalCount = await commentsCollection.countDocuments({
+    const totalCount = await CommentModel.countDocuments({
       postId,
     });
 
-    const allCommentsForPost = await commentsCollection
-      .find({
-        postId,
-      })
+    const allCommentsForPost = await CommentModel.find({
+      postId,
+    })
       .collation({ locale: "en" })
-      .sort(sortBy, sortDirection)
+      .sort({ [sortBy]: sortDirection })
       .skip(skip)
       .limit(pageSize)
-      .toArray();
+      .lean();
     const comments = paginatorReturnObject<CommentDBType>(
       allCommentsForPost,
       transformCommentsResponse,

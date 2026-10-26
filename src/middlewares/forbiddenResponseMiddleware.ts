@@ -16,7 +16,7 @@ export const createForbiddenResponseMiddleware =
     );
     if (!comment) {
       res.sendStatus(StatusCodes.NOT_FOUND);
-    } else if (comment && comment.commentatorInfo.userId !== req.userId) {
+    } else if (comment && comment.userId.toString() !== req.userId) {
       res.sendStatus(StatusCodes.FORBIDDEN);
     } else {
       next();

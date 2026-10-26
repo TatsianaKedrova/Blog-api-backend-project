@@ -1,25 +1,27 @@
-import { ObjectId } from "mongodb";
 import { CommentDBType } from "../../dto/commentsDTO/commentsDTO";
 import { injectable } from "inversify";
-import { commentsCollection } from "../../db/mongoDB/mongoDB";
+import { Types } from "mongoose";
+import { CommentModel } from "../../db/mongoose/models/comments.model";
 
 @injectable()
 export class CommentsCommandsRepository {
-  async createComment(newComment: CommentDBType): Promise<ObjectId> {
-    const result = await commentsCollection.insertOne(newComment);
-    return result.insertedId;
+  async createComment(
+    newComment: Omit<CommentDBType, "_id">,
+  ): Promise<Types.ObjectId> {
+    const result = await CommentModel.create(newComment);
+    return result._id;
   }
   async deleteComment(commentId: string): Promise<boolean> {
-    const deletedComment = await commentsCollection.findOneAndDelete({
-      _id: new ObjectId(commentId),
+    const deletedComment = await CommentModel.deleteOne({
+      _id: commentId,
     });
-    return deletedComment !== null;
+    return deletedComment.deletedCount === 1;
   }
   async updateComment(commentId: string, content: string): Promise<boolean> {
-    const newUpdatedComment = await commentsCollection.findOneAndUpdate(
-      { _id: new ObjectId(commentId) },
+    const newUpdatedComment = await CommentModel.updateOne(
+      { _id: commentId },
       { $set: { content } },
     );
-    return newUpdatedComment !== null;
+    return newUpdatedComment.modifiedCount === 1;
   }
 }

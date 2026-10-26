@@ -8,6 +8,7 @@ import { PostsQueryRepository } from "../repositories/query-repository/postsQuer
 import { UsersQueryRepository } from "../repositories/query-repository/usersQueryRepository";
 import { transformCommentsResponse } from "../utils/comments-utils/transformCommentsResponse";
 import { creationDate } from "../utils/date/dateUtils";
+import { Types } from "mongoose";
 
 @injectable()
 export class CommentsService {
@@ -31,14 +32,12 @@ export class CommentsService {
     }
     const foundUser = await this.usersQueryRepository.findUserById(userId);
     if (!foundUser) return null;
-    const newComment: CommentDBType = {
-      postId,
+    const newComment: Omit<CommentDBType, "_id"> = {
+      postId: new Types.ObjectId(),
       content,
       createdAt: creationDate(),
-      commentatorInfo: {
-        userId,
-        userLogin: foundUser!.accountData.login,
-      },
+      userId: new Types.ObjectId(),
+      userLogin: foundUser!.accountData.login,
     };
     const createdComment =
       await this.commentsCommandsRepository.createComment(newComment);

@@ -1,16 +1,18 @@
-import { WithId } from "mongodb";
 import {
   CommentDBType,
   CommentViewModel,
 } from "../../dto/commentsDTO/commentsDTO";
 
 export const transformCommentsResponse = (
-  newComment: WithId<CommentDBType>,
+  newComment: CommentDBType,
 ): CommentViewModel => {
   return {
     id: newComment._id.toString(),
     content: newComment.content,
     createdAt: newComment.createdAt.toISOString(),
-    commentatorInfo: newComment.commentatorInfo,
+    commentatorInfo: {
+      userId: newComment.userId.toString(),
+      userLogin: newComment.userLogin,
+    },
   };
 };

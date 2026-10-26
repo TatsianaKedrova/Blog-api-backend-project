@@ -20,8 +20,10 @@ import { inject, injectable } from "inversify";
 @injectable()
 export class CommentsController {
   constructor(
-    @inject(CommentsService) protected readonly commentsService: CommentsService,
-    @inject(CommentsQueryRepository) private readonly commentsQueryRepository: CommentsQueryRepository,
+    @inject(CommentsService)
+    protected readonly commentsService: CommentsService,
+    @inject(CommentsQueryRepository)
+    private readonly commentsQueryRepository: CommentsQueryRepository,
   ) {}
   async createComment(
     req: RequestWithURIParamsAndBody<URIParamsRequest, CommentInputModel>,

@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { Types } from "mongoose";
 
 export type CommentInputModel = {
   content: string; // maxLength: 300, minLength: 20
@@ -17,20 +17,23 @@ export type CommentatorInfo = {
 };
 
 export class CommentDBType {
-  public _id?: ObjectId;
+  public _id: Types.ObjectId;
   public content: string;
-  public commentatorInfo: CommentatorInfo;
+  public userId: Types.ObjectId;
+  public userLogin: string;
   public createdAt: Date;
-  public postId: string;
+  public postId: Types.ObjectId;
   constructor(data: {
-    _id: ObjectId;
+    _id: Types.ObjectId;
     content: string;
-    commentatorInfo: CommentatorInfo;
+    userId: Types.ObjectId;
+    userLogin: string;
     createdAt: Date;
-    postId: string;
+    postId: Types.ObjectId;
   }) {
     this._id = data._id;
-    this.commentatorInfo = data.commentatorInfo;
+    this.userId = data.userId;
+    this.userLogin = data.userLogin;
     this.content = data.content;
     this.createdAt = data.createdAt;
     this.postId = data.postId;
