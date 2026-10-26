@@ -1,0 +1,20 @@
+$kind: http-request
+url: "{{BASE_URL}}/blogs/6aafa8dbc7c137e9ee81cb9b/posts"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"title\": \"post 1\",\r
+
+    \  \"shortDescription\": \"post description\",\r
+
+    \  \"content\": \"post 1 content info\"\r
+
+    }"
+auth:
+  type: basic
+  credentials:
+    username: admin
+    password: qwerty
+order: 5000

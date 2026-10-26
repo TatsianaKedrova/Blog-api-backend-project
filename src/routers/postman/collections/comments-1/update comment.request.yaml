@@ -1,0 +1,6 @@
+$kind: http-request
+url: "{{BASE_URL}}/comments/:id"
+method: PUT
+pathVariables:
+  id: ""
+order: 3000

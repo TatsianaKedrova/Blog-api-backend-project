@@ -1,0 +1,9 @@
+$kind: http-request
+url: "{{BASE_URL}}/blogs/6aafa8dbc7c137e9ee81cb9b"
+method: PUT
+auth:
+  type: basic
+  credentials:
+    username: admin
+    password: qwerty
+order: 7000

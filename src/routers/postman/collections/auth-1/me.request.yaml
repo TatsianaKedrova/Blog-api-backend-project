@@ -1,0 +1,36 @@
+$kind: http-request
+url: "{{BASE_URL}}/auth/me"
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: "{{active_access_token}}"
+scripts:
+  - type: beforeRequest
+    code: "const tokenCreatedAt = pm.globals.get(\"token_created_at\");\r
+
+      const expirationWindow = 10000; // 10 seconds in milliseconds\r
+
+      \r
+
+      if (tokenCreatedAt) {\r
+
+      \    const timeElapsed = Date.now() - Number(tokenCreatedAt);\r
+
+      \    \r
+
+      \    // If the token has been in memory for more than 10 seconds, self-destruct!\r
+
+      \    if (timeElapsed > expirationWindow) {\r
+
+      \        pm.globals.unset(\"active_access_token\");\r
+
+      \        pm.globals.unset(\"token_created_at\");\r
+
+      \        console.log(\"🗑️ [Postman]: Token detected as expired and automatically cleared!\");\r
+
+      \    }\r
+
+      }\r\n"
+    language: text/javascript
+order: 4000

@@ -1,0 +1,24 @@
+$kind: http-request
+url: "{{BASE_URL}}/posts/"
+method: POST
+body:
+  type: json
+  content: " \r
+
+    \ {\r
+
+    \  \"title\": \"new post\",\r
+
+    \  \"shortDescription\": \"I haven't been here for a long time\", \r
+
+    \  \"content\": \"I haven't been here for a long time. Me too\",\r
+
+    \  \"blogId\": \"1\"\r
+
+    \ }"
+auth:
+  type: basic
+  credentials:
+    username: admin
+    password: qwerty
+order: 3000

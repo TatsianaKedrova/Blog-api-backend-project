@@ -8,4 +8,5 @@ dist
 # Ignore Postman configuration and collection files
 .postman/
 *.postman_collection.json
-*.yaml
+# Exclude local Postman workspace values and variable states
+workspace.globals.yaml

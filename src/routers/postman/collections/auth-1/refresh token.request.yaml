@@ -1,0 +1,8 @@
+$kind: http-request
+url: "{{BASE_URL}}/auth/refresh-token"
+method: POST
+auth:
+  type: noauth
+settings:
+  disabledSystemHeaders: []
+order: 6000

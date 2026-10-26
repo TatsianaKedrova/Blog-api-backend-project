@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{BASE_URL}}/security/devices/6abb58643667de04584160d4"
+method: DELETE
+order: 2000

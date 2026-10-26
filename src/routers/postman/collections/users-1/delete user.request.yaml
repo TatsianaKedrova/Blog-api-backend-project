@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{BASE_URL}}/users/:id"
+method: DELETE
+pathVariables:
+  id: |2
+                "id": "6ab0009be244f93817140bc0",
+auth:
+  type: basic
+  credentials:
+    username: admin
+    password: qwerty
+order: 2000

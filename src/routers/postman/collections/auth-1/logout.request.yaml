@@ -1,0 +1,6 @@
+$kind: http-request
+url: "{{BASE_URL}}/auth/logout"
+method: POST
+auth:
+  type: noauth
+order: 5000

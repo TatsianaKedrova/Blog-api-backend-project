@@ -1,0 +1,11 @@
+$kind: http-request
+url: "{{BASE_URL}}/auth/registration-email-resending"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"email\": \"baletrot@gmail.com\"\r
+
+    }"
+order: 3000

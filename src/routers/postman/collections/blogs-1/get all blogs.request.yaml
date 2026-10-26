@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{BASE_URL}}/blogs/"
+method: GET
+order: 2000

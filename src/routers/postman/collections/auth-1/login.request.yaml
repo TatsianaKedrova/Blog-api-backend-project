@@ -1,0 +1,33 @@
+$kind: http-request
+url: "{{BASE_URL}}/auth/login"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \    \"loginOrEmail\": \"baletro\",\r
+
+    \    \"password\": \"rtrttrtrtr\"\r
+
+    }"
+scripts:
+  - type: afterResponse
+    code: "// 1. Parse the JSON response body\r
+
+      const response = pm.response.json();\r
+
+      \r
+
+      // 2. Extract the access token (adjust 'accessToken' if your API key has a different name)\r
+
+      const token = response.accessToken; \r
+
+      \r
+
+      // 3. Save it to a collection or environment variable\r
+
+      pm.collectionVariables.set(\"accessToken\", token);\r
+
+      console.log(\"Access token updated successfully!\");\r\n"
+    language: text/javascript
+order: 7000

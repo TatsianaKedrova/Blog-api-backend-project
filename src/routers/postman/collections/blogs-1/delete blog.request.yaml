@@ -1,0 +1,9 @@
+$kind: http-request
+url: "{{BASE_URL}}/blogs/2"
+method: DELETE
+auth:
+  type: basic
+  credentials:
+    username: admin
+    password: qwerty
+order: 3000

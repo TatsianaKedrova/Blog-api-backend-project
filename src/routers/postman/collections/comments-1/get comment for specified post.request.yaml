@@ -1,0 +1,6 @@
+$kind: http-request
+url: "{{BASE_URL}}/posts/:id/comments"
+method: GET
+pathVariables:
+  id: 6aafb1ea48dcd4a2a18e277e
+order: 5000

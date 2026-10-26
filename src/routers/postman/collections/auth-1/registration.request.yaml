@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{BASE_URL}}/auth/registration"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"login\": \"baletro\",\r
+
+    \  \"password\":\"rtrttrtrtr\",\r
+
+    \  \"email\": \"Baletrot@gmail.com\"\r
+
+    }"
+order: 1000
