@@ -46,9 +46,7 @@ const blogsQueryRepository = new BlogsQueryRepository();
 const blogsCommandsRepository = new BlogsCommandsRepository();
 const postsCommandsRepository = new PostsCommandsRepository();
 const postsQueryRepository = new PostsQueryRepository();
-const commentsQueryRepository = new CommentsQueryRepository(
-  postsQueryRepository,
-);
+const commentsQueryRepository = new CommentsQueryRepository();
 const commentsCommandsRepository = new CommentsCommandsRepository();
 
 // ==========================================
@@ -132,6 +130,7 @@ export const postsController = new PostsController(
 export const commentsController = new CommentsController(
   commentsService,
   commentsQueryRepository,
+  postsQueryRepository,
 );
 
 export const blogsController = new BlogsController(

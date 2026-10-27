@@ -65,6 +65,7 @@ export class UsersService {
             : createExpirationDate({ hours: 1 }),
         },
         isAddedBySuperAdmin,
+        passwordConfirmation: {},
       };
 
       const createdUserId =
