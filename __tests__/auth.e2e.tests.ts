@@ -2,9 +2,9 @@ import request from "supertest";
 import { app } from "../src/settings";
 import { StatusCodes } from "http-status-codes";
 import { beforeAll, describe, expect, jest, test } from "@jest/globals";
-import { ObjectId } from "mongodb";
-import { refreshTokensBlacklistedCollection } from "./db/mongoDB/mongoDB";
 import { UserModel } from "./db/mongoose/models/user.model";
+import { BlacklistedRefreshTokenModel } from "./db/mongoose/models/blacklistedRefreshToken.model";
+import { UserInputModel } from "./dto/usersDTO/usersDTO";
 
 const correctAuthToken = "YWRtaW46cXdlcnR5";
 let registeredUserID1: string;
@@ -12,15 +12,13 @@ let registeredUserConfirmationCode1: string | null;
 let registeredUserAccessToken1: string;
 let registeredUserRefreshToken1: string;
 
-const userCredentials = {
+const userCredentials: UserInputModel = {
   login: "Stay",
   email: "nansy@mainModule.org",
   password: "kedrova",
 };
 const findUserInDB = async (userId: string) => {
-  const foundUser = await UserModel.findOne({
-    _id: new ObjectId(userId),
-  });
+  const foundUser = await UserModel.findById(userId);
   return foundUser;
 };
 
@@ -119,11 +117,6 @@ describe("API for auth", () => {
     const createdUserInDB = await findUserInDB(registeredUserID1);
     registeredUserConfirmationCode1 =
       createdUserInDB && createdUserInDB?.emailConfirmation.confirmationCode;
-    const refreshTokenEmptyArray =
-      await refreshTokensBlacklistedCollection.findOne({
-        _id: new ObjectId(registeredUserID1),
-      });
-    expect(refreshTokenEmptyArray?.refreshTokensArray.length).toEqual(0);
   });
   test("user SHOULDN'T be registered if the user with same login already exists", async () => {
     const userCredentials = {
@@ -343,25 +336,21 @@ describe("API for auth", () => {
       .post("/api/auth/refresh-token")
       .set("Cookie", ["refreshToken=''"])
       .expect(StatusCodes.UNAUTHORIZED);
-    const refreshTokensBlacklist =
-      await refreshTokensBlacklistedCollection.findOne({
-        _id: new ObjectId(registeredUserID1),
-      });
-    expect(refreshTokensBlacklist?.refreshTokensArray.length).toEqual(0);
+    const foundBlacklistedToken = await BlacklistedRefreshTokenModel.findOne({
+      token: "''",
+    }).lean();
+    expect(foundBlacklistedToken?.token).toBeNull();
   });
   test("user SHOULD BE able to update REFRESH-ACCESS TOKEN pair", async () => {
     const result = await request(app)
       .post("/api/auth/refresh-token")
       .set("Cookie", [`refreshToken=${registeredUserRefreshToken1}`])
       .expect(StatusCodes.OK);
-    const refreshTokensBlacklist =
-      await refreshTokensBlacklistedCollection.findOne({
-        _id: new ObjectId(registeredUserID1),
-      });
-    expect(refreshTokensBlacklist?.refreshTokensArray.length).toEqual(1);
-    expect(refreshTokensBlacklist?.refreshTokensArray[0]).toEqual(
-      registeredUserRefreshToken1,
-    );
+    const refreshTokensBlacklist = await BlacklistedRefreshTokenModel.findOne({
+      token: registeredUserRefreshToken1,
+    }).lean();
+    expect(refreshTokensBlacklist?.token).toEqual(registeredUserRefreshToken1);
+    expect(refreshTokensBlacklist?.token).not.toBeNull();
     expect(
       result.headers["set-cookie"][0].split("=")[1].split(";")[0],
     ).not.toEqual(registeredUserRefreshToken1);
@@ -372,14 +361,21 @@ describe("API for auth", () => {
       .post("/api/auth/refresh-token")
       .set("Cookie", [`refreshToken=${registeredUserRefreshToken1}`])
       .expect(StatusCodes.UNAUTHORIZED);
-    const refreshTokensBlacklist =
-      await refreshTokensBlacklistedCollection.findOne({
-        _id: new ObjectId(registeredUserID1),
-      });
-    expect(refreshTokensBlacklist?.refreshTokensArray.length).toEqual(1);
-    expect(refreshTokensBlacklist?.refreshTokensArray[0]).toEqual(
+    const refreshTokensBlacklisted = await BlacklistedRefreshTokenModel.findOne(
+      {
+        token: registeredUserRefreshToken1,
+      },
+    ).lean();
+    expect(refreshTokensBlacklisted?.token).toEqual(
       registeredUserRefreshToken1,
     );
+    const setCookieHeader = result.headers["set-cookie"];
+    expect(setCookieHeader).toBeDefined();
+    const cookieString = Array.isArray(setCookieHeader)
+      ? setCookieHeader.join(" ")
+      : setCookieHeader;
+    expect(cookieString).toContain("refreshToken=;");
+    expect(cookieString).toMatch(/Max-Age=0|Expires=Thu, 01 Jan 1970/);
     expect(result.body).toEqual({});
   });
   // it("user SHOULD NOT be able to update REFRESH-ACCESS TOKEN pair, if refresh token is expired", async () => {
