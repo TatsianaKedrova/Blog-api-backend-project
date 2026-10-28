@@ -1,26 +1,28 @@
-import { Types } from "mongoose";
+import { Model, Types } from "mongoose";
 import { UserDBType } from "../../dto/usersDTO/usersDTO";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { UserModel } from "../../db/mongoose/models/user.model";
 
 @injectable()
 export class UsersCommandsRepository {
-  constructor() {}
+  constructor(
+    @inject(UserModel) private readonly userModel: Model<UserDBType>,
+  ) {}
 
   async createNewUser(
     newUser: Omit<UserDBType, "_id">,
   ): Promise<Types.ObjectId> {
-    const createdUser = await UserModel.create(newUser);
+    const createdUser = await this.userModel.create(newUser);
     return createdUser._id;
   }
   async deleteUser(id: string): Promise<boolean> {
-    const deleteResult = await UserModel.deleteOne({
+    const deleteResult = await this.userModel.deleteOne({
       _id: id,
     });
     return deleteResult.deletedCount === 1;
   }
   async updateUserIsConfirmed(_id: Types.ObjectId): Promise<boolean> {
-    const updatedUser = await UserModel.updateOne(
+    const updatedUser = await this.userModel.updateOne(
       { _id },
       {
         $set: {
@@ -37,7 +39,7 @@ export class UsersCommandsRepository {
     hashedToken: string,
     expirationDate: Date,
   ) {
-    const result = await UserModel.updateOne(
+    const result = await this.userModel.updateOne(
       { _id: userId },
       {
         $set: {
@@ -53,7 +55,7 @@ export class UsersCommandsRepository {
     code: string,
     expirationDate: Date,
   ): Promise<boolean> {
-    const updatedUser = await UserModel.updateOne(
+    const updatedUser = await this.userModel.updateOne(
       { _id: id },
       {
         $set: {
@@ -69,22 +71,23 @@ export class UsersCommandsRepository {
     passwordSalt: string,
     passwordHash: string,
   ): Promise<boolean> {
-    const user = await UserModel.findOneAndUpdate<UserDBType>(
-      {
-        "passwordConfirmation.passwordResetHash": hashedToken,
-        "passwordConfirmation.passwordResetExpires": { $gt: new Date() },
-      },
-      {
-        $set: {
-          "accountData.passwordSalt": passwordSalt,
-          "accountData.passwordHash": passwordHash,
+    const user = await this.userModel
+      .findOneAndUpdate<UserDBType>(
+        {
+          "passwordConfirmation.passwordResetHash": hashedToken,
+          "passwordConfirmation.passwordResetExpires": { $gt: new Date() },
         },
-        $unset: {
-          "passwordConfirmation.passwordResetHash": 1,
-          "passwordConfirmation.passwordResetExpires": 1,
+        {
+          $set: {
+            "accountData.passwordSalt": passwordSalt,
+            "accountData.passwordHash": passwordHash,
+          },
+          $unset: {
+            "passwordConfirmation.passwordResetHash": 1,
+            "passwordConfirmation.passwordResetExpires": 1,
+          },
         },
-      },
-    )
+      )
       .select("_id")
       .lean();
     return !!user;
