@@ -18,7 +18,6 @@ import { AuthService } from "./authService";
 import { inject, injectable } from "inversify";
 import { createEmailManager } from "../globals/email/email-manager";
 import { TYPES } from "../constants/tokens";
-import { Types } from "mongoose";
 
 @injectable()
 export class UsersService {
@@ -77,10 +76,6 @@ export class UsersService {
       if (!newUserData.isAddedBySuperAdmin) {
         await this.emailManager.sendEmailConfirmationLetter(newUserData);
       }
-
-      await this.authService.createRefreshTokenBlacklistForUser(
-        new Types.ObjectId(createdUserId),
-      );
       return transformedUserResponse;
     }
   }

@@ -1,9 +1,7 @@
 import mongoose from "mongoose";
-
-export const runMongooseDB = async (
-  mongoUri: string,
-  dbName: string,
-): Promise<void> => {
+const dbName = process.env.DB_NAME || "blogs-posts";
+const mongoUri = process.env.MONGODB_DRIVER || "mongodb://0.0.0.0:27017";
+export const runMongooseDB = async (): Promise<void> => {
   try {
     if (!mongoUri) {
       throw new Error("MONGO_URI is not defined in the environment variables");

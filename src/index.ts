@@ -2,14 +2,14 @@ import "reflect-metadata";
 import { app } from "./settings";
 
 import ngrok from "@ngrok/ngrok";
-import { runDB } from "./db/mongoDB/mongoDB";
+import { runMongooseDB } from "./db/mongoose/mongooseDB";
 
 const port = process.env.PORT || 5000;
 app.set("trust proxy", true);
 
 const startApp = async () => {
   try {
-    await runDB();
+    await runMongooseDB();
     app.listen(port, () => {
       console.log(`Express 5 successfully running on port ${port}`);
     });

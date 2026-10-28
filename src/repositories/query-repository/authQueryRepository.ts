@@ -1,16 +1,15 @@
-import { ObjectId, WithId } from "mongodb";
 import { RefreshTokensBlacklistDB } from "../../dto/authDTO/authDTO";
-import { refreshTokensBlacklistedCollection } from "../../db/mongoDB/mongoDB";
+import { BlacklistedRefreshTokenModel } from "../../db/mongoose/models/blacklistedRefreshToken.model";
 
 export class AuthQueryRepository {
-  async findBlacklistedUserRefreshTokenById(
-    userId: ObjectId,
+  async findBlacklistedRefreshToken(
+    userId: string,
     refreshToken: string,
-  ): Promise<null | WithId<RefreshTokensBlacklistDB>> {
-    const foundRefreshToken = await refreshTokensBlacklistedCollection.findOne({
-      _id: userId,
-      refreshTokensArray: refreshToken,
-    });
+  ): Promise<RefreshTokensBlacklistDB | null> {
+    const foundRefreshToken = await BlacklistedRefreshTokenModel.findOne({
+      userId,
+      token: refreshToken,
+    }).lean();
     return foundRefreshToken;
   }
 }

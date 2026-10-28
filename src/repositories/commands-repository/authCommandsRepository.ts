@@ -1,23 +1,14 @@
-import { ObjectId } from "mongodb";
 import { injectable } from "inversify";
-import { refreshTokensBlacklistedCollection } from "../../db/mongoDB/mongoDB";
+import { BlacklistedRefreshTokenModel } from "../../db/mongoose/models/blacklistedRefreshToken.model";
 @injectable()
 export class AuthCommandsRepository {
-  async createUserRefreshTokensBlacklist(userId: ObjectId): Promise<string> {
-    const createRefreshTokensBlacklistForUser =
-      await refreshTokensBlacklistedCollection.insertOne({
-        _id: userId,
-        refreshTokensArray: [],
-      });
-    return createRefreshTokensBlacklistForUser.insertedId.toString();
-  }
   async putRefreshTokenToBlacklist(
-    refreshToken: string,
+    token: string,
     userId: string,
   ): Promise<void> {
-    await refreshTokensBlacklistedCollection.updateOne(
-      { _id: new ObjectId(userId) },
-      { $push: { refreshTokensArray: refreshToken } },
-    );
+    await BlacklistedRefreshTokenModel.create({
+      userId,
+      token,
+    });
   }
 }

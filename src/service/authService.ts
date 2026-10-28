@@ -5,7 +5,6 @@ import { UserIsConfirmedError } from "../utils/errors-utils/registration-confirm
 import { ConfirmationCodeExpiredError } from "../utils/errors-utils/registration-confirmation-errors/ConfirmationCodeExpiredError";
 import { EmailAlreadyConfirmedError } from "../utils/errors-utils/resend-email-errors/EmailAlreadyConfirmedError";
 import { WrongEmailError } from "../utils/errors-utils/resend-email-errors/WrongEmailError";
-import { ObjectId } from "mongodb";
 import {
   AccessToken,
   NewPasswordRecoveryInputModel,
@@ -88,13 +87,7 @@ export class AuthService {
       refreshToken: refreshToken as RefreshToken,
     };
   }
-  async createRefreshTokenBlacklistForUser(
-    userId: ObjectId,
-  ): Promise<string | null> {
-    return await this.authCommandsRepository.createUserRefreshTokensBlacklist(
-      userId,
-    );
-  }
+
   async placeRefreshTokenToBlacklist(
     refreshToken: string,
     userId: string,

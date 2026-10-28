@@ -1,6 +1,6 @@
-import { ObjectId } from "mongodb";
 import { SecurityDevicesQueryRepository } from "../../repositories/query-repository/securityDevicesQueryRepository";
 import { AuthQueryRepository } from "../../repositories/query-repository/authQueryRepository";
+import { Types } from "mongoose";
 
 export type LoginInputModel = {
   loginOrEmail: string;
@@ -26,8 +26,10 @@ export type EmailRequest = {
 };
 
 export type RefreshTokensBlacklistDB = {
-  _id: ObjectId;
-  refreshTokensArray: string[];
+  _id: Types.ObjectId;
+  userId: Types.ObjectId;
+  token: string;
+  invalidatedAt: Date
 };
 export type AccessToken = string & { readonly __brand: unique symbol };
 export type RefreshToken = string & { readonly __brand: unique symbol };

@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { ObjectId } from "mongodb";
 import { createAppError } from "../utils/appErrors";
 import { getJwtPayloadResult } from "../utils/jwt/jwtUtils";
 import { getClearCookieOptions } from "../utils/auth-utils/cookie";
@@ -30,7 +29,7 @@ export const createRefreshTokenValidityMiddleware =
         StatusCodes.UNAUTHORIZED,
       );
     }
-    // refreshTokenJWTPayloadResult?.deviceId
+
     const activeSession =
       await securityDevicesQueryRepository.findSessionByDeviceId(
         refreshTokenJWTPayloadResult?.deviceId,
@@ -42,8 +41,8 @@ export const createRefreshTokenValidityMiddleware =
       );
     }
     const checkRefreshTokenIsBlacklisted =
-      await authQueryRepository.findBlacklistedUserRefreshTokenById(
-        new ObjectId(refreshTokenJWTPayloadResult.userId),
+      await authQueryRepository.findBlacklistedRefreshToken(
+        refreshTokenJWTPayloadResult.userId,
         refreshTokenFromClient,
       );
 
