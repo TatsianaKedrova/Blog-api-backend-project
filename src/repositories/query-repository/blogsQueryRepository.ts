@@ -14,6 +14,7 @@ import { PostModel } from "../../db/mongoose/models/post.model";
 export class BlogsQueryRepository {
   constructor(
     @inject(PostModel) private readonly postModel: Model<PostDBType>,
+    @inject(BlogModel) private readonly blogModel: Model<BlogDBType>,
   ) {}
   async findBlogs(
     searchNameTerm: string,
@@ -27,8 +28,9 @@ export class BlogsQueryRepository {
     if (searchNameTerm) {
       filter.name = { $regex: searchNameTerm, $options: "i" };
     }
-    const totalCount = await BlogModel.countDocuments(filter);
-    const foundBlogs = await BlogModel.find(filter)
+    const totalCount = await this.blogModel.countDocuments(filter);
+    const foundBlogs = await this.blogModel
+      .find(filter)
       .sort({ [sortBy]: sortDirection })
       .skip(skip)
       .limit(pageSize)
@@ -68,6 +70,6 @@ export class BlogsQueryRepository {
     );
   }
   async findBlogById(id: string): Promise<BlogDBType | null> {
-    return await BlogModel.findById<BlogDBType>(id).lean();
+    return await this.blogModel.findById<BlogDBType>(id).lean();
   }
 }
