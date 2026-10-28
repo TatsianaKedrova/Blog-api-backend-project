@@ -3,22 +3,12 @@ import {
   stringInputValidatorCommon,
   stringsInputValidatorWithLength,
 } from "../validators/commonValidator";
-import { BlogModel } from "../../db/mongoose/models/blog.model";
-import { createAppError } from "../appErrors";
-import { StatusCodes } from "http-status-codes";
 import { Types } from "mongoose";
 
-export const isValidBlogId: CustomValidator = async (blogId: string) => {
+export const isValidBlogId: CustomValidator = (blogId: string) => {
   if (!Types.ObjectId.isValid(blogId)) {
     throw new Error(
       "This blogId is invalid and doesn't fit the ObjectId 24 hex characters structure",
-    );
-  }
-  const blog = await BlogModel.findOne({ _id: blogId });
-  if (!blog) {
-    throw createAppError(
-      "Blog with such ID doesn't exist",
-      StatusCodes.NOT_FOUND,
     );
   }
   return true;

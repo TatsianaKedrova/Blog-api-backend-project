@@ -64,12 +64,15 @@ export class PostsController {
     req: RequestBodyModel<PostInputModel>,
     res: Response<PostViewModel | TApiErrorResultObject>,
   ) {
+    const { blogId, title, shortDescription, content } = req.body;
     const newPost = await this.postsService.createNewPost(
-      req.body.blogId,
-      req.body,
+      blogId,
+      title,
+      shortDescription,
+      content,
     );
     if (!newPost) {
-      res.sendStatus(StatusCodes.CONFLICT);
+      res.sendStatus(StatusCodes.NOT_FOUND);
     } else {
       res.status(StatusCodes.CREATED).send(newPost);
     }
@@ -81,9 +84,13 @@ export class PostsController {
     >,
     res: Response<PostViewModel>,
   ) {
+    const blogId = req.params.id;
+    const { title, shortDescription, content } = req.body;
     const createdPost = await this.postsService.createNewPost(
-      req.params.id,
-      req.body,
+      blogId,
+      title,
+      shortDescription,
+      content,
     );
     if (!createdPost) {
       res.sendStatus(StatusCodes.NOT_FOUND);

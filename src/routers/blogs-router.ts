@@ -5,7 +5,7 @@ import { blogsValidator } from "../utils/blogs-utils/blogsValidator";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 
 import { validateObjectIdMiddleware } from "../middlewares/validateObjectIdMiddleware";
-import { postsValidatorBlogId } from "../utils/posts-utils/postsValidator";
+import { postsValidator } from "../utils/posts-utils/postsValidator";
 import { blogsController, postsController } from "../inversify.config";
 export const blogsRouter = express.Router({});
 
@@ -29,9 +29,9 @@ blogsRouter.post(
   "/:id/posts",
   basicAuthMiddleware,
   validateObjectIdMiddleware,
-  postsValidatorBlogId,
+  postsValidator,
   responseErrorValidationMiddleware,
-  postsController.createNewPost.bind(postsController),
+  postsController.createPostForSpecificBlog.bind(postsController),
 );
 //TODO: CREATE A NEW BLOG
 blogsRouter.post(

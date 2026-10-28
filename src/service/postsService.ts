@@ -20,9 +20,10 @@ export class PostsService {
   ) {}
   async createNewPost(
     blogId: string,
-    postData: Omit<PostInputModel, "blogId">,
+    title: string,
+    shortDescription: string,
+    content: string,
   ): Promise<PostViewModel | null> {
-    const { title, shortDescription, content } = postData;
     const blog = await this.blogsQueryRepository.findBlogById(blogId);
     if (!blog) {
       return null;
@@ -31,7 +32,7 @@ export class PostsService {
       title,
       shortDescription,
       content,
-      blogId: new Types.ObjectId(),
+      blogId: new Types.ObjectId(blogId),
       blogName: blog.name,
       createdAt: creationDate(),
     };
