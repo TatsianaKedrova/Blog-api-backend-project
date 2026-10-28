@@ -5,8 +5,13 @@ import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnO
 import { Paginator } from "../../dto/common/PaginatorModel";
 import { PostModel } from "../../db/mongoose/models/post.model";
 import { SortOrder } from "mongoose";
+import { inject } from "inversify";
+import { Model } from "mongoose";
 
 export class PostsQueryRepository {
+  constructor(
+    @inject(PostModel) private readonly postModel: Model<PostDBType>,
+  ) {}
   async findPosts(
     pageNumber: number,
     sortBy: string,
@@ -14,8 +19,9 @@ export class PostsQueryRepository {
     sortDirection: SortOrder,
   ): Promise<Paginator<PostViewModel>> {
     const skip = paginationHandler(pageNumber, pageSize);
-    const totalCount = await PostModel.countDocuments();
-    const foundPosts = await PostModel.find()
+    const totalCount = await this.postModel.countDocuments();
+    const foundPosts = await this.postModel
+      .find()
       .collation({ locale: "en" })
       .sort({ [sortBy]: sortDirection })
       .skip(skip)
@@ -31,7 +37,7 @@ export class PostsQueryRepository {
     return posts;
   }
   async findPostById(id: string): Promise<PostDBType | null> {
-    const foundPost = await PostModel.findById<PostDBType>(id).lean();
+    const foundPost = await this.postModel.findById<PostDBType>(id).lean();
     return foundPost;
   }
 }

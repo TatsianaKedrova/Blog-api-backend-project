@@ -5,13 +5,16 @@ import { PostDBType, PostViewModel } from "../../dto/postsDTO/postDTO";
 import { transformPostsResponse } from "../../utils/posts-utils/transformPostsResponse";
 import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { BlogModel } from "../../db/mongoose/models/blog.model";
-import { QueryFilter, SortOrder } from "mongoose";
+import { Model, QueryFilter, SortOrder } from "mongoose";
 import { PostModel } from "../../db/mongoose/models/post.model";
 
 @injectable()
 export class BlogsQueryRepository {
+  constructor(
+    @inject(PostModel) private readonly postModel: Model<PostDBType>,
+  ) {}
   async findBlogs(
     searchNameTerm: string,
     pageNumber: number,
@@ -47,10 +50,11 @@ export class BlogsQueryRepository {
   ): Promise<Paginator<PostViewModel>> {
     const skip = paginationHandler(pageNumber, pageSize);
 
-    const totalCount = await PostModel.countDocuments({
+    const totalCount = await this.postModel.countDocuments({
       blogId: id,
     });
-    const foundPosts = await PostModel.find({ blogId: id })
+    const foundPosts = await this.postModel
+      .find({ blogId: id })
       .sort({ [sortBy]: sortDirection })
       .skip(skip)
       .limit(pageSize)
