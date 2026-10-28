@@ -2,15 +2,21 @@ import {
   DeviceViewModel,
   SecurityDeviceDBType,
 } from "../../dto/securityDevicesDTO/securityDevicesDTO";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { SecurityDeviceModel } from "../../db/mongoose/models/sessions.model";
+import { Model } from "mongoose";
 
 @injectable()
 export class SecurityDevicesQueryRepository {
+  constructor(
+    @inject(SecurityDeviceModel)
+    private readonly securityDeviceModel: Model<SecurityDeviceDBType>,
+  ) {}
   async getActiveSessions(userId: string): Promise<DeviceViewModel[]> {
-    const allActiveSessions = await SecurityDeviceModel.find({
-      userId,
-    })
+    const allActiveSessions = await this.securityDeviceModel
+      .find({
+        userId,
+      })
       .sort({ refreshTokenExpirationDate: -1 })
       .lean();
     if (allActiveSessions.length === 0) {
@@ -26,8 +32,9 @@ export class SecurityDevicesQueryRepository {
   async findSessionByDeviceId(
     deviceId: string,
   ): Promise<SecurityDeviceDBType | null> {
-    const foundDeviceSession =
-      await SecurityDeviceModel.findById(deviceId).lean();
+    const foundDeviceSession = await this.securityDeviceModel
+      .findById(deviceId)
+      .lean();
     return foundDeviceSession;
   }
 }

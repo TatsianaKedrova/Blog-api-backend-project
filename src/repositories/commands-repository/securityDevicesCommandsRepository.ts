@@ -1,13 +1,18 @@
 import { SecurityDeviceDBType } from "../../dto/securityDevicesDTO/securityDevicesDTO";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { SecurityDeviceModel } from "../../db/mongoose/models/sessions.model";
+import { Model } from "mongoose";
 
 @injectable()
 export class SecurityDevicesCommandsRepository {
+  constructor(
+    @inject(SecurityDeviceModel)
+    private readonly securityDeviceModel: Model<SecurityDeviceDBType>,
+  ) {}
   async createDeviceSession(
     sessionData: Omit<SecurityDeviceDBType, "_id">,
   ): Promise<string> {
-    const result = await SecurityDeviceModel.create(sessionData);
+    const result = await this.securityDeviceModel.create(sessionData);
     return result._id.toString();
   }
   async updateLastActiveDate(
@@ -16,7 +21,7 @@ export class SecurityDevicesCommandsRepository {
     refreshTokenCreationDate: Date,
     refreshTokenExpirationDate: Date,
   ): Promise<boolean> {
-    const isLastActiveTimeUpdated = await SecurityDeviceModel.updateOne(
+    const isLastActiveTimeUpdated = await this.securityDeviceModel.updateOne(
       { _id: deviceId, userId },
       {
         $set: {
@@ -31,7 +36,7 @@ export class SecurityDevicesCommandsRepository {
     deviceId: string,
     userId: string,
   ): Promise<boolean> {
-    const result = await SecurityDeviceModel.deleteOne({
+    const result = await this.securityDeviceModel.deleteOne({
       userId,
       _id: deviceId,
     });
@@ -41,7 +46,7 @@ export class SecurityDevicesCommandsRepository {
     userId: string,
     currentDeviceId: string,
   ): Promise<boolean> {
-    const result = await SecurityDeviceModel.deleteMany({
+    const result = await this.securityDeviceModel.deleteMany({
       userId,
       _id: { $ne: currentDeviceId },
     });
