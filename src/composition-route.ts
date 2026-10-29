@@ -4,6 +4,13 @@ import { CommentsController } from "./controllers/commentsController";
 import { PostsController } from "./controllers/postsController";
 import { SecurityDevicesController } from "./controllers/securityDevicesController";
 import { UsersController } from "./controllers/usersController";
+import { ApiCallModel } from "./db/mongoose/models/apiCalls.model";
+import { BlacklistedRefreshTokenModel } from "./db/mongoose/models/blacklistedRefreshToken.model";
+import { BlogModel } from "./db/mongoose/models/blog.model";
+import { CommentModel } from "./db/mongoose/models/comments.model";
+import { PostModel } from "./db/mongoose/models/post.model";
+import { SecurityDeviceModel } from "./db/mongoose/models/sessions.model";
+import { UserModel } from "./db/mongoose/models/user.model";
 import { createEmailManager } from "./globals/email/email-manager";
 import { createForbiddenResponseMiddleware } from "./middlewares/forbiddenResponseMiddleware";
 import { createRateLimiterMiddleware } from "./middlewares/rateLimiterMiddleware";
@@ -33,21 +40,28 @@ import { UsersService } from "./service/usersService";
 // ==========================================
 // 1. Repositories
 // ==========================================
-const apiCallsQueryRepository = new ApiCallsQueryRepository();
-const apiCallsCommandsRepository = new ApiCallsCommandsRepository();
-const authCommandsRepository = new AuthCommandsRepository();
-const authQueryRepository = new AuthQueryRepository();
-const usersQueryRepository = new UsersQueryRepository();
-const usersCommandsRepository = new UsersCommandsRepository();
-const securityDevicesQueryRepository = new SecurityDevicesQueryRepository();
-const securityDevicesCommandsRepository =
-  new SecurityDevicesCommandsRepository();
-const blogsQueryRepository = new BlogsQueryRepository();
-const blogsCommandsRepository = new BlogsCommandsRepository();
-const postsCommandsRepository = new PostsCommandsRepository();
-const postsQueryRepository = new PostsQueryRepository();
-const commentsQueryRepository = new CommentsQueryRepository();
-const commentsCommandsRepository = new CommentsCommandsRepository();
+const apiCallsQueryRepository = new ApiCallsQueryRepository(ApiCallModel);
+const apiCallsCommandsRepository = new ApiCallsCommandsRepository(ApiCallModel);
+const authCommandsRepository = new AuthCommandsRepository(
+  BlacklistedRefreshTokenModel,
+);
+const authQueryRepository = new AuthQueryRepository(
+  BlacklistedRefreshTokenModel,
+);
+const usersQueryRepository = new UsersQueryRepository(UserModel);
+const usersCommandsRepository = new UsersCommandsRepository(UserModel);
+const securityDevicesQueryRepository = new SecurityDevicesQueryRepository(
+  SecurityDeviceModel,
+);
+const securityDevicesCommandsRepository = new SecurityDevicesCommandsRepository(
+  SecurityDeviceModel,
+);
+const blogsQueryRepository = new BlogsQueryRepository(PostModel, BlogModel);
+const blogsCommandsRepository = new BlogsCommandsRepository(BlogModel);
+const postsCommandsRepository = new PostsCommandsRepository(PostModel);
+const postsQueryRepository = new PostsQueryRepository(PostModel);
+const commentsQueryRepository = new CommentsQueryRepository(CommentModel);
+const commentsCommandsRepository = new CommentsCommandsRepository(CommentModel);
 
 // ==========================================
 // 2. Services
