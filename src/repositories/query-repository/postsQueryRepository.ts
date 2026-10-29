@@ -6,11 +6,10 @@ import { Paginator } from "../../dto/common/PaginatorModel";
 import { PostModel } from "../../db/mongoose/models/post.model";
 import { SortOrder } from "mongoose";
 import { inject } from "inversify";
-import { Model } from "mongoose";
 
 export class PostsQueryRepository {
   constructor(
-    @inject(PostModel) private readonly postModel: Model<PostDBType>,
+    @inject(PostModel) private readonly postModel: typeof PostModel,
   ) {}
   async findPosts(
     pageNumber: number,

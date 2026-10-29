@@ -5,12 +5,12 @@ import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnO
 import { transformUsersResponse } from "../../utils/usersUtils/transformUsersResponse";
 import { inject, injectable } from "inversify";
 import { UserModel } from "../../db/mongoose/models/user.model";
-import { Model, QueryFilter, SortOrder } from "mongoose";
+import { QueryFilter, SortOrder } from "mongoose";
 
 @injectable()
 export class UsersQueryRepository {
   constructor(
-    @inject(UserModel) private readonly userModel: Model<UserDBType>,
+    @inject(UserModel) private readonly userModel: typeof UserModel,
   ) {}
   async getUsers(
     pageNumber: number,

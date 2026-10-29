@@ -4,13 +4,12 @@ import {
 } from "../../dto/securityDevicesDTO/securityDevicesDTO";
 import { inject, injectable } from "inversify";
 import { SecurityDeviceModel } from "../../db/mongoose/models/sessions.model";
-import { Model } from "mongoose";
 
 @injectable()
 export class SecurityDevicesQueryRepository {
   constructor(
     @inject(SecurityDeviceModel)
-    private readonly securityDeviceModel: Model<SecurityDeviceDBType>,
+    private readonly securityDeviceModel: typeof SecurityDeviceModel,
   ) {}
   async getActiveSessions(userId: string): Promise<DeviceViewModel[]> {
     const allActiveSessions = await this.securityDeviceModel

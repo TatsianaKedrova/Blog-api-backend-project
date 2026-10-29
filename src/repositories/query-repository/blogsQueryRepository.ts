@@ -7,14 +7,14 @@ import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { inject, injectable } from "inversify";
 import { BlogModel } from "../../db/mongoose/models/blog.model";
-import { Model, QueryFilter, SortOrder } from "mongoose";
+import { QueryFilter, SortOrder } from "mongoose";
 import { PostModel } from "../../db/mongoose/models/post.model";
 
 @injectable()
 export class BlogsQueryRepository {
   constructor(
-    @inject(PostModel) private readonly postModel: Model<PostDBType>,
-    @inject(BlogModel) private readonly blogModel: Model<BlogDBType>,
+    @inject(PostModel) private readonly postModel: typeof PostModel,
+    @inject(BlogModel) private readonly blogModel: typeof BlogModel,
   ) {}
   async findBlogs(
     searchNameTerm: string,

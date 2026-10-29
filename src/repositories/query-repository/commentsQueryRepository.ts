@@ -8,12 +8,12 @@ import { paginationHandler } from "../../utils/common-utils/paginationHandler";
 import { paginatorReturnObject } from "../../utils/common-utils/paginatorReturnObject";
 import { inject, injectable } from "inversify";
 import { CommentModel } from "../../db/mongoose/models/comments.model";
-import { Model, SortOrder } from "mongoose";
+import { SortOrder } from "mongoose";
 
 @injectable()
 export class CommentsQueryRepository {
   constructor(
-    @inject(CommentModel) private readonly commentModel: Model<CommentDBType>,
+    @inject(CommentModel) private readonly commentModel: typeof CommentModel,
   ) {}
   async findCommentById(id: string): Promise<CommentDBType | null> {
     const comment = await this.commentModel.findById(id).lean();

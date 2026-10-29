@@ -6,7 +6,8 @@ import { UserInputModel } from "./dto/usersDTO/usersDTO";
 import { getJwtPayloadResult } from "./utils/jwt/jwtUtils";
 import { UsersQueryRepository } from "./repositories/query-repository/usersQueryRepository";
 import { SecurityDeviceModel } from "./db/mongoose/models/sessions.model";
-const usersQueryRepository = new UsersQueryRepository();
+import { UserModel } from "./db/mongoose/models/user.model";
+const usersQueryRepository = new UsersQueryRepository(UserModel);
 const userAgents = {
   chromeWindows:
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
