@@ -4,6 +4,8 @@ node_modules
 dist
 /rest.http
 .lock
+coverage
+.vscode
 
 # Ignore Postman configuration and collection files
 .postman/
