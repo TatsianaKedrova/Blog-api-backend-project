@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import {
   CommentDBType,
   CommentViewModel,
+  LikeStatus,
 } from "../dto/commentsDTO/commentsDTO";
 import { CommentsCommandsRepository } from "../repositories/commands-repository/commentsCommandsRepository";
 import { PostsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
@@ -38,6 +39,9 @@ export class CommentsService {
       createdAt: creationDate(),
       userId: new Types.ObjectId(userId),
       userLogin: foundUser.accountData.login,
+      likesCount: 0,
+      dislikesCount: 0,
+      myStatus: "none",
     };
     const createdComment =
       await this.commentsCommandsRepository.createComment(newComment);
@@ -61,5 +65,8 @@ export class CommentsService {
       content,
     );
     return updatedComment;
+  }
+  async changeLikeStatus(likeStatus: LikeStatus, userId: string): Promise<any> {
+    // const existingLikeStatus = await this.commentsQueryRepository
   }
 }

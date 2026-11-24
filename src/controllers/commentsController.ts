@@ -128,6 +128,9 @@ export class CommentsController {
       return res.sendStatus(StatusCodes.NOT_FOUND);
     }
     const likeStatus = req.body.likeStatus;
+    const userId = req.userId;
+    const changedStatus =
+      await this.commentsService.changeLikeStatus(likeStatus, userId);
     return res.sendStatus(StatusCodes.NO_CONTENT);
   }
 }

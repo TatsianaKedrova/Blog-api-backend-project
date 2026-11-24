@@ -14,5 +14,10 @@ export const transformCommentsResponse = (
       userId: newComment.userId.toString(),
       userLogin: newComment.userLogin,
     },
+    likesInfo: {
+      likesCount: newComment.likesCount,
+      dislikesCount: newComment.dislikesCount,
+      myStatus: newComment.myStatus,
+    },
   };
 };
