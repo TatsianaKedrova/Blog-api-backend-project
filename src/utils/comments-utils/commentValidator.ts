@@ -1,4 +1,4 @@
-import { stringsInputValidatorWithLength } from "../validators/commonValidator";
+import { stringsInputValidatorWithLength } from "../common-utils/commonValidator";
 
 export const commentValidator = [
   stringsInputValidatorWithLength("content", 300, 20),

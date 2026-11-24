@@ -2,7 +2,7 @@ import { CustomValidator } from "express-validator";
 import {
   stringInputValidatorCommon,
   stringsInputValidatorWithLength,
-} from "../validators/commonValidator";
+} from "../common-utils/commonValidator";
 import { Types } from "mongoose";
 
 export const isValidBlogId: CustomValidator = (blogId: string) => {

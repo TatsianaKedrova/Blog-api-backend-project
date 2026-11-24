@@ -1,0 +1,9 @@
+$kind: http-request
+name: change like/dislike status
+url: "{{BASE_URL}}/comments/:id/like-status"
+method: PUT
+pathVariables:
+  id: ""
+auth:
+  type: bearer
+order: 6000

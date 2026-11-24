@@ -7,6 +7,7 @@ import {
   commentsController,
   forbiddenResponseMiddleware,
 } from "../inversify.config";
+import { likesStatusValidator } from "../utils/comments-utils/likesStatusValidator";
 
 export const commentsRouter = express.Router({});
 
@@ -32,4 +33,11 @@ commentsRouter.put(
   commentValidator,
   responseErrorValidationMiddleware,
   commentsController.updateComment.bind(commentsController),
+);
+commentsRouter.put(
+  "/:id/like-status",
+  accessTokenValidityMiddleware,
+  validateObjectIdMiddleware,
+  likesStatusValidator,
+  commentsController.changeLikeStatus.bind(commentsController),
 );

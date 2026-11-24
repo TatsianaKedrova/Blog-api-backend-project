@@ -2,6 +2,7 @@ import { Response } from "express";
 import {
   CommentInputModel,
   CommentViewModel,
+  LikeInputModel,
 } from "../dto/commentsDTO/commentsDTO";
 import {
   RequestWithURIParam,
@@ -115,5 +116,18 @@ export class CommentsController {
       res.sendStatus(StatusCodes.NOT_FOUND);
     }
     res.sendStatus(StatusCodes.NO_CONTENT);
+  }
+  async changeLikeStatus(
+    req: RequestWithURIParamsAndBody<URIParamsRequest, LikeInputModel>,
+    res: Response,
+  ) {
+    const comment = await this.commentsQueryRepository.findCommentById(
+      req.params.id,
+    );
+    if (!comment) {
+      return res.sendStatus(StatusCodes.NOT_FOUND);
+    }
+    const likeStatus = req.body.likeStatus;
+    return res.sendStatus(StatusCodes.NO_CONTENT);
   }
 }

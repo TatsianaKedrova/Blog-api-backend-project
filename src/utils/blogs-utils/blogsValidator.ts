@@ -1,5 +1,5 @@
 import { urlBlogsRegex } from "../common-utils/regexes";
-import { stringsInputValidatorWithLength } from "../validators/commonValidator";
+import { stringsInputValidatorWithLength } from "../common-utils/commonValidator";
 
 export const blogsURLValidator = () => {
   return stringsInputValidatorWithLength("websiteUrl", 100).custom((url) => {

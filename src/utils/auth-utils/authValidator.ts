@@ -2,7 +2,7 @@ import { userEmailRegex, userLoginRegex } from "../common-utils/regexes";
 import {
   stringInputValidatorCommon,
   stringsInputValidatorWithLength,
-} from "./commonValidator";
+} from "../common-utils/commonValidator";
 
 export const loginValidator = [
   stringInputValidatorCommon("loginOrEmail"),

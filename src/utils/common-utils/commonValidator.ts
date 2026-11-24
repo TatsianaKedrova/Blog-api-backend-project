@@ -5,8 +5,8 @@ export const stringInputValidatorCommon = (field: string) => {
     .exists()
     .withMessage(`${field} field is required`)
     .isString()
-    .trim()
     .withMessage(`${field} should be of type String`)
+    .trim()
     .notEmpty()
     .withMessage(`${field} must be included in request body`);
 };

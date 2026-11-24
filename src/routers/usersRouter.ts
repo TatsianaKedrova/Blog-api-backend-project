@@ -3,7 +3,7 @@ import express from "express";
 import { basicAuthMiddleware } from "../middlewares/basicAuth";
 import { responseErrorValidationMiddleware } from "../middlewares/responseErrorValidationMiddleware";
 import { usersController } from "../inversify.config";
-import { userRegistrationValidator } from "../utils/validators/authValidator";
+import { userRegistrationValidator } from "../utils/auth-utils/authValidator";
 export const usersRouter = express.Router({});
 
 usersRouter.get(

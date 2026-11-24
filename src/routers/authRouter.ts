@@ -6,7 +6,7 @@ import {
   passwordResetValidator,
   emailValidator,
   confirmationCodeValidator,
-} from "../utils/validators/authValidator";
+} from "../utils/auth-utils/authValidator";
 import { accessTokenValidityMiddleware } from "../middlewares/accessTokenValidityMiddleware";
 import {
   authController,

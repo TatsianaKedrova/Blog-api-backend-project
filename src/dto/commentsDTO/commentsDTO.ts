@@ -39,3 +39,9 @@ export class CommentDBType {
     this.postId = data.postId;
   }
 }
+export const LIKE_STATUSES = ["none", "like", "dislike"] as const;
+export type LikeStatus = (typeof LIKE_STATUSES)[number];
+
+export type LikeInputModel = {
+  likeStatus: LikeStatus;
+};
