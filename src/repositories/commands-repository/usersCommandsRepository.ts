@@ -1,12 +1,13 @@
 import { Types } from "mongoose";
 import { UserDBType } from "../../dto/usersDTO/usersDTO";
 import { inject, injectable } from "inversify";
+import { TYPES } from "../../constants/tokens";
 import { UserModel } from "../../db/mongoose/models/user.model";
 
 @injectable()
 export class UsersCommandsRepository {
   constructor(
-    @inject(UserModel) private readonly userModel: typeof UserModel,
+    @inject(TYPES.UserModel) private readonly userModel: typeof UserModel,
   ) {}
 
   async createNewUser(

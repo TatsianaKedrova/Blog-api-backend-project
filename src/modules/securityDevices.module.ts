@@ -3,6 +3,8 @@ import { SecurityDevicesController } from "../controllers/securityDevicesControl
 import { SecurityDevicesService } from "../service/securityDevicesService";
 import { SecurityDevicesQueryRepository } from "../repositories/query-repository/securityDevicesQueryRepository";
 import { SecurityDevicesCommandsRepository } from "../repositories/commands-repository/securityDevicesCommandsRepository";
+import { TYPES } from "../constants/tokens";
+import { SecurityDeviceModel } from "../db/mongoose/models/sessions.model";
 
 export const SecurityDevicesModule = new ContainerModule((options) => {
   options
@@ -21,4 +23,5 @@ export const SecurityDevicesModule = new ContainerModule((options) => {
     .bind<SecurityDevicesCommandsRepository>(SecurityDevicesCommandsRepository)
     .toSelf()
     .inSingletonScope();
+  options.bind(TYPES.SecurityDeviceModel).toConstantValue(SecurityDeviceModel);
 });

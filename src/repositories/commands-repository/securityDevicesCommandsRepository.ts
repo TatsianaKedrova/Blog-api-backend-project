@@ -1,11 +1,12 @@
 import { SecurityDeviceDBType } from "../../dto/securityDevicesDTO/securityDevicesDTO";
 import { inject, injectable } from "inversify";
 import { SecurityDeviceModel } from "../../db/mongoose/models/sessions.model";
+import { TYPES } from "../../constants/tokens";
 
 @injectable()
 export class SecurityDevicesCommandsRepository {
   constructor(
-    @inject(SecurityDeviceModel)
+    @inject(TYPES.SecurityDeviceModel)
     private readonly securityDeviceModel: typeof SecurityDeviceModel,
   ) {}
   async createDeviceSession(

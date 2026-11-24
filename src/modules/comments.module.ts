@@ -5,6 +5,7 @@ import { CommentsQueryRepository } from "../repositories/query-repository/commen
 import { CommentsCommandsRepository } from "../repositories/commands-repository/commentsCommandsRepository";
 import { TYPES } from "../constants/tokens";
 import { createForbiddenResponseMiddleware } from "../middlewares/forbiddenResponseMiddleware";
+import { CommentModel } from "../db/mongoose/models/comments.model";
 export const CommentsModule = new ContainerModule((options) => {
   options
     .bind<CommentsController>(CommentsController)
@@ -19,6 +20,7 @@ export const CommentsModule = new ContainerModule((options) => {
     .bind<CommentsCommandsRepository>(CommentsCommandsRepository)
     .toSelf()
     .inSingletonScope();
+  options.bind(TYPES.CommentModel).toConstantValue(CommentModel);
   options
     .bind(TYPES.ForbiddenResponseMiddleware)
     .toDynamicValue((context) => {

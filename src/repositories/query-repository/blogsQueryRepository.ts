@@ -9,12 +9,13 @@ import { inject, injectable } from "inversify";
 import { BlogModel } from "../../db/mongoose/models/blog.model";
 import { QueryFilter, SortOrder } from "mongoose";
 import { PostModel } from "../../db/mongoose/models/post.model";
+import { TYPES } from "../../constants/tokens";
 
 @injectable()
 export class BlogsQueryRepository {
   constructor(
-    @inject(PostModel) private readonly postModel: typeof PostModel,
-    @inject(BlogModel) private readonly blogModel: typeof BlogModel,
+    @inject(TYPES.PostModel) private readonly postModel: typeof PostModel,
+    @inject(TYPES.BlogModel) private readonly blogModel: typeof BlogModel,
   ) {}
   async findBlogs(
     searchNameTerm: string,

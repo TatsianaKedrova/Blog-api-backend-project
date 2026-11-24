@@ -2,11 +2,12 @@ import { inject, injectable } from "inversify";
 import { BlogDBType, BlogInputModel } from "../../dto/blogsDTO/blogDTO";
 import { BlogModel } from "../../db/mongoose/models/blog.model";
 import { Types } from "mongoose";
+import { TYPES } from "../../constants/tokens";
 
 @injectable()
 export class BlogsCommandsRepository {
   constructor(
-    @inject(BlogModel) private readonly blogModel: typeof BlogModel,
+    @inject(TYPES.BlogModel) private readonly blogModel: typeof BlogModel,
   ) {}
   async createNewBlog(
     newBlog: Omit<BlogDBType, "_id">,

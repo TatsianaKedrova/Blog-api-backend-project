@@ -2,11 +2,12 @@ import { PostDBType, PostInputModel } from "../../dto/postsDTO/postDTO";
 import { inject, injectable } from "inversify";
 import { PostModel } from "../../db/mongoose/models/post.model";
 import { Types } from "mongoose";
+import { TYPES } from "../../constants/tokens";
 
 @injectable()
 export class PostsCommandsRepository {
   constructor(
-    @inject(PostModel) private readonly postModel: typeof PostModel,
+    @inject(TYPES.PostModel) private readonly postModel: typeof PostModel,
   ) {}
   async createNewPost(
     newPost: Omit<PostDBType, "_id">,

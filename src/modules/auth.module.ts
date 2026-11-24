@@ -8,6 +8,7 @@ import { SecurityDevicesQueryRepository } from "../repositories/query-repository
 import { createRefreshTokenValidityMiddleware } from "../middlewares/refreshTokenValidityMiddleware";
 import { ApiCallsService } from "../service/apiCallsService";
 import { createRateLimiterMiddleware } from "../middlewares/rateLimiterMiddleware";
+import { BlacklistedRefreshTokenModel } from "../db/mongoose/models/blacklistedRefreshToken.model";
 
 export const AuthModule = new ContainerModule((options) => {
   options.bind<AuthController>(AuthController).toSelf().inSingletonScope();
@@ -20,6 +21,9 @@ export const AuthModule = new ContainerModule((options) => {
     .bind<AuthCommandsRepository>(AuthCommandsRepository)
     .toSelf()
     .inSingletonScope();
+  options
+    .bind(TYPES.BlacklistedRefreshTokenModel)
+    .toConstantValue(BlacklistedRefreshTokenModel);
   options
     .bind(TYPES.RefreshTokenValidityMiddleware)
     .toDynamicValue((context) => {
@@ -44,5 +48,3 @@ export const AuthModule = new ContainerModule((options) => {
     })
     .inSingletonScope();
 });
-
-

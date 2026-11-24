@@ -6,11 +6,12 @@ import { transformUsersResponse } from "../../utils/usersUtils/transformUsersRes
 import { inject, injectable } from "inversify";
 import { UserModel } from "../../db/mongoose/models/user.model";
 import { QueryFilter, SortOrder } from "mongoose";
+import { TYPES } from "../../constants/tokens";
 
 @injectable()
 export class UsersQueryRepository {
   constructor(
-    @inject(UserModel) private readonly userModel: typeof UserModel,
+    @inject(TYPES.UserModel) private readonly userModel: typeof UserModel,
   ) {}
   async getUsers(
     pageNumber: number,

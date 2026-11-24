@@ -2,11 +2,13 @@ import { CommentDBType } from "../../dto/commentsDTO/commentsDTO";
 import { inject, injectable } from "inversify";
 import { Types } from "mongoose";
 import { CommentModel } from "../../db/mongoose/models/comments.model";
+import { TYPES } from "../../constants/tokens";
 
 @injectable()
 export class CommentsCommandsRepository {
   constructor(
-    @inject(CommentModel) private readonly commentModel: typeof CommentModel,
+    @inject(TYPES.CommentModel)
+    private readonly commentModel: typeof CommentModel,
   ) {}
   async createComment(
     newComment: Omit<CommentDBType, "_id">,

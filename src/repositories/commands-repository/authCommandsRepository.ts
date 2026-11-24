@@ -1,9 +1,10 @@
 import { inject, injectable } from "inversify";
 import { BlacklistedRefreshTokenModel } from "../../db/mongoose/models/blacklistedRefreshToken.model";
+import { TYPES } from "../../constants/tokens";
 @injectable()
 export class AuthCommandsRepository {
   constructor(
-    @inject(BlacklistedRefreshTokenModel)
+    @inject(TYPES.BlacklistedRefreshTokenModel)
     private readonly blacklistedRefreshTokenModel: typeof BlacklistedRefreshTokenModel,
   ) {}
   async putRefreshTokenToBlacklist(

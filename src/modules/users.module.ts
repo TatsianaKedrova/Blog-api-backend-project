@@ -5,6 +5,7 @@ import { UsersQueryRepository } from "../repositories/query-repository/usersQuer
 import { UsersCommandsRepository } from "../repositories/commands-repository/usersCommandsRepository";
 import { TYPES } from "../constants/tokens";
 import { createEmailManager } from "../globals/email/email-manager";
+import { UserModel } from "../db/mongoose/models/user.model";
 
 export const UsersModule = new ContainerModule((options) => {
   options.bind<UsersController>(UsersController).toSelf().inSingletonScope();
@@ -17,6 +18,7 @@ export const UsersModule = new ContainerModule((options) => {
     .bind<UsersCommandsRepository>(UsersCommandsRepository)
     .toSelf()
     .inSingletonScope();
+  options.bind(TYPES.UserModel).toConstantValue(UserModel);
   options
     .bind(TYPES.EmailManager)
     .toDynamicValue((context) => {
