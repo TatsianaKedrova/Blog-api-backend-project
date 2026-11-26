@@ -22,7 +22,10 @@ export class CommentsCommandsRepository {
     });
     return deletedComment.deletedCount === 1;
   }
-  async updateComment(commentId: string, content: string): Promise<boolean> {
+  async updateCommentContent(
+    commentId: string,
+    content: string,
+  ): Promise<boolean> {
     const newUpdatedComment = await this.commentModel.updateOne(
       { _id: commentId },
       { $set: { content } },

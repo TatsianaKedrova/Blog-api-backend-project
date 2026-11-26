@@ -6,6 +6,9 @@ import { CommentsCommandsRepository } from "../repositories/commands-repository/
 import { TYPES } from "../constants/tokens";
 import { createForbiddenResponseMiddleware } from "../middlewares/forbiddenResponseMiddleware";
 import { CommentModel } from "../db/mongoose/models/comments.model";
+import { LikeDislikeModel } from "../db/mongoose/models/likes.model";
+import { LikesCommandsRepository } from "../repositories/commands-repository/likesCommandsRepository";
+import { LikesQueryRepository } from "../repositories/query-repository/likesQueryRepository";
 export const CommentsModule = new ContainerModule((options) => {
   options
     .bind<CommentsController>(CommentsController)
@@ -21,6 +24,15 @@ export const CommentsModule = new ContainerModule((options) => {
     .toSelf()
     .inSingletonScope();
   options.bind(TYPES.CommentModel).toConstantValue(CommentModel);
+  options.bind(TYPES.LikeDislikeModel).toConstantValue(LikeDislikeModel);
+  options
+    .bind<LikesCommandsRepository>(LikesCommandsRepository)
+    .toSelf()
+    .inSingletonScope();
+  options
+    .bind<LikesQueryRepository>(LikesQueryRepository)
+    .toSelf()
+    .inSingletonScope();
   options
     .bind(TYPES.ForbiddenResponseMiddleware)
     .toDynamicValue((context) => {
