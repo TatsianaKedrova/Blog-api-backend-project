@@ -1,13 +1,8 @@
 import { Types } from "mongoose";
+import { LikesInfoViewModel } from "./likesDTO";
 
 export type CommentInputModel = {
   content: string; // maxLength: 300, minLength: 20
-};
-
-export type LikesInfoViewModel = {
-  likesCount: number; //Total likes for parent item
-  dislikesCount: number; //Total dislikes for parent item
-  myStatus: LikeStatus; //Send None if you want to unlike\undislike
 };
 export type CommentViewModel = {
   id: string;
@@ -31,7 +26,6 @@ export class CommentDBType {
   public postId: Types.ObjectId;
   public likesCount: number;
   public dislikesCount: number;
-  myStatus: LikeStatus;
   constructor(data: {
     _id: Types.ObjectId;
     content: string;
@@ -41,7 +35,6 @@ export class CommentDBType {
     postId: Types.ObjectId;
     likesCount: number;
     dislikesCount: number;
-    myStatus: LikeStatus;
   }) {
     this._id = data._id;
     this.userId = data.userId;
@@ -51,12 +44,5 @@ export class CommentDBType {
     this.postId = data.postId;
     this.likesCount = data.likesCount;
     this.dislikesCount = data.dislikesCount;
-    this.myStatus = data.myStatus;
   }
 }
-export const LIKE_STATUSES = ["none", "like", "dislike"] as const;
-export type LikeStatus = (typeof LIKE_STATUSES)[number];
-
-export type LikeInputModel = {
-  likeStatus: LikeStatus;
-};
