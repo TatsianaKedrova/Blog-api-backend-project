@@ -17,7 +17,7 @@ export const transformCommentsResponse = (
     likesInfo: {
       likesCount: newComment.likesCount,
       dislikesCount: newComment.dislikesCount,
-      myStatus: newComment.myStatus,
+      myStatus: "none",
     },
   };
 };

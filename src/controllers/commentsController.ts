@@ -2,7 +2,6 @@ import { Response } from "express";
 import {
   CommentInputModel,
   CommentViewModel,
-  LikeInputModel,
 } from "../dto/commentsDTO/commentsDTO";
 import {
   RequestWithURIParam,
@@ -18,6 +17,7 @@ import { CommentsService } from "../service/commentsService";
 import { CommentsQueryRepository } from "../repositories/query-repository/commentsQueryRepository";
 import { inject, injectable } from "inversify";
 import { PostsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
+import { LikeInputModel } from "../dto/commentsDTO/likesDTO";
 
 @injectable()
 export class CommentsController {
@@ -108,7 +108,7 @@ export class CommentsController {
     res: Response,
   ) {
     const { content } = req.body;
-    const updatedComment = await this.commentsService.updateCommentById(
+    const updatedComment = await this.commentsService.updateCommentContentById(
       req.params.id,
       content,
     );
@@ -121,16 +121,18 @@ export class CommentsController {
     req: RequestWithURIParamsAndBody<URIParamsRequest, LikeInputModel>,
     res: Response,
   ) {
-    const comment = await this.commentsQueryRepository.findCommentById(
-      req.params.id,
+    const commentId = req.params.id;
+    const userId = req.userId;
+    const likeStatus = req.body.likeStatus;
+
+    const changeStatus = await this.commentsService.changeLikeStatus(
+      likeStatus,
+      userId,
+      commentId,
     );
-    if (!comment) {
+    if (!changeStatus) {
       return res.sendStatus(StatusCodes.NOT_FOUND);
     }
-    const likeStatus = req.body.likeStatus;
-    const userId = req.userId;
-    const changedStatus =
-      await this.commentsService.changeLikeStatus(likeStatus, userId);
     return res.sendStatus(StatusCodes.NO_CONTENT);
   }
 }

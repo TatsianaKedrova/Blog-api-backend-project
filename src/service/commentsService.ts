@@ -2,7 +2,6 @@ import { inject, injectable } from "inversify";
 import {
   CommentDBType,
   CommentViewModel,
-  LikeStatus,
 } from "../dto/commentsDTO/commentsDTO";
 import { CommentsCommandsRepository } from "../repositories/commands-repository/commentsCommandsRepository";
 import { PostsQueryRepository } from "../repositories/query-repository/postsQueryRepository";
@@ -10,6 +9,10 @@ import { UsersQueryRepository } from "../repositories/query-repository/usersQuer
 import { transformCommentsResponse } from "../utils/comments-utils/transformCommentsResponse";
 import { creationDate } from "../utils/date/dateUtils";
 import { Types } from "mongoose";
+import { CommentsQueryRepository } from "../repositories/query-repository/commentsQueryRepository";
+import { LikeStatus } from "../dto/commentsDTO/likesDTO";
+import { LikesQueryRepository } from "../repositories/query-repository/likesQueryRepository";
+import { LikesCommandsRepository } from "../repositories/commands-repository/likesCommandsRepository";
 
 @injectable()
 export class CommentsService {
@@ -20,6 +23,12 @@ export class CommentsService {
     private readonly postsQueryRepository: PostsQueryRepository,
     @inject(CommentsCommandsRepository)
     private readonly commentsCommandsRepository: CommentsCommandsRepository,
+    @inject(CommentsQueryRepository)
+    private readonly commentsQueryRepository: CommentsQueryRepository,
+    @inject(LikesQueryRepository)
+    protected readonly likesQueryRepository: LikesQueryRepository,
+    @inject(LikesCommandsRepository)
+    protected readonly likesCommandsRepository: LikesCommandsRepository,
   ) {}
 
   async createNewComment(
@@ -41,7 +50,6 @@ export class CommentsService {
       userLogin: foundUser.accountData.login,
       likesCount: 0,
       dislikesCount: 0,
-      myStatus: "none",
     };
     const createdComment =
       await this.commentsCommandsRepository.createComment(newComment);
@@ -56,17 +64,39 @@ export class CommentsService {
       await this.commentsCommandsRepository.deleteComment(commentId);
     return deletedComment;
   }
-  async updateCommentById(
+  async updateCommentContentById(
     commentId: string,
     content: string,
   ): Promise<boolean> {
-    const updatedComment = await this.commentsCommandsRepository.updateComment(
-      commentId,
-      content,
-    );
+    const updatedComment =
+      await this.commentsCommandsRepository.updateCommentContent(
+        commentId,
+        content,
+      );
     return updatedComment;
   }
-  async changeLikeStatus(likeStatus: LikeStatus, userId: string): Promise<any> {
-    // const existingLikeStatus = await this.commentsQueryRepository
+  async changeLikeStatus(
+    likeStatus: LikeStatus,
+    userId: string,
+    commentId: string,
+  ): Promise<boolean> {
+    const comment =
+      await this.commentsQueryRepository.findCommentById(commentId);
+    if (!comment) {
+      return false;
+    }
+    const oldLikeStatus = await this.likesQueryRepository.findUserReaction(
+      userId,
+      commentId,
+    );
+
+    if (oldLikeStatus === likeStatus) return true;
+    const changeLikeDislikeStatus =
+      await this.likesCommandsRepository.changeLikesDislikesStatus(
+        userId,
+        commentId,
+        likeStatus,
+      );
+    return true;
   }
 }

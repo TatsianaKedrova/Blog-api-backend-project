@@ -14,7 +14,7 @@ export const likesSchema = new Schema<LikesDBType>(
 );
 likesSchema.index({ commentId: 1, userId: 1 }, { unique: true });
 
-export const LikeModel = model<LikesDBType>(
+export const LikeDislikeModel = model<LikesDBType>(
   "LikeDislike",
   likesSchema,
   "likesDislikes",

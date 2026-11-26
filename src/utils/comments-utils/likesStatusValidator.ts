@@ -1,4 +1,4 @@
-import { LIKE_STATUSES } from "../../dto/commentsDTO/commentsDTO";
+import { LIKE_STATUSES } from "../../dto/commentsDTO/likesDTO";
 import { stringInputValidatorCommon } from "../common-utils/commonValidator";
 
 export const likesInputValidator = (field: string) => {

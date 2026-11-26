@@ -10,4 +10,5 @@ export const TYPES = {
   BlacklistedRefreshTokenModel: Symbol.for("BlacklistedRefreshTokenModel"),
   SecurityDeviceModel: Symbol.for("SecurityDeviceModel"),
   CommentModel: Symbol.for("CommentModel"),
+  LikeDislikeModel: Symbol.for("LikeDislikeModel"),
 };

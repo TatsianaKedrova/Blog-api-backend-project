@@ -8,6 +8,7 @@ import { ApiCallModel } from "./db/mongoose/models/apiCalls.model";
 import { BlacklistedRefreshTokenModel } from "./db/mongoose/models/blacklistedRefreshToken.model";
 import { BlogModel } from "./db/mongoose/models/blog.model";
 import { CommentModel } from "./db/mongoose/models/comments.model";
+import { LikeDislikeModel } from "./db/mongoose/models/likes.model";
 import { PostModel } from "./db/mongoose/models/post.model";
 import { SecurityDeviceModel } from "./db/mongoose/models/sessions.model";
 import { UserModel } from "./db/mongoose/models/user.model";
@@ -19,6 +20,7 @@ import { ApiCallsCommandsRepository } from "./repositories/commands-repository/a
 import { AuthCommandsRepository } from "./repositories/commands-repository/authCommandsRepository";
 import { BlogsCommandsRepository } from "./repositories/commands-repository/blogsCommandsRepository";
 import { CommentsCommandsRepository } from "./repositories/commands-repository/commentsCommandsRepository";
+import { LikesCommandsRepository } from "./repositories/commands-repository/likesCommandsRepository";
 import { PostsCommandsRepository } from "./repositories/commands-repository/postsCommandsRepository";
 import { SecurityDevicesCommandsRepository } from "./repositories/commands-repository/securityDevicesCommandsRepository";
 import { UsersCommandsRepository } from "./repositories/commands-repository/usersCommandsRepository";
@@ -26,6 +28,7 @@ import { ApiCallsQueryRepository } from "./repositories/query-repository/apiCall
 import { AuthQueryRepository } from "./repositories/query-repository/authQueryRepository";
 import { BlogsQueryRepository } from "./repositories/query-repository/blogsQueryRepository";
 import { CommentsQueryRepository } from "./repositories/query-repository/commentsQueryRepository";
+import { LikesQueryRepository } from "./repositories/query-repository/likesQueryRepository";
 import { PostsQueryRepository } from "./repositories/query-repository/postsQueryRepository";
 import { SecurityDevicesQueryRepository } from "./repositories/query-repository/securityDevicesQueryRepository";
 import { UsersQueryRepository } from "./repositories/query-repository/usersQueryRepository";
@@ -95,10 +98,16 @@ const postsService = new PostsService(
   blogsQueryRepository,
   postsCommandsRepository,
 );
+
+const likesCommandsRepository = new LikesCommandsRepository(LikeDislikeModel);
+const likesQueryRepository = new LikesQueryRepository(LikeDislikeModel);
 const commentsService = new CommentsService(
   usersQueryRepository,
   postsQueryRepository,
   commentsCommandsRepository,
+  commentsQueryRepository,
+  likesQueryRepository,
+  likesCommandsRepository,
 );
 
 const blogsService = new BlogsService(blogsCommandsRepository);
